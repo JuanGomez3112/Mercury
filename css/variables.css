@@ -1,0 +1,119 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  text-decoration: none;
+  list-style: none;
+}
+
+.boton-expand {
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+  border-radius: 1.25rem;
+  font-weight: 900;
+}
+
+.boton-border {
+  background-color: transparent;
+  border: 2px solid #010326;
+  color: #010326;
+}
+
+.boton-color {
+  background: #010326;
+  color: #F0EFF4;
+  border: 2px solid transparent;
+  transition: background 0.2s ease-in-out;
+}
+.boton-color:hover {
+  background: #9379F2;
+}
+
+.logo-oscuro {
+  fill: #010326;
+}
+
+.logo-blanco {
+  fill: #F0EFF4;
+}
+
+.group-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.input-group {
+  gap: 2px;
+}
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.input-group .campo-texto {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+.input-group .campo-texto input {
+  width: 270px;
+  position: relative;
+  font-size: 0.875rem;
+  padding: 0.6rem;
+  padding-left: 2rem;
+  background-color: transparent;
+  border: 2px solid #010326;
+  border-radius: 1.125rem;
+  color: #010326;
+  outline: none;
+  font-weight: 500;
+}
+.input-group .campo-texto input::placeholder {
+  color: rgba(1, 3, 38, 0.56);
+}
+.input-group .campo-texto input:focus {
+  background-color: rgba(202, 191, 217, 0.56);
+}
+.input-group .campo-texto input:focus ~ i {
+  color: #010326;
+}
+.input-group .campo-texto i {
+  position: absolute;
+  font-size: 0.8rem;
+  top: 0.9rem;
+  left: 1rem;
+  color: rgba(1, 3, 38, 0.56);
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: #010326;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.circle-icon i {
+  font-size: 1rem;
+  justify-content: center;
+  color: #F0EFF4;
+}
+
+/*# sourceMappingURL=variables.css.map */

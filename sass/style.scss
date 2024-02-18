@@ -1,0 +1,157 @@
+@import 'variables';
+
+body {
+    display: flex;
+
+
+    .content-logo {
+        background-color: $azulMarino;
+        display: flex;
+        justify-content: center;
+        width: 63.54%;
+        height: 100vh;
+        align-items: center;
+        position: relative;
+
+        svg {
+            position: relative;
+            max-height: 68.52%;
+            height: auto;
+            width: auto;
+        }
+    }
+
+    main {
+        background-image: $gradient-primary;
+        max-width: 36.46%;
+        width: 36.46%;
+        height: 100vh;
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 600px;
+
+        .logo-oscuro {
+            height: 19.44%;
+            margin: 3.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+
+            >label {
+                order: 1;
+                display: block;
+                cursor: pointer;
+            }
+
+            >input[type="radio"] {
+                display: none;
+
+                &:checked+label {
+                    background-color: transparent;
+                    border: 2px solid $azulMarino;
+                    color: $azulMarino;
+                    transition: all 0.2s ease-in-out;
+
+                    &:hover {
+                        background: $vivo;
+                        border: solid 2px transparent;
+                    }
+
+                    &+form {
+                        display: block;
+                    }
+                }
+            }
+
+            .acceso {
+                order: 99;
+                flex-grow: 1;
+                display: none;
+                max-width: max-content;
+
+                .swipper {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+
+                    .group-inputs {
+                        margin: 2rem;
+                        width: max-content;
+                    }
+
+                    .group-check {
+                        display: flex;
+                        gap: 4rem;
+
+                        p {
+                            font-weight: 600;
+                            color: $azulMarino;
+                        }
+                    }
+
+                    button {
+                        margin: 2.5rem;
+                        width: max-content;
+                    }
+
+                    
+                }
+            }
+
+            .registro {
+                order: 99;
+                flex-grow: 1;
+                display: none;
+                max-width: max-content;
+
+                .swipper {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+
+                    .group-inputs {
+                        margin: 2rem;
+                        width: max-content;
+                    }
+
+                    .group-check {
+                        display: flex;
+                        gap: 4rem;
+
+                        p {
+                            font-weight: 600;
+                            color: $azulMarino;
+                        }
+                    }
+
+                    button {
+                        margin: 2.5rem;
+                        width: max-content;
+                    }
+                }
+            }
+        }
+
+
+        .redes-sociales {
+            gap: 1rem;
+
+            p {
+                font-weight: 600;
+                color: $azulMarino;
+            }
+
+            .redes-icon {
+                display: flex;
+                flex-direction: row;
+                gap: 2rem;
+            }
+        }
+    }
+}
