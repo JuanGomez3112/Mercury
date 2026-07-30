@@ -2,8 +2,8 @@
 
 /* ── Mercury brand tokens (paleta tentativa, sin canonizar) ── */
 :root {
-  --navy: #010326;
-  --navy-2: #0a0b2e;
+  --navy: #050418;          /* base profunda con tinte morado (era #010326) */
+  --navy-2: #171334;        /* superficie: lavanda del diseño (#CABFD9) en oscuro */
   --purple: #9379f2;
   --purple-soft: #cabfd9;
   --white: #f0eff4;
