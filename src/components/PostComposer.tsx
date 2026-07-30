@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import SlidePublish from "./SlidePublish";
@@ -17,6 +17,8 @@ export default function PostComposer({
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [adult, setAdult] = useState(false);
@@ -24,6 +26,38 @@ export default function PostComposer({
   const [error, setError] = useState("");
 
   const previews = files.map((f) => ({ f, url: URL.createObjectURL(f) }));
+
+  // Rueda del mouse (vertical) → scroll horizontal de los tags
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        el.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Click + arrastrar para desplazar los tags
+  function dragDown(e: React.PointerEvent) {
+    const el = scrollRef.current;
+    if (!el) return;
+    drag.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false };
+  }
+  function dragMove(e: React.PointerEvent) {
+    if (!drag.current.down) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    const dx = e.clientX - drag.current.startX;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
+    el.scrollLeft = drag.current.startScroll - dx;
+  }
+  function dragEnd() {
+    drag.current.down = false;
+  }
 
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
@@ -132,12 +166,22 @@ export default function PostComposer({
           <IconFire className="h-4 w-3.5" />
         </button>
 
-        <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-4 overflow-x-auto">
+        <div
+          ref={scrollRef}
+          onPointerDown={dragDown}
+          onPointerMove={dragMove}
+          onPointerUp={dragEnd}
+          onPointerLeave={dragEnd}
+          className="no-scrollbar flex min-w-0 flex-1 cursor-grab items-center gap-4 overflow-x-auto select-none active:cursor-grabbing"
+        >
           {pills.map((p) => (
             <button
               key={p.label}
               type="button"
-              onClick={p.onClick}
+              onClick={() => {
+                if (drag.current.moved) return; // fue arrastre, no click
+                p.onClick?.();
+              }}
               className="flex shrink-0 items-center gap-2 rounded-full bg-purple/20 px-4 py-3 text-sm text-white/80 transition hover:bg-purple/30 hover:text-white"
             >
               <span className="text-purple">{p.icon}</span>
@@ -148,7 +192,7 @@ export default function PostComposer({
 
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:text-white"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple/20 text-white/70 transition hover:bg-purple/30 hover:text-white"
           aria-label="Más"
         >
           <IconMore className="h-1 w-3.5" />
