@@ -71,14 +71,15 @@ export type ChatPreview = {
   body: string;
   createdAt: Date;
   mine: boolean;
+  unread: number;
 };
 
-/** Conversaciones recientes: último mensaje por interlocutor. */
+/** Conversaciones recientes: último mensaje por interlocutor + no leídos. */
 export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatPreview[]> {
   const msgs = await prisma.message.findMany({
     where: { OR: [{ senderId: viewerId }, { recipientId: viewerId }] },
     orderBy: { createdAt: "desc" },
-    take: 200,
+    take: 300,
     include: {
       sender: { select: { username: true, displayName: true, avatarUrl: true } },
       recipient: { select: { username: true, displayName: true, avatarUrl: true } },
@@ -89,10 +90,20 @@ export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatP
     const mine = m.senderId === viewerId;
     const partner = mine ? m.recipient : m.sender;
     if (!seen.has(partner.username)) {
-      seen.set(partner.username, { partner, body: m.body, createdAt: m.createdAt, mine });
+      seen.set(partner.username, { partner, body: m.body, createdAt: m.createdAt, mine, unread: 0 });
+    }
+    // no leído: mensaje del interlocutor hacia mí sin leer
+    if (!mine && m.readAt === null) {
+      const c = seen.get(partner.username)!;
+      c.unread += 1;
     }
   }
   return [...seen.values()].slice(0, limit);
+}
+
+/** Total de mensajes no leídos del viewer. */
+export async function getUnreadTotal(viewerId: string): Promise<number> {
+  return prisma.message.count({ where: { recipientId: viewerId, readAt: null } });
 }
 
 export type ThreadMessage = {

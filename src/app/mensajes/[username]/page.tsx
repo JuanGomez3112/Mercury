@@ -5,8 +5,7 @@ import { prisma } from "@/lib/db";
 import { getThread } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
 import Avatar from "@/components/Avatar";
-import MessageComposer from "@/components/MessageComposer";
-import { timeAgo } from "@/lib/time";
+import ChatThread from "@/components/ChatThread";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +24,11 @@ export default async function ChatPage({
   ]);
   if (!viewer || !partner) notFound();
 
+  // marca leídos al abrir
+  await prisma.message.updateMany({
+    where: { senderId: partner.id, recipientId: session.sub, readAt: null },
+    data: { readAt: new Date() },
+  });
   const messages = await getThread(session.sub, partner.id);
 
   return (
@@ -41,31 +45,8 @@ export default async function ChatPage({
             </div>
           </Link>
 
-          {/* Mensajes */}
-          <div className="flex-1 space-y-2 overflow-y-auto p-4">
-            {messages.length === 0 ? (
-              <p className="py-10 text-center text-sm text-white/40">
-                No hay mensajes. Escribe el primero.
-              </p>
-            ) : (
-              messages.map((m) => (
-                <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${
-                      m.mine ? "bg-purple text-navy" : "bg-navy text-white"
-                    }`}
-                  >
-                    <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                    <span className={`mt-0.5 block text-[10px] ${m.mine ? "text-navy/60" : "text-white/40"}`}>
-                      {timeAgo(m.createdAt)}
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          <MessageComposer to={partner.username} />
+          {/* Mensajes (tiempo real) */}
+          <ChatThread partner={partner.username} initial={messages} />
         </div>
       </div>
     </>

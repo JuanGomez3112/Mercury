@@ -42,10 +42,17 @@ export default async function MessagesPage() {
                     <span className="truncate font-medium text-white">{c.partner.displayName ?? c.partner.username}</span>
                     <span className="text-xs text-white/30">{timeAgo(c.createdAt)}</span>
                   </div>
-                  <span className="block truncate text-sm text-white/50">
-                    {c.mine && "Tú: "}
-                    {c.body}
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`block truncate text-sm ${c.unread > 0 ? "font-semibold text-white/90" : "text-white/50"}`}>
+                      {c.mine && "Tú: "}
+                      {c.body}
+                    </span>
+                    {c.unread > 0 && (
+                      <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-orange-500 px-1.5 text-[10px] font-bold text-white">
+                        {c.unread}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))
