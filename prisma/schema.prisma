@@ -29,6 +29,22 @@ model User {
   followers Follow[] @relation("following")
   sentMessages     Message[] @relation("sent")
   receivedMessages Message[] @relation("received")
+  notifications    Notification[] @relation("notifs")
+  actorNotifs      Notification[] @relation("actorNotifs")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation("notifs", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   String
+  actor     User     @relation("actorNotifs", fields: [actorId], references: [id], onDelete: Cascade)
+  type      String   // like | comment | follow
+  postId    String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, readAt])
 }
 
 model Message {

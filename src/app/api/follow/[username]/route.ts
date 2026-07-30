@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { notify, unnotify } from "@/lib/notifications";
 
 // POST /api/follow/:username — toggle seguir/dejar de seguir
 export async function POST(
@@ -24,10 +25,12 @@ export async function POST(
 
   if (existing) {
     await prisma.follow.delete({ where: key });
+    await unnotify({ userId: target.id, actorId: session.sub, type: "follow" });
   } else {
     await prisma.follow.create({
       data: { followerId: session.sub, followingId: target.id },
     });
+    await notify({ userId: target.id, actorId: session.sub, type: "follow" });
   }
 
   const count = await prisma.follow.count({ where: { followingId: target.id } });

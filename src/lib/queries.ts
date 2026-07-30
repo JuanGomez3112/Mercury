@@ -107,6 +107,36 @@ export async function getUnreadTotal(viewerId: string): Promise<number> {
   return prisma.message.count({ where: { recipientId: viewerId, readAt: null } });
 }
 
+export type NotifItem = {
+  id: string;
+  type: string;
+  postId: string | null;
+  readAt: Date | null;
+  createdAt: Date;
+  actor: Author;
+};
+
+export async function getNotifications(userId: string, limit = 30): Promise<NotifItem[]> {
+  const rows = await prisma.notification.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: { actor: { select: { username: true, displayName: true, avatarUrl: true } } },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    type: r.type,
+    postId: r.postId,
+    readAt: r.readAt,
+    createdAt: r.createdAt,
+    actor: r.actor,
+  }));
+}
+
+export async function getUnreadNotifCount(userId: string): Promise<number> {
+  return prisma.notification.count({ where: { userId, readAt: null } });
+}
+
 export type ThreadMessage = {
   id: string;
   body: string;

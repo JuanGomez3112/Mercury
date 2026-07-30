@@ -2,7 +2,8 @@ import Link from "next/link";
 import MercuryMark from "./MercuryMark";
 import Avatar from "./Avatar";
 import InboxLink from "./InboxLink";
-import { IconSearch, IconBell, IconMasks, IconMapPeople } from "./icons";
+import NotifBell from "./NotifBell";
+import { IconSearch, IconMasks, IconMapPeople } from "./icons";
 
 export default function TopBar({
   username,
@@ -26,9 +27,7 @@ export default function TopBar({
             <IconSearch className="h-4 w-4" />
           </button>
           <div className="hidden items-center gap-9 sm:flex">
-            <button className="text-purple transition hover:text-purple-soft" aria-label="Notificaciones">
-              <IconBell className="h-6 w-6" />
-            </button>
+            <NotifBell />
             <InboxLink />
             <button className="text-purple transition hover:text-purple-soft" aria-label="Tabú">
               <IconMasks className="h-6 w-6" />

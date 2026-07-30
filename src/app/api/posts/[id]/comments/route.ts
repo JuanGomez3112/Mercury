@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { notify } from "@/lib/notifications";
 
 const schema = z.object({ body: z.string().trim().min(1, "Vacío").max(1000) });
 
@@ -32,12 +33,13 @@ export async function POST(
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
 
-  const post = await prisma.post.findUnique({ where: { id }, select: { id: true } });
+  const post = await prisma.post.findUnique({ where: { id }, select: { authorId: true } });
   if (!post) return NextResponse.json({ error: "No existe" }, { status: 404 });
 
   const comment = await prisma.comment.create({
     data: { postId: id, authorId: session.sub, body: parsed.data.body },
     include: { author: { select: { username: true, displayName: true, avatarUrl: true } } },
   });
+  await notify({ userId: post.authorId, actorId: session.sub, type: "comment", postId: id });
   return NextResponse.json({ ok: true, comment });
 }
