@@ -13,12 +13,13 @@ export default function Tabs({ active }: { active: FeedTab }) {
     <div className="flex">
       {tabs.map(({ key, label, icon: Icon }) => {
         const on = key === active;
+        const onColor = key === "tabu" ? "border-orange-500 text-orange-400" : "border-purple text-purple";
         return (
           <Link
             key={key}
             href={`/feed?tab=${key}`}
             className={`flex flex-1 items-center justify-center gap-2 border-b-2 pb-3 text-sm font-medium transition ${
-              on ? "border-purple text-purple" : "border-transparent text-white/40 hover:text-white/70"
+              on ? onColor : "border-transparent text-white/40 hover:text-white/70"
             }`}
           >
             <Icon className="h-4 w-4" />
