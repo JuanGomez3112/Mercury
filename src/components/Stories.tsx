@@ -36,7 +36,9 @@ function StoryAvatar({ src, mode }: { src?: string | null; mode?: string | null 
 
 export default function Stories({ me, stories }: { me: Story; stories: Story[] }) {
   return (
-    <div className="no-scrollbar h-[150px] overflow-x-auto rounded-2xl border border-purple/15 bg-gradient-to-tl from-[#2e2568] to-[#1a1540] p-8">
+    <div className="group relative h-[150px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20">
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tl from-[#2e2568] to-[#1a1540] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="no-scrollbar relative h-full overflow-x-auto p-8">
       <div className="flex h-full w-max items-end gap-8">
         {/* Mi historia */}
         <div className="relative shrink-0">
@@ -55,6 +57,7 @@ export default function Stories({ me, stories }: { me: Story; stories: Story[] }
             <StoryAvatar src={st.avatarUrl} mode={st.mode} />
           </Link>
         ))}
+      </div>
       </div>
     </div>
   );

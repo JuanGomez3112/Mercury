@@ -33,7 +33,7 @@ export default function PostComposer({
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY !== 0) {
-        el.scrollLeft += e.deltaY;
+        el.scrollBy({ left: e.deltaY, behavior: "smooth" });
         e.preventDefault();
       }
     };
@@ -116,7 +116,7 @@ export default function PostComposer({
   ];
 
   return (
-    <div className="flex min-h-[200px] flex-col rounded-2xl border border-purple/15 bg-[#211a48] p-8">
+    <div className="group flex min-h-[200px] flex-col rounded-2xl border border-white/10 bg-navy-2/50 p-8 transition-colors duration-300 hover:border-purple/20 hover:bg-[#211a48]">
       <div className="flex items-start gap-4">
         <Avatar src={avatarUrl} className="h-10 w-10" />
         <textarea
