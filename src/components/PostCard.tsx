@@ -73,17 +73,17 @@ export default function PostCard({
       )}
 
       {/* Barra de acciones */}
-      <div className="mt-4 flex items-center gap-6 text-white/60">
+      <div className="mt-4 flex items-center gap-7 text-white/60">
         <LikeButton postId={post.id} initialLiked={post.likedByMe} initialCount={post.likeCount} />
         <span className="flex items-center gap-1.5 text-sm">
-          <IconComment className="h-7 w-7" />
+          <IconComment className="text-[28px]" />
           {post.commentCount > 0 && post.commentCount}
         </span>
         <button className="transition hover:text-white" aria-label="Compartir">
-          <IconShare className="h-7 w-7" />
+          <IconShare className="text-[28px]" />
         </button>
         <button className="ml-auto transition hover:text-white" aria-label="Guardar">
-          <IconBookmark className="h-7 w-7" />
+          <IconBookmark className="text-[28px]" />
         </button>
       </div>
 

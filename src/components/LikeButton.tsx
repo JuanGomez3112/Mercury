@@ -34,7 +34,7 @@ export default function LikeButton({
       aria-label="Me gusta"
       className={`transition ${liked ? "text-purple" : "text-white/60 hover:text-white"}`}
     >
-      {liked ? <IconHeartFill className="h-7 w-7" /> : <IconHeart className="h-7 w-7" />}
+      {liked ? <IconHeartFill className="text-[28px]" /> : <IconHeart className="text-[28px]" />}
     </button>
   );
 }
