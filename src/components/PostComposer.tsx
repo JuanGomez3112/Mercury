@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import SlidePublish from "./SlidePublish";
-import { IconFire, IconImage, IconMusic, IconTag, IconPin, IconPoll, IconLink, IconMore } from "./icons";
+import { IconFire, IconImage, IconLive, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink, IconMore } from "./icons";
 
-const MAX_FILES = 4;
+const MAX_FILES = 10;
 
 export default function PostComposer({
   displayName,
@@ -105,9 +105,11 @@ export default function PostComposer({
   }
 
   const pills = [
-    { label: "Foto", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
+    { label: "Foto | Video", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
+    { label: "Video en vivo", icon: <IconLive className="h-4 w-4" /> },
+    { label: "Cámara", icon: <IconCamera className="h-4 w-4" /> },
     { label: "Música", icon: <IconMusic className="h-4 w-4" /> },
-    { label: "Etiquetas", icon: <IconTag className="h-4 w-4" /> },
+    { label: "Etiqueta", icon: <IconTag className="h-4 w-4" /> },
     { label: "Ubicación", icon: <IconPin className="h-4 w-4" /> },
     { label: "Encuesta", icon: <IconPoll className="h-4 w-4" /> },
     { label: "Enlace", icon: <IconLink className="h-4 w-4" /> },

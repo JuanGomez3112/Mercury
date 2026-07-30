@@ -5,7 +5,7 @@ import { currentUser } from "@/lib/auth";
 
 const schema = z.object({
   body: z.string().trim().max(2000).default(""),
-  images: z.array(z.string()).max(4).default([]),
+  images: z.array(z.string()).max(10).default([]),
   adult: z.boolean().default(false),
 });
 

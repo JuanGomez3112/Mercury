@@ -169,6 +169,27 @@ export const IconVerified = ({ className = base }: P) => (
   </svg>
 );
 
+export const IconVideo = ({ className = base }: P) => (
+  <svg className={s(className)} viewBox="0 0 24 24" {...stroke}>
+    <rect x="2" y="6" width="14" height="12" rx="2" />
+    <path d="m22 8-6 4 6 4z" />
+  </svg>
+);
+
+export const IconLive = ({ className = base }: P) => (
+  <svg className={s(className)} viewBox="0 0 24 24" {...stroke}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M7 7a7 7 0 0 0 0 10M17 7a7 7 0 0 1 0 10M4.5 4.5a11 11 0 0 0 0 15M19.5 4.5a11 11 0 0 1 0 15" />
+  </svg>
+);
+
+export const IconCamera = ({ className = base }: P) => (
+  <svg className={s(className)} viewBox="0 0 24 24" {...stroke}>
+    <path d="M14.5 4h-5L8 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-4z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+);
+
 export const IconFire = ({ className = base }: P) => (
   <svg className={s(className)} viewBox="0 0 24 24" fill="currentColor">
     <path d="M13 2c.5 3-1.5 4.5-3 6.5C8.3 10.7 7 12.5 7 15a5 5 0 0 0 10 .3c.2-2.4-1-4.3-2-5.8-.3 1-.9 1.8-1.8 2.2.6-1.7.4-3.6-.4-5.2A8 8 0 0 0 13 2z" />

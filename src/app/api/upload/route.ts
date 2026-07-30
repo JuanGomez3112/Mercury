@@ -3,7 +3,7 @@ import { currentUser } from "@/lib/auth";
 import { putMedia, extFor } from "@/lib/s3";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
-const MAX_FILES = 4;
+const MAX_FILES = 10;
 
 export async function POST(req: Request) {
   const session = await currentUser();
