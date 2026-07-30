@@ -5,8 +5,8 @@ import { createSession } from "@/lib/session";
 import { exchangeCode, fetchGoogleUser, uniqueUsername } from "@/lib/google";
 
 export async function GET(req: Request) {
-  const appUrl = process.env.APP_URL ?? "";
   const url = new URL(req.url);
+  const appUrl = process.env.APP_URL || url.origin;
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
 

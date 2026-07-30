@@ -3,10 +3,11 @@ import { cookies } from "next/headers";
 import { randomBytes } from "crypto";
 import { googleAuthUrl, googleConfigured } from "@/lib/google";
 
-export async function GET() {
-  const appUrl = process.env.APP_URL ?? "";
+export async function GET(req: Request) {
+  const base = process.env.APP_URL || new URL(req.url).origin;
+
   if (!googleConfigured()) {
-    return NextResponse.redirect(`${appUrl}/login?error=oauth_config`);
+    return NextResponse.redirect(`${base}/login?error=oauth_config`);
   }
 
   const state = randomBytes(16).toString("hex");
