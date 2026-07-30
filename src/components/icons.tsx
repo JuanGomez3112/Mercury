@@ -26,6 +26,7 @@ import {
   faCamera,
   faFire,
   faChevronDown,
+  faMercury,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as farHeart, faComment, faBookmark } from "@fortawesome/free-regular-svg-icons";
 import { faGoogle, faFacebookF, faXTwitter } from "@fortawesome/free-brands-svg-icons";
@@ -66,6 +67,7 @@ export const IconLive = make(faTowerBroadcast);
 export const IconCamera = make(faCamera);
 export const IconFire = make(faFire);
 export const IconChevronDown = make(faChevronDown);
+export const IconMercury = make(faMercury);
 export const IconGoogle = make(faGoogle);
 export const IconFacebook = make(faFacebookF);
 export const IconX = make(faXTwitter);
