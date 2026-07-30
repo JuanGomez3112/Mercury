@@ -32,6 +32,15 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Degradado morado reutilizable para iconos (checks, likes, publicar) */}
+        <svg aria-hidden width="0" height="0" className="absolute">
+          <defs>
+            <linearGradient id="mercuryGrad" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stopColor="#9379f2" />
+              <stop offset="1" stopColor="#cabfd9" />
+            </linearGradient>
+          </defs>
+        </svg>
         <AgeGate />
         {children}
       </body>

@@ -6,7 +6,7 @@ import TopBar from "@/components/TopBar";
 import PostCard from "@/components/PostCard";
 import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
-import { IconVerified } from "@/components/icons";
+import { VerifiedGrad } from "@/components/GradientIcons";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +71,7 @@ export default async function ProfilePage({
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-semibold text-white">{name}</h1>
-                  <IconVerified className="h-5 w-5 text-purple" />
+                  <VerifiedGrad className="h-5 w-5" />
                 </div>
                 <p className="text-sm text-white/50">@{profile.username}</p>
                 {profile.bio && <p className="mt-2 max-w-md text-sm text-white/80">{profile.bio}</p>}

@@ -6,7 +6,8 @@ import CommentBar from "./CommentBar";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
-import { IconComment, IconShare, IconBookmark, IconMore, IconVerified, IconFire } from "./icons";
+import { IconComment, IconShare, IconBookmark, IconMore, IconFire } from "./icons";
+import { VerifiedGrad } from "./GradientIcons";
 
 export default function PostCard({
   post,
@@ -29,7 +30,7 @@ export default function PostCard({
               <Link href={`/u/${post.author.username}`} className="font-semibold text-white hover:underline">
                 {name}
               </Link>
-              <IconVerified className="h-4 w-4 text-purple" />
+              <VerifiedGrad className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-1 text-white/40">
               <span>@{post.author.username}</span>

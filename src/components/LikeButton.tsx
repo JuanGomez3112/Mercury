@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { IconHeart, IconHeartFill } from "./icons";
+import { IconHeart } from "./icons";
+import { HeartGrad } from "./GradientIcons";
 
 export default function LikeButton({
   postId,
@@ -32,9 +33,9 @@ export default function LikeButton({
     <button
       onClick={toggle}
       aria-label="Me gusta"
-      className={`transition ${liked ? "text-purple" : "text-white/60 hover:text-white"}`}
+      className={`transition ${liked ? "" : "text-white/60 hover:text-white"}`}
     >
-      {liked ? <IconHeartFill className="text-[28px]" /> : <IconHeart className="text-[28px]" />}
+      {liked ? <HeartGrad className="h-7 w-7" /> : <IconHeart className="text-[28px]" />}
     </button>
   );
 }
