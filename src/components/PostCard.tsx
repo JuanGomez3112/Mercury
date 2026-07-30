@@ -3,6 +3,7 @@ import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
 import DeletePostButton from "./DeletePostButton";
 import { timeAgo } from "@/lib/auth";
+import PostMedia from "./PostMedia";
 import { IconComment, IconShare, IconBookmark, IconMore, IconVerified, IconFire } from "./icons";
 
 export type FeedPost = {
@@ -16,52 +17,6 @@ export type FeedPost = {
   likedByMe: boolean;
   isMine: boolean;
 };
-
-/* eslint-disable @next/next/no-img-element */
-function Tile({ src, size, plus }: { src: string; size: number; plus?: number }) {
-  return (
-    <div className="relative shrink-0 overflow-hidden rounded-lg" style={{ width: size, height: size }}>
-      <img src={src} alt="" className="h-full w-full object-cover" />
-      {plus ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-navy/[0.64] text-3xl font-bold text-white">
-          +{plus}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function Media({ images }: { images: string[] }) {
-  if (images.length === 0) return null;
-
-  // 1 sola: contenedor 640, imagen centrada
-  if (images.length === 1) {
-    return (
-      <div className="mt-4 h-[640px] w-full overflow-hidden rounded-xl bg-navy">
-        <img src={images[0]} alt="" className="h-full w-full object-contain" />
-      </div>
-    );
-  }
-
-  // 2+: fila superior 2×384, fila inferior 3×256; la última con +N si hay >5
-  const top = images.slice(0, 2); // 384
-  const bottom = images.slice(2, 5); // 256
-  const extra = images.length - 5;
-  return (
-    <div className="mt-4 flex w-fit flex-col gap-2">
-      <div className="flex gap-2">
-        {top.map((s) => <Tile key={s} src={s} size={384} />)}
-      </div>
-      {bottom.length > 0 && (
-        <div className="flex gap-2">
-          {bottom.map((s, i) => (
-            <Tile key={s} src={s} size={256} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function PostCard({ post }: { post: FeedPost }) {
   const name = post.author.displayName ?? post.author.username;
@@ -105,7 +60,7 @@ export default function PostCard({ post }: { post: FeedPost }) {
       {post.body && <p className="mt-4 whitespace-pre-wrap break-words text-white/90">{post.body}</p>}
 
       {/* Media */}
-      <Media images={post.images} />
+      <PostMedia images={post.images} />
 
       {/* Likers */}
       {post.likeCount > 0 && (
