@@ -36,8 +36,14 @@ export default function InboxLink() {
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={toggle} className="relative text-purple transition hover:text-purple-soft" aria-label="Mensajes">
-        <IconInbox className="h-7 w-7" />
+      <button
+        onClick={toggle}
+        aria-label="Mensajes"
+        className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
+          open ? "bg-gradient-to-tl from-purple to-purple-soft text-white" : "text-purple hover:bg-purple/15"
+        }`}
+      >
+        <IconInbox className="!h-6 !w-6" />
         {n > 0 && (
           <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-bold text-white">
             {n > 9 ? "9+" : n}

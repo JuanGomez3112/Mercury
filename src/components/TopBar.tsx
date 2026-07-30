@@ -26,14 +26,14 @@ export default function TopBar({
           >
             <IconSearch className="h-4 w-4" />
           </button>
-          <div className="hidden items-center gap-9 sm:flex">
+          <div className="hidden items-center gap-4 sm:flex">
             <NotifBell />
             <InboxLink />
-            <button className="text-purple transition hover:text-purple-soft" aria-label="Tabú">
-              <IconMasks className="h-7 w-7" />
+            <button className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Tabú">
+              <IconMasks className="!h-6 !w-6" />
             </button>
-            <button className="text-purple transition hover:text-purple-soft" aria-label="Mapa">
-              <IconMapPeople className="h-7 w-7" />
+            <button className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Mapa">
+              <IconMapPeople className="!h-6 !w-6" />
             </button>
           </div>
           <ProfileMenu username={username} avatarUrl={avatarUrl} />
