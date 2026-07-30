@@ -10,7 +10,7 @@ import type { FeedPost, CommentDTO } from "@/lib/types";
 
 function Tile({ src, size, plus, onOpen }: { src: string; size: number; plus?: number; onOpen: () => void }) {
   return (
-    <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden rounded-lg" style={{ width: size, height: size }}>
+    <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden" style={{ width: size, height: size }}>
       <img src={src} alt="" className="h-full w-full object-cover transition hover:opacity-90" />
       {plus ? (
         <div className="absolute inset-0 flex items-center justify-center bg-navy/[0.64] text-3xl font-bold text-white">+{plus}</div>
@@ -88,17 +88,19 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
         const bottom = images.slice(2, 5);
         const extra = images.length - 5;
         return (
-          <div className="mt-4 flex w-fit flex-col gap-2">
-            <div className="flex gap-2">
-              {top.map((s, i) => <Tile key={s} src={s} size={384} onOpen={() => setOpen(i)} />)}
-            </div>
-            {bottom.length > 0 && (
-              <div className="flex gap-2">
-                {bottom.map((s, i) => (
-                  <Tile key={s} src={s} size={256} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} onOpen={() => setOpen(2 + i)} />
-                ))}
+          <div className="no-scrollbar mt-4 max-w-full overflow-x-auto">
+            <div className="flex w-fit flex-col overflow-hidden rounded-xl">
+              <div className="flex">
+                {top.map((s, i) => <Tile key={s} src={s} size={384} onOpen={() => setOpen(i)} />)}
               </div>
-            )}
+              {bottom.length > 0 && (
+                <div className="flex">
+                  {bottom.map((s, i) => (
+                    <Tile key={s} src={s} size={256} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} onOpen={() => setOpen(2 + i)} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         );
       })()

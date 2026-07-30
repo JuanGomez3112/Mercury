@@ -50,7 +50,7 @@ export default async function FeedPage() {
   return (
     <>
       <TopBar username={me.username} avatarUrl={me.avatarUrl} />
-      <div className="mx-auto flex w-full max-w-[1920px] justify-center gap-8 px-6 py-6">
+      <div className="mx-auto flex w-full max-w-[1920px] gap-8 py-6 pl-6">
         <LeftRail />
         <LeftPanel me={me} />
 

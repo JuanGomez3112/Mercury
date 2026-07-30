@@ -194,10 +194,10 @@ export default function PostComposer({
 
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple/20 text-white/70 transition hover:bg-purple/30 hover:text-white"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple/20 text-purple/80 transition hover:bg-purple/30 hover:text-purple"
           aria-label="Más"
         >
-          <IconMore className="h-1 w-3.5" />
+          <IconMore className="h-4 w-4" />
         </button>
       </div>
 

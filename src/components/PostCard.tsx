@@ -46,8 +46,8 @@ export default function PostCard({
             </span>
           )}
           {post.isMine && <DeletePostButton postId={post.id} />}
-          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-purple text-navy transition hover:brightness-95" aria-label="Más">
-            <IconMore className="h-1 w-3.5" />
+          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-purple/20 text-purple/70 transition hover:bg-purple/30 hover:text-purple" aria-label="Más">
+            <IconMore className="h-4 w-4" />
           </button>
         </div>
       </div>
