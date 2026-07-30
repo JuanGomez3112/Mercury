@@ -18,12 +18,12 @@ export type FeedPost = {
 };
 
 /* eslint-disable @next/next/no-img-element */
-function Tile({ src, plus }: { src: string; plus?: number }) {
+function Tile({ src, size, plus }: { src: string; size: number; plus?: number }) {
   return (
-    <div className="relative h-full min-w-0 flex-1 overflow-hidden">
+    <div className="relative shrink-0 overflow-hidden rounded-lg" style={{ width: size, height: size }}>
       <img src={src} alt="" className="h-full w-full object-cover" />
       {plus ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-navy/70 text-3xl font-bold text-white">
+        <div className="absolute inset-0 flex items-center justify-center bg-navy/[0.64] text-3xl font-bold text-white">
           +{plus}
         </div>
       ) : null}
@@ -34,6 +34,7 @@ function Tile({ src, plus }: { src: string; plus?: number }) {
 function Media({ images }: { images: string[] }) {
   if (images.length === 0) return null;
 
+  // 1 sola: contenedor 640, imagen centrada
   if (images.length === 1) {
     return (
       <div className="mt-4 h-[640px] w-full overflow-hidden rounded-xl bg-navy">
@@ -42,54 +43,22 @@ function Media({ images }: { images: string[] }) {
     );
   }
 
-  const cls = "mt-4 h-[640px] w-full overflow-hidden rounded-xl";
-
-  if (images.length === 2) {
-    return (
-      <div className={`${cls} flex gap-1.5`}>
-        {images.map((s) => <Tile key={s} src={s} />)}
-      </div>
-    );
-  }
-
-  if (images.length === 3) {
-    return (
-      <div className={`${cls} flex gap-1.5`}>
-        <Tile src={images[0]} />
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Tile src={images[1]} />
-          <Tile src={images[2]} />
-        </div>
-      </div>
-    );
-  }
-
-  if (images.length === 4) {
-    return (
-      <div className={`${cls} grid grid-cols-2 grid-rows-2 gap-1.5`}>
-        {images.map((s) => (
-          <div key={s} className="relative overflow-hidden">
-            <img src={s} alt="" className="h-full w-full object-cover" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // 5+ : 2 arriba, 3 abajo; la última con +N si hay más de 5
-  const top = images.slice(0, 2);
-  const bottom = images.slice(2, 5);
+  // 2+: fila superior 2×384, fila inferior 3×256; la última con +N si hay >5
+  const top = images.slice(0, 2); // 384
+  const bottom = images.slice(2, 5); // 256
   const extra = images.length - 5;
   return (
-    <div className={`${cls} flex flex-col gap-1.5`}>
-      <div className="flex flex-1 gap-1.5">
-        {top.map((s) => <Tile key={s} src={s} />)}
+    <div className="mt-4 flex w-fit flex-col gap-2">
+      <div className="flex gap-2">
+        {top.map((s) => <Tile key={s} src={s} size={384} />)}
       </div>
-      <div className="flex flex-1 gap-1.5">
-        {bottom.map((s, i) => (
-          <Tile key={s} src={s} plus={i === 2 && extra > 0 ? extra : undefined} />
-        ))}
-      </div>
+      {bottom.length > 0 && (
+        <div className="flex gap-2">
+          {bottom.map((s, i) => (
+            <Tile key={s} src={s} size={256} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
