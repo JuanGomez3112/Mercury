@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconHeart, IconHeartFill } from "./icons";
 
 export default function LikeButton({
   postId,
@@ -37,12 +38,13 @@ export default function LikeButton({
   return (
     <button
       onClick={toggle}
+      aria-label="Me gusta"
       className={`flex items-center gap-1.5 text-sm transition ${
-        liked ? "text-purple" : "text-white/50 hover:text-white"
+        liked ? "text-purple" : "text-white/60 hover:text-white"
       }`}
     >
-      <span aria-hidden>{liked ? "♥" : "♡"}</span>
-      {count}
+      {liked ? <IconHeartFill className="h-5 w-5" /> : <IconHeart className="h-5 w-5" />}
+      {count > 0 && count}
     </button>
   );
 }

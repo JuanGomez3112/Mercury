@@ -7,7 +7,7 @@ type Row = {
   images: string[];
   createdAt: Date;
   authorId: string;
-  author: { username: string; displayName: string | null };
+  author: { username: string; displayName: string | null; avatarUrl: string | null };
   _count: { likes: number };
   likes: { userId: string }[];
 };
@@ -26,7 +26,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
 }
 
 const include = (viewerId: string) => ({
-  author: { select: { username: true, displayName: true } },
+  author: { select: { username: true, displayName: true, avatarUrl: true } },
   _count: { select: { likes: true } },
   likes: { where: { userId: viewerId }, select: { userId: true } },
 });

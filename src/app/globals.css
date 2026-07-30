@@ -42,6 +42,9 @@ body {
   mask: url("/mercury-logo.svg") no-repeat center / contain;
   aspect-ratio: 286 / 722;
 }
+.mercury-mark-navy {
+  background: var(--navy);
+}
 
 /* Autofill del navegador: evita el fondo blanco/amarillo, mantiene tono oscuro
    morado y texto claro para que iconos y valores se noten. */
