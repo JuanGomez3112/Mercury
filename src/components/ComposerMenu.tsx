@@ -24,7 +24,7 @@ export default function ComposerMenu() {
         className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ${
           open
             ? "bg-gradient-to-tl from-purple to-purple-soft text-white"
-            : "bg-purple/20 text-purple hover:bg-purple hover:text-white"
+            : "bg-navy text-white/70 hover:bg-purple hover:text-white"
         }`}
         aria-label="Más opciones"
       >
