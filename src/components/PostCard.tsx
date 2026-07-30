@@ -80,7 +80,7 @@ export default function PostCard({
           {post.commentCount > 0 && post.commentCount}
         </span>
         <button className="transition hover:text-white" aria-label="Compartir">
-          <IconShare className="text-[28px]" />
+          <IconShare className="text-[24px]" />
         </button>
         <button className="ml-auto transition hover:text-white" aria-label="Guardar">
           <IconBookmark className="text-[28px]" />
