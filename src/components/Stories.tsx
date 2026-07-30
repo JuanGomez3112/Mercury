@@ -36,7 +36,7 @@ function StoryAvatar({ src, mode }: { src?: string | null; mode?: string | null 
 
 export default function Stories({ me, stories }: { me: Story; stories: Story[] }) {
   return (
-    <div className="no-scrollbar h-[150px] overflow-x-auto rounded-2xl bg-gradient-to-tl from-purple to-purple-soft p-8">
+    <div className="no-scrollbar h-[150px] overflow-x-auto rounded-2xl border border-purple/15 bg-gradient-to-tl from-[#2e2568] to-[#1a1540] p-8">
       <div className="flex h-full w-max items-end gap-8">
         {/* Mi historia */}
         <div className="relative shrink-0">
@@ -47,7 +47,7 @@ export default function Stories({ me, stories }: { me: Story; stories: Story[] }
         </div>
 
         {/* Separador morado */}
-        <span className="h-16 w-px shrink-0 self-end bg-navy/40" />
+        <span className="h-16 w-px shrink-0 self-end bg-purple/50" />
 
         {/* Historias de los demás */}
         {stories.map((st) => (
