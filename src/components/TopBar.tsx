@@ -12,7 +12,7 @@ export default function TopBar({
 }) {
   return (
     <header className="sticky top-0 z-40 h-24 border-b border-white/10 bg-navy/90 backdrop-blur">
-      <div className="mx-auto flex h-full max-w-[1920px] items-center justify-between px-6">
+      <div className="mx-auto flex h-full max-w-[1920px] items-center justify-between px-4 lg:px-32">
         <Link href="/feed" className="flex items-center gap-2.5">
           <MercuryMark className="h-[72px] w-9" />
         </Link>
