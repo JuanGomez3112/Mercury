@@ -77,7 +77,17 @@ export default async function ProfilePage({
                 {profile.bio && <p className="mt-2 max-w-md text-sm text-white/80">{profile.bio}</p>}
               </div>
             </div>
-            {!isMe && <FollowButton username={profile.username} initialFollowing={following} />}
+            {!isMe && (
+              <div className="flex items-center gap-2">
+                <a
+                  href={`/mensajes/${profile.username}`}
+                  className="rounded-[1.25rem] border-2 border-white/20 px-4 py-2 text-sm font-bold text-white transition hover:border-purple hover:text-purple"
+                >
+                  Mensaje
+                </a>
+                <FollowButton username={profile.username} initialFollowing={following} />
+              </div>
+            )}
           </div>
 
           <div className="mt-6 flex gap-6 text-sm text-white/60">

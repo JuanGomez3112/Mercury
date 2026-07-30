@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import type { FeedPost } from "./types";
+import type { FeedPost, Author } from "./types";
 
 type Row = {
   id: string;
@@ -64,6 +64,57 @@ export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<Feed
     include: include(viewerId),
   });
   return posts.map((p) => toFeedPost(p as Row, viewerId));
+}
+
+export type ChatPreview = {
+  partner: Author;
+  body: string;
+  createdAt: Date;
+  mine: boolean;
+};
+
+/** Conversaciones recientes: último mensaje por interlocutor. */
+export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatPreview[]> {
+  const msgs = await prisma.message.findMany({
+    where: { OR: [{ senderId: viewerId }, { recipientId: viewerId }] },
+    orderBy: { createdAt: "desc" },
+    take: 200,
+    include: {
+      sender: { select: { username: true, displayName: true, avatarUrl: true } },
+      recipient: { select: { username: true, displayName: true, avatarUrl: true } },
+    },
+  });
+  const seen = new Map<string, ChatPreview>();
+  for (const m of msgs) {
+    const mine = m.senderId === viewerId;
+    const partner = mine ? m.recipient : m.sender;
+    if (!seen.has(partner.username)) {
+      seen.set(partner.username, { partner, body: m.body, createdAt: m.createdAt, mine });
+    }
+  }
+  return [...seen.values()].slice(0, limit);
+}
+
+export type ThreadMessage = {
+  id: string;
+  body: string;
+  createdAt: Date;
+  mine: boolean;
+};
+
+/** Hilo de mensajes entre el viewer y un usuario. */
+export async function getThread(viewerId: string, partnerId: string): Promise<ThreadMessage[]> {
+  const msgs = await prisma.message.findMany({
+    where: {
+      OR: [
+        { senderId: viewerId, recipientId: partnerId },
+        { senderId: partnerId, recipientId: viewerId },
+      ],
+    },
+    orderBy: { createdAt: "asc" },
+    take: 200,
+  });
+  return msgs.map((m) => ({ id: m.id, body: m.body, createdAt: m.createdAt, mine: m.senderId === viewerId }));
 }
 
 /** Tendencias: hashtags más usados en los posts recientes. */

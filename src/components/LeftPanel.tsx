@@ -3,12 +3,12 @@ import Avatar from "./Avatar";
 import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser } from "./icons";
 
 const nav = [
-  { icon: IconGrid, label: "Inicio", active: true },
-  { icon: IconSearch, label: "Explorar" },
-  { icon: IconFire, label: "Tabú" },
-  { icon: IconInbox, label: "Mensajes" },
-  { icon: IconBookmark, label: "Guardados" },
-  { icon: IconUser, label: "Perfil" },
+  { icon: IconGrid, label: "Inicio", href: "/feed?tab=feed", active: true },
+  { icon: IconSearch, label: "Explorar", href: "/feed?tab=explora" },
+  { icon: IconFire, label: "Tabú", href: "/feed?tab=tabu" },
+  { icon: IconInbox, label: "Mensajes", href: "/mensajes" },
+  { icon: IconBookmark, label: "Guardados", href: "/feed" },
+  { icon: IconUser, label: "Perfil", href: "#perfil" },
 ];
 
 export default function LeftPanel({
@@ -29,10 +29,10 @@ export default function LeftPanel({
       </div>
 
       <nav className="rounded-2xl border border-white/10 bg-navy-2/50 p-3">
-        {nav.map(({ icon: Icon, label, active }) => (
+        {nav.map(({ icon: Icon, label, href, active }) => (
           <Link
             key={label}
-            href="/feed"
+            href={label === "Perfil" ? `/u/${me.username}` : href}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition ${
               active ? "bg-purple/15 text-purple" : "text-white/70 hover:bg-white/5 hover:text-white"
             }`}

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getFeedByTab, type FeedTab } from "@/lib/queries";
+import { getFeedByTab, getRecentChats, type FeedTab } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
 import LeftRail from "@/components/LeftRail";
 import LeftPanel from "@/components/LeftPanel";
@@ -36,7 +36,7 @@ export default async function FeedPage({
   });
   const followingIds = following.map((f) => f.id);
 
-  const [posts, stories, suggestions] = await Promise.all([
+  const [posts, stories, suggestions, chats] = await Promise.all([
     getFeedByTab(me.id, tab),
     prisma.user.findMany({
       where: { id: { not: me.id } },
@@ -50,6 +50,7 @@ export default async function FeedPage({
       take: 4,
       select: { username: true, displayName: true, avatarUrl: true },
     }),
+    getRecentChats(me.id),
   ]);
 
   const displayName = me.displayName ?? me.username;
@@ -82,7 +83,7 @@ export default async function FeedPage({
           </div>
         </main>
 
-        <RightPanel me={me} suggestions={suggestions} />
+        <RightPanel me={me} suggestions={suggestions} chats={chats} />
       </div>
     </>
   );

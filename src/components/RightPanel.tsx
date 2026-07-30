@@ -4,15 +4,16 @@ import LogoutButton from "./LogoutButton";
 import FollowButton from "./FollowButton";
 import ModeToggle from "./ModeToggle";
 import type { Story } from "./Stories";
+import type { ChatPreview } from "@/lib/queries";
 
 export default function RightPanel({
   me,
   suggestions,
-  trends = [],
+  chats = [],
 }: {
   me: { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
   suggestions: Story[];
-  trends?: { tag: string; count: number }[];
+  chats?: ChatPreview[];
 }) {
   const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
 
@@ -35,27 +36,37 @@ export default function RightPanel({
         </div>
       </div>
 
-      {/* Tendencias */}
-      {trends.length > 0 && (
-        <div className="border-t border-white/10 pt-5">
-          <h2 className="mb-3 text-sm font-semibold text-white/70">Tendencias</h2>
-          <div className="space-y-2">
-            {trends.map((t, i) => (
+      {/* Mensajes recientes */}
+      <div className="border-t border-white/10 pt-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-white/70">Mensajes</h2>
+          <Link href="/mensajes" className="text-xs font-medium text-purple hover:underline">Ver todos</Link>
+        </div>
+        {chats.length === 0 ? (
+          <p className="text-sm text-white/40">Sin conversaciones todavía.</p>
+        ) : (
+          <div className="space-y-1">
+            {chats.map((c) => (
               <Link
-                key={t.tag}
-                href="/feed"
-                className="flex items-center justify-between rounded-xl px-2 py-1.5 transition hover:bg-white/5"
+                key={c.partner.username}
+                href={`/mensajes/${c.partner.username}`}
+                className="flex items-center gap-2 rounded-xl px-2 py-2 transition hover:bg-white/5"
               >
-                <div className="min-w-0">
-                  <span className="block truncate font-medium text-purple">{t.tag}</span>
-                  <span className="text-xs text-white/40">{t.count} publicaciones</span>
+                <Avatar src={c.partner.avatarUrl} className="h-10 w-10" />
+                <div className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-white">
+                    {c.partner.displayName ?? c.partner.username}
+                  </span>
+                  <span className="block truncate text-xs text-white/40">
+                    {c.mine && "Tú: "}
+                    {c.body}
+                  </span>
                 </div>
-                <span className="text-xs text-white/30">#{i + 1}</span>
               </Link>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Sugerencias */}
       {suggestions.length > 0 && (

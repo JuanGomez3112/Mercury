@@ -4,8 +4,8 @@ import { IconGrid, IconSearch, IconFire, IconInbox, IconMapPeople } from "./icon
 const items = [
   { icon: IconGrid, href: "/feed", label: "Inicio", active: true },
   { icon: IconSearch, href: "/feed", label: "Explorar" },
-  { icon: IconFire, href: "/feed", label: "Tabú" },
-  { icon: IconInbox, href: "/feed", label: "Mensajes" },
+  { icon: IconFire, href: "/feed?tab=tabu", label: "Tabú" },
+  { icon: IconInbox, href: "/mensajes", label: "Mensajes" },
   { icon: IconMapPeople, href: "/feed", label: "Mapa" },
 ];
 

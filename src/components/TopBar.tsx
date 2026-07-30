@@ -25,11 +25,18 @@ export default function TopBar({
             <IconSearch className="h-4 w-4" />
           </button>
           <div className="hidden items-center gap-9 sm:flex">
-            {[IconBell, IconInbox, IconMasks, IconMapPeople].map((Icon, i) => (
-              <button key={i} className="text-purple transition hover:text-purple-soft" aria-label="nav">
-                <Icon className="h-6 w-6" />
-              </button>
-            ))}
+            <button className="text-purple transition hover:text-purple-soft" aria-label="Notificaciones">
+              <IconBell className="h-6 w-6" />
+            </button>
+            <Link href="/mensajes" className="text-purple transition hover:text-purple-soft" aria-label="Mensajes">
+              <IconInbox className="h-6 w-6" />
+            </Link>
+            <button className="text-purple transition hover:text-purple-soft" aria-label="Tabú">
+              <IconMasks className="h-6 w-6" />
+            </button>
+            <button className="text-purple transition hover:text-purple-soft" aria-label="Mapa">
+              <IconMapPeople className="h-6 w-6" />
+            </button>
           </div>
           <Link href={`/u/${username}`} aria-label="Mi perfil">
             <Avatar src={avatarUrl} className="h-12 w-12 ring-2 ring-purple/40" />

@@ -27,6 +27,21 @@ model User {
   comments  Comment[]
   following Follow[] @relation("follower")
   followers Follow[] @relation("following")
+  sentMessages     Message[] @relation("sent")
+  receivedMessages Message[] @relation("received")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("sent", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User     @relation("received", fields: [recipientId], references: [id], onDelete: Cascade)
+  body        String
+  createdAt   DateTime @default(now())
+
+  @@index([senderId, recipientId])
+  @@index([recipientId, senderId])
 }
 
 model Post {
