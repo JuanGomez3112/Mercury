@@ -90,7 +90,8 @@ export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatP
     const mine = m.senderId === viewerId;
     const partner = mine ? m.recipient : m.sender;
     if (!seen.has(partner.username)) {
-      seen.set(partner.username, { partner, body: m.body, createdAt: m.createdAt, mine, unread: 0 });
+      const body = m.body || (m.imageUrl ? "📷 Foto" : "");
+      seen.set(partner.username, { partner, body, createdAt: m.createdAt, mine, unread: 0 });
     }
     // no leído: mensaje del interlocutor hacia mí sin leer
     if (!mine && m.readAt === null) {
@@ -109,6 +110,7 @@ export async function getUnreadTotal(viewerId: string): Promise<number> {
 export type ThreadMessage = {
   id: string;
   body: string;
+  imageUrl: string | null;
   createdAt: Date;
   mine: boolean;
 };
@@ -125,7 +127,13 @@ export async function getThread(viewerId: string, partnerId: string): Promise<Th
     orderBy: { createdAt: "asc" },
     take: 200,
   });
-  return msgs.map((m) => ({ id: m.id, body: m.body, createdAt: m.createdAt, mine: m.senderId === viewerId }));
+  return msgs.map((m) => ({
+    id: m.id,
+    body: m.body,
+    imageUrl: m.imageUrl,
+    createdAt: m.createdAt,
+    mine: m.senderId === viewerId,
+  }));
 }
 
 /** Tendencias: hashtags más usados en los posts recientes. */
