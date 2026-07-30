@@ -69,19 +69,17 @@ export default function PostCard({ post }: { post: FeedPost }) {
     <article className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-base leading-5 tracking-[0.02em]">
       {/* Cabecera */}
       <div className="flex items-start justify-between">
-        <div className="flex items-start gap-4">
+        <div className="flex items-center gap-4">
           <Link href={`/u/${post.author.username}`}>
             <Avatar src={post.author.avatarUrl} className="h-16 w-16" />
           </Link>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <Link href={`/u/${post.author.username}`} className="font-semibold text-white hover:underline">
-                {name}
-              </Link>
-              <IconVerified className="h-4 w-4 text-purple" />
-            </div>
-            <div className="text-white/40">@{post.author.username}</div>
-            <div className="text-white/40">{timeAgo(post.createdAt)}</div>
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+            <Link href={`/u/${post.author.username}`} className="font-semibold text-white hover:underline">
+              {name}
+            </Link>
+            <IconVerified className="h-4 w-4 text-purple" />
+            <span className="text-white/40">@{post.author.username}</span>
+            <span className="text-white/40">· {timeAgo(post.createdAt)}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
