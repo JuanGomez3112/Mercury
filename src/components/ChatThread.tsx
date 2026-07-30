@@ -14,7 +14,9 @@ export default function ChatThread({
   const [messages, setMessages] = useState<ThreadMessage[]>(initial);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [partnerTyping, setPartnerTyping] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const lastPing = useRef(0);
 
   function scrollDown() {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,11 +26,20 @@ export default function ChatThread({
     const res = await fetch(`/api/messages/${partner}`, { cache: "no-store" });
     if (res.ok) {
       const d = await res.json();
-      setMessages((prev) => {
-        if (d.messages.length !== prev.length) return d.messages;
-        return prev;
-      });
+      setPartnerTyping(!!d.typing);
+      setMessages((prev) => (d.messages.length !== prev.length ? d.messages : prev));
     }
+  }
+
+  function pingTyping() {
+    const now = Date.now();
+    if (now - lastPing.current < 2000) return; // throttle
+    lastPing.current = now;
+    fetch("/api/messages/typing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ to: partner }),
+    }).catch(() => {});
   }
 
   // polling tiempo real
@@ -40,7 +51,7 @@ export default function ChatThread({
 
   useEffect(() => {
     scrollDown();
-  }, [messages.length]);
+  }, [messages.length, partnerTyping]);
 
   async function send() {
     if (!body.trim() || busy) return;
@@ -74,13 +85,23 @@ export default function ChatThread({
             </div>
           ))
         )}
+        {partnerTyping && (
+          <div className="flex justify-start">
+            <div className="flex items-center gap-1 rounded-2xl bg-navy px-4 py-3">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/60 [animation-delay:-0.2s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/60 [animation-delay:-0.1s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/60" />
+              <span className="ml-1 text-xs text-white/40">escribiendo…</span>
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
       <div className="flex items-center gap-3 border-t border-white/10 p-4">
         <input
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={(e) => { setBody(e.target.value); pingTyping(); }}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); send(); } }}
           placeholder="Escribe un mensaje…"
           className="flex-1 rounded-full border border-white/10 bg-navy px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple"

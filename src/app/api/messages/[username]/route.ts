@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { getThread } from "@/lib/queries";
+import { isTyping } from "@/lib/typing";
 
 // GET /api/messages/:username — hilo + marca como leídos los del interlocutor
 export async function GET(
@@ -22,5 +23,5 @@ export async function GET(
   });
 
   const messages = await getThread(session.sub, partner.id);
-  return NextResponse.json({ messages });
+  return NextResponse.json({ messages, typing: isTyping(partner.id, session.sub) });
 }
