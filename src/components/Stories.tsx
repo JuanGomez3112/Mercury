@@ -36,8 +36,8 @@ function StoryAvatar({ src, mode }: { src?: string | null; mode?: string | null 
 
 export default function Stories({ me, stories }: { me: Story; stories: Story[] }) {
   return (
-    <div className="h-[150px] rounded-2xl border border-white/10 bg-navy-2/50 p-8">
-      <div className="no-scrollbar flex h-full items-end gap-8 overflow-x-auto">
+    <div className="no-scrollbar h-[150px] overflow-x-auto rounded-2xl border border-white/10 bg-navy-2/50 p-8">
+      <div className="flex h-full w-max items-end gap-8">
         {/* Mi historia */}
         <div className="relative shrink-0">
           <StoryAvatar src={me.avatarUrl} mode={me.mode} />
