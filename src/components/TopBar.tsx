@@ -1,8 +1,8 @@
 import Link from "next/link";
 import MercuryMark from "./MercuryMark";
-import Avatar from "./Avatar";
 import InboxLink from "./InboxLink";
 import NotifBell from "./NotifBell";
+import ProfileMenu from "./ProfileMenu";
 import { IconSearch, IconMasks, IconMapPeople } from "./icons";
 
 export default function TopBar({
@@ -36,9 +36,7 @@ export default function TopBar({
               <IconMapPeople className="h-6 w-6" />
             </button>
           </div>
-          <Link href={`/u/${username}`} aria-label="Mi perfil">
-            <Avatar src={avatarUrl} className="h-12 w-12 ring-2 ring-purple/40" />
-          </Link>
+          <ProfileMenu username={username} avatarUrl={avatarUrl} />
         </div>
       </div>
     </header>
