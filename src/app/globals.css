@@ -42,3 +42,16 @@ body {
   mask: url("/mercury-logo.svg") no-repeat center / contain;
   aspect-ratio: 286 / 722;
 }
+
+/* Autofill del navegador: evita el fondo blanco/amarillo, mantiene tono oscuro
+   morado y texto claro para que iconos y valores se noten. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+  -webkit-box-shadow: 0 0 0 1000px #1b1442 inset;
+  box-shadow: 0 0 0 1000px #1b1442 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
