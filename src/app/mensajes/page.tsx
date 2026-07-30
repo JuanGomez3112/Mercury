@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getRecentChats } from "@/lib/queries";
-import TopBar from "@/components/TopBar";
+import AppShell from "@/components/AppShell";
 import Avatar from "@/components/Avatar";
 import { timeAgo } from "@/lib/time";
 
@@ -22,9 +22,8 @@ export default async function MessagesPage() {
   const chats = await getRecentChats(session.sub, 50);
 
   return (
-    <>
-      <TopBar username={viewer.username} avatarUrl={viewer.avatarUrl} />
-      <div className="mx-auto w-full max-w-2xl px-4 py-6">
+    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
+      <div>
         <h1 className="mb-4 text-xl font-semibold text-white">Mensajes</h1>
         <div className="rounded-2xl border border-white/10 bg-navy-2/50">
           {chats.length === 0 ? (
@@ -59,6 +58,6 @@ export default async function MessagesPage() {
           )}
         </div>
       </div>
-    </>
+    </AppShell>
   );
 }

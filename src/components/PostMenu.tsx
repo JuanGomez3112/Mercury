@@ -1,0 +1,50 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useOutside } from "@/lib/useOutside";
+import { IconMore } from "./icons";
+
+export default function PostMenu({ postId, isMine }: { postId: string; isMine: boolean }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useOutside(ref, () => setOpen(false), open);
+
+  async function borrar() {
+    setOpen(false);
+    if (!confirm("¿Borrar esta publicación?")) return;
+    const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
+    if (res.ok) router.refresh();
+  }
+
+  const item = "flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition hover:bg-white/5";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-purple/20 text-purple/70 transition hover:bg-purple/30 hover:text-purple"
+        aria-label="Opciones"
+      >
+        <IconMore className="h-4 w-4" />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-navy-2 py-1 shadow-2xl">
+          <button onClick={() => { setOpen(false); alert("Reporte enviado (pendiente)"); }} className={`${item} text-white/80 hover:text-white`}>
+            Reportar
+          </button>
+          <button onClick={() => { setOpen(false); alert("Enlace copiado (pendiente)"); }} className={`${item} text-white/80 hover:text-white`}>
+            Copiar enlace
+          </button>
+          {isMine && (
+            <button onClick={borrar} className={`${item} border-t border-white/10 text-red-400 hover:text-red-300`}>
+              Borrar publicación
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

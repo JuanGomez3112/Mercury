@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getNotifications } from "@/lib/queries";
-import TopBar from "@/components/TopBar";
+import AppShell from "@/components/AppShell";
 import Avatar from "@/components/Avatar";
 import { timeAgo } from "@/lib/time";
 
@@ -33,9 +33,8 @@ export default async function NotificationsPage() {
   });
 
   return (
-    <>
-      <TopBar username={viewer.username} avatarUrl={viewer.avatarUrl} />
-      <div className="mx-auto w-full max-w-2xl px-4 py-6">
+    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
+      <div>
         <h1 className="mb-4 text-xl font-semibold text-white">Notificaciones</h1>
         <div className="rounded-2xl border border-white/10 bg-navy-2/50">
           {notifs.length === 0 ? (
@@ -61,6 +60,6 @@ export default async function NotificationsPage() {
           )}
         </div>
       </div>
-    </>
+    </AppShell>
   );
 }

@@ -58,7 +58,7 @@ export default async function FeedPage({
     <>
       <TopBar username={me.username} avatarUrl={me.avatarUrl} />
       <div className="mx-auto flex w-full max-w-[1920px] gap-8 py-6 pl-4 pr-8">
-        <LeftRail />
+        <LeftRail username={me.username} />
         <LeftPanel me={me} />
 
         <main className="w-full min-w-0 flex-1 space-y-6 xl:max-w-[896px]">
@@ -69,7 +69,7 @@ export default async function FeedPage({
           <FeedTabs initialTab={tab} initialPosts={posts} viewerAvatarUrl={me.avatarUrl} />
         </main>
 
-        <RightPanel me={me} suggestions={suggestions} chats={chats} />
+        <RightPanel suggestions={suggestions} chats={chats} />
       </div>
     </>
   );

@@ -1,43 +1,20 @@
 import Link from "next/link";
 import Avatar from "./Avatar";
-import LogoutButton from "./LogoutButton";
 import FollowButton from "./FollowButton";
-import ModeToggle from "./ModeToggle";
 import type { Story } from "./Stories";
 import type { ChatPreview } from "@/lib/queries";
 
 export default function RightPanel({
-  me,
   suggestions,
   chats = [],
 }: {
-  me: { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
   suggestions: Story[];
   chats?: ChatPreview[];
 }) {
-  const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
-
   return (
     <aside className="sticky top-28 hidden h-[calc(100vh-8rem)] w-[448px] shrink-0 flex-col gap-6 self-start overflow-y-auto rounded-3xl border border-white/10 bg-navy-2/70 p-6 xl:flex">
-      {/* Perfil */}
-      <div>
-        <Link href={`/u/${me.username}`} className="flex items-center gap-3">
-          <Avatar src={me.avatarUrl} className="h-12 w-12" />
-          <div className="min-w-0">
-            <span className="block truncate font-semibold text-white">{me.displayName ?? me.username}</span>
-            <span className="block truncate text-xs text-white/40">@{me.username}</span>
-          </div>
-        </Link>
-        <div className="mt-4">
-          <ModeToggle initial={mode} />
-        </div>
-        <div className="mt-4">
-          <LogoutButton />
-        </div>
-      </div>
-
       {/* Mensajes recientes */}
-      <div className="border-t border-white/10 pt-5">
+      <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-white/70">Mensajes</h2>
           <Link href="/mensajes" className="text-xs font-medium text-purple hover:underline">Ver todos</Link>

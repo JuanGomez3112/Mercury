@@ -44,7 +44,7 @@ export default function SlidePublish({
 
   return (
     <div
-      className="relative shrink-0 rounded-full bg-purple-soft"
+      className="relative shrink-0 rounded-full bg-purple/30"
       style={{ width: KNOB + PAD * 2, height: TRACK }}
       title="Desliza hacia abajo para publicar"
     >
@@ -62,7 +62,7 @@ export default function SlidePublish({
           }
         }}
         disabled={disabled || loading}
-        className="absolute left-1/2 flex items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-navy shadow-lg transition-transform touch-none disabled:opacity-50"
+        className="absolute left-1/2 flex items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-white shadow-lg transition-transform touch-none disabled:opacity-50"
         style={{
           width: KNOB,
           height: KNOB,

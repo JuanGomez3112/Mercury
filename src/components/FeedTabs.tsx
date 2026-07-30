@@ -52,7 +52,7 @@ export default function FeedTabs({
             {empty[tab]}
           </div>
         ) : (
-          posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={viewerAvatarUrl} />)
+          posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={viewerAvatarUrl} fireLike={tab === "tabu"} />)
         )}
       </div>
     </div>

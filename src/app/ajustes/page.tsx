@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import TopBar from "@/components/TopBar";
+import AppShell from "@/components/AppShell";
 import ModeToggle from "@/components/ModeToggle";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -20,9 +20,8 @@ export default async function SettingsPage() {
   const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
 
   return (
-    <>
-      <TopBar username={me.username} avatarUrl={me.avatarUrl} />
-      <div className="mx-auto w-full max-w-2xl space-y-4 px-4 py-6">
+    <AppShell username={me.username} avatarUrl={me.avatarUrl}>
+      <div className="space-y-4">
         <h1 className="text-xl font-semibold text-white">Ajustes</h1>
 
         <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
@@ -47,6 +46,6 @@ export default async function SettingsPage() {
           Cambio de contraseña, verificación de edad y privacidad — próximamente.
         </p>
       </div>
-    </>
+    </AppShell>
   );
 }

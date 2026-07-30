@@ -30,10 +30,10 @@ export default function TopBar({
             <NotifBell />
             <InboxLink />
             <button className="text-purple transition hover:text-purple-soft" aria-label="Tabú">
-              <IconMasks className="h-6 w-6" />
+              <IconMasks className="h-7 w-7" />
             </button>
             <button className="text-purple transition hover:text-purple-soft" aria-label="Mapa">
-              <IconMapPeople className="h-6 w-6" />
+              <IconMapPeople className="h-7 w-7" />
             </button>
           </div>
           <ProfileMenu username={username} avatarUrl={avatarUrl} />

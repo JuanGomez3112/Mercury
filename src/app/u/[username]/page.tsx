@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getUserPosts } from "@/lib/queries";
-import TopBar from "@/components/TopBar";
+import AppShell from "@/components/AppShell";
 import PostCard from "@/components/PostCard";
 import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
@@ -57,9 +57,8 @@ export default async function ProfilePage({
   const name = profile.displayName ?? profile.username;
 
   return (
-    <>
-      <TopBar username={viewer.username} avatarUrl={viewer.avatarUrl} />
-      <div className="mx-auto w-full max-w-[896px] space-y-6 px-6 py-6">
+    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl} wide>
+      <div className="space-y-6">
         {/* Cabecera del perfil */}
         <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8">
           <div className="flex items-start justify-between">
@@ -108,6 +107,6 @@ export default async function ProfilePage({
           )}
         </div>
       </div>
-    </>
+    </AppShell>
   );
 }

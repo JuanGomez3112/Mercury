@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getThread } from "@/lib/queries";
-import TopBar from "@/components/TopBar";
+import AppShell from "@/components/AppShell";
 import Avatar from "@/components/Avatar";
 import ChatThread from "@/components/ChatThread";
 
@@ -32,10 +32,8 @@ export default async function ChatPage({
   const messages = await getThread(session.sub, partner.id);
 
   return (
-    <>
-      <TopBar username={viewer.username} avatarUrl={viewer.avatarUrl} />
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-6">
-        <div className="flex min-h-[70vh] flex-col rounded-2xl border border-white/10 bg-navy-2/50">
+    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
+      <div className="flex min-h-[70vh] flex-col rounded-2xl border border-white/10 bg-navy-2/50">
           {/* Cabecera */}
           <Link href={`/u/${partner.username}`} className="flex items-center gap-3 border-b border-white/10 p-4">
             <Avatar src={partner.avatarUrl} className="h-10 w-10" />
@@ -47,8 +45,7 @@ export default async function ChatPage({
 
           {/* Mensajes (tiempo real) */}
           <ChatThread partner={partner.username} initial={messages} />
-        </div>
       </div>
-    </>
+    </AppShell>
   );
 }

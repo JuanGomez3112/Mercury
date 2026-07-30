@@ -1,20 +1,22 @@
 import Link from "next/link";
 import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
-import DeletePostButton from "./DeletePostButton";
+import PostMenu from "./PostMenu";
 import CommentBar from "./CommentBar";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
-import { IconComment, IconShare, IconBookmark, IconMore, IconFire } from "./icons";
+import { IconComment, IconShare, IconBookmark, IconFire } from "./icons";
 import { VerifiedGrad } from "./GradientIcons";
 
 export default function PostCard({
   post,
   viewerAvatarUrl,
+  fireLike = false,
 }: {
   post: FeedPost;
   viewerAvatarUrl?: string | null;
+  fireLike?: boolean;
 }) {
   const name = post.author.displayName ?? post.author.username;
   return (
@@ -46,10 +48,7 @@ export default function PostCard({
               18+
             </span>
           )}
-          {post.isMine && <DeletePostButton postId={post.id} />}
-          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-purple/20 text-purple/70 transition hover:bg-purple/30 hover:text-purple" aria-label="Más">
-            <IconMore className="h-4 w-4" />
-          </button>
+          <PostMenu postId={post.id} isMine={post.isMine} />
         </div>
       </div>
 
@@ -75,7 +74,7 @@ export default function PostCard({
 
       {/* Barra de acciones */}
       <div className="mt-4 flex items-center gap-7 text-white/60">
-        <LikeButton postId={post.id} initialLiked={post.likedByMe} initialCount={post.likeCount} />
+        <LikeButton postId={post.id} initialLiked={post.likedByMe} initialCount={post.likeCount} variant={fireLike ? "fire" : "heart"} />
         <span className="flex items-center gap-1.5 text-sm">
           <IconComment className="text-[28px]" />
           {post.commentCount > 0 && post.commentCount}
