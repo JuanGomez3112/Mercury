@@ -13,7 +13,7 @@ export default function AppHeader({ username }: { username: string }) {
         <div className="flex items-center gap-3">
           <Link
             href={`/u/${username}`}
-            className="text-sm text-white/80 transition hover:text-white"
+            className="rounded-[1.25rem] border-2 border-white/15 px-4 py-1.5 text-sm font-bold text-white transition hover:border-purple hover:text-purple"
           >
             Mi perfil
           </Link>

@@ -61,14 +61,14 @@ export default function PostComposer() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-4">
+    <div className="rounded-[1.25rem] border-2 border-white/10 bg-navy-2/50 p-4">
       <textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
         placeholder="¿Qué estás pensando?"
         maxLength={2000}
         rows={3}
-        className="w-full resize-none rounded-lg border border-white/10 bg-navy px-3.5 py-2.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple"
+        className="w-full resize-none rounded-2xl border-2 border-white/10 bg-navy px-4 py-3 text-white outline-none transition placeholder:text-white/30 focus:border-purple"
       />
 
       {previews.length > 0 && (
@@ -103,7 +103,7 @@ export default function PostComposer() {
         <button
           onClick={submit}
           disabled={loading || (!body.trim() && files.length === 0)}
-          className="rounded-lg bg-purple px-5 py-2 text-sm font-medium text-navy transition hover:opacity-90 disabled:opacity-50"
+          className="rounded-[1.25rem] bg-purple px-6 py-2 font-black text-navy transition hover:brightness-95 disabled:opacity-50"
         >
           {loading ? "Publicando…" : "Publicar"}
         </button>

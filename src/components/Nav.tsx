@@ -10,14 +10,17 @@ export default function Nav() {
           <span className="text-lg font-semibold tracking-wide text-white">Mercury</span>
         </Link>
         <div className="flex items-center gap-3 text-sm">
-          <Link href="/login" className="text-white/80 transition hover:text-white">
+          <Link
+            href="/login"
+            className="rounded-[1.25rem] border-2 border-white/20 px-4 py-1.5 font-bold text-white transition hover:border-purple hover:text-purple"
+          >
             Iniciar sesión
           </Link>
           <Link
             href="/register"
-            className="rounded-lg bg-purple px-4 py-2 font-medium text-navy transition hover:opacity-90"
+            className="rounded-[1.25rem] bg-purple px-4 py-1.5 font-black text-navy transition hover:brightness-95"
           >
-            Registrarte
+            Registrate
           </Link>
         </div>
       </nav>

@@ -17,7 +17,7 @@ export type FeedPost = {
 export default function PostCard({ post }: { post: FeedPost }) {
   const name = post.author.displayName ?? post.author.username;
   return (
-    <article className="rounded-2xl border border-white/10 bg-navy-2/40 p-5">
+    <article className="rounded-[1.25rem] border-2 border-white/10 bg-navy-2/40 p-5 transition hover:border-purple/40">
       <div className="flex items-center justify-between">
         <div className="flex items-baseline gap-2">
           <Link href={`/u/${post.author.username}`} className="font-medium text-white hover:underline">
@@ -45,7 +45,7 @@ export default function PostCard({ post }: { post: FeedPost }) {
               key={src}
               src={src}
               alt=""
-              className="max-h-96 w-full rounded-xl border border-white/10 object-cover"
+              className="max-h-96 w-full rounded-2xl border-2 border-white/10 object-cover"
             />
           ))}
         </div>
