@@ -138,7 +138,7 @@ export default function PostComposer({
               key={p.label}
               type="button"
               onClick={p.onClick}
-              className="flex shrink-0 items-center gap-2 rounded-full bg-navy px-4 py-3 text-sm text-white/80 transition hover:text-white"
+              className="flex shrink-0 items-center gap-2 rounded-full bg-purple/20 px-4 py-3 text-sm text-white/80 transition hover:bg-purple/30 hover:text-white"
             >
               <span className="text-purple">{p.icon}</span>
               {p.label}
