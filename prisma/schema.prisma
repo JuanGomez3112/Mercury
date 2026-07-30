@@ -33,6 +33,7 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   body      String
   images    String[] @default([])
+  isAdult   Boolean  @default(false)
   createdAt DateTime @default(now())
 
   likes Like[]

@@ -6,6 +6,7 @@ import { currentUser } from "@/lib/auth";
 const schema = z.object({
   body: z.string().trim().max(2000).default(""),
   images: z.array(z.string()).max(4).default([]),
+  adult: z.boolean().default(false),
 });
 
 export async function POST(req: Request) {
@@ -16,13 +17,13 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
-  const { body, images } = parsed.data;
+  const { body, images, adult } = parsed.data;
   if (!body && images.length === 0) {
     return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
   }
 
   const post = await prisma.post.create({
-    data: { authorId: session.sub, body, images },
+    data: { authorId: session.sub, body, images, isAdult: adult },
   });
   return NextResponse.json({ ok: true, id: post.id });
 }

@@ -169,6 +169,12 @@ export const IconVerified = ({ className = base }: P) => (
   </svg>
 );
 
+export const IconFire = ({ className = base }: P) => (
+  <svg className={s(className)} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13 2c.5 3-1.5 4.5-3 6.5C8.3 10.7 7 12.5 7 15a5 5 0 0 0 10 .3c.2-2.4-1-4.3-2-5.8-.3 1-.9 1.8-1.8 2.2.6-1.7.4-3.6-.4-5.2A8 8 0 0 0 13 2z" />
+  </svg>
+);
+
 export const IconGoogle = ({ className = base }: P) => (
   <svg className={s(className)} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 11v3.5h4.9c-.2 1.2-1.6 3.6-4.9 3.6a5.1 5.1 0 1 1 0-10.2c1.6 0 2.7.7 3.3 1.3l2.3-2.2A8.5 8.5 0 1 0 12 20.5c4.9 0 8.2-3.5 8.2-8.4 0-.6-.1-1-.2-1.5H12z" />

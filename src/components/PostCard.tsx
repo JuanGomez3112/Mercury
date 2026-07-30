@@ -3,12 +3,13 @@ import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
 import DeletePostButton from "./DeletePostButton";
 import { timeAgo } from "@/lib/auth";
-import { IconComment, IconShare, IconBookmark, IconMore, IconVerified } from "./icons";
+import { IconComment, IconShare, IconBookmark, IconMore, IconVerified, IconFire } from "./icons";
 
 export type FeedPost = {
   id: string;
   body: string;
   images: string[];
+  isAdult: boolean;
   createdAt: Date | string;
   author: { username: string; displayName: string | null; avatarUrl: string | null };
   likeCount: number;
@@ -66,6 +67,12 @@ export default function PostCard({ post }: { post: FeedPost }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {post.isAdult && (
+            <span className="flex items-center gap-1 rounded-full bg-orange-500/15 px-2 py-0.5 text-xs font-semibold text-orange-400">
+              <IconFire className="h-3 w-3" />
+              18+
+            </span>
+          )}
           {post.isMine && <DeletePostButton postId={post.id} />}
           <button className="flex h-7 w-7 items-center justify-center rounded-full text-white/40 transition hover:bg-white/5 hover:text-white" aria-label="Más">
             <IconMore className="h-4 w-4" />

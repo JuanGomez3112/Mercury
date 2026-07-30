@@ -3,8 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
-import MercuryMark from "./MercuryMark";
-import { IconImage, IconMusic, IconTag, IconPin, IconPoll, IconLink, IconMore } from "./icons";
+import SlidePublish from "./SlidePublish";
+import { IconFire, IconImage, IconMusic, IconTag, IconPin, IconPoll, IconLink, IconMore } from "./icons";
 
 const MAX_FILES = 4;
 
@@ -19,6 +19,7 @@ export default function PostComposer({
   const fileRef = useRef<HTMLInputElement>(null);
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [adult, setAdult] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,12 +56,13 @@ export default function PostComposer({
     const res = await fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body, images }),
+      body: JSON.stringify({ body, images, adult }),
     });
     setLoading(false);
     if (res.ok) {
       setBody("");
       setFiles([]);
+      setAdult(false);
       router.refresh();
     } else {
       const d = await res.json().catch(() => ({}));
@@ -69,6 +71,7 @@ export default function PostComposer({
   }
 
   const pills = [
+    { label: "Foto", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
     { label: "Música", icon: <IconMusic className="h-4 w-4" /> },
     { label: "Etiquetas", icon: <IconTag className="h-4 w-4" /> },
     { label: "Ubicación", icon: <IconPin className="h-4 w-4" /> },
@@ -88,14 +91,11 @@ export default function PostComposer({
           maxLength={2000}
           className="min-h-[46px] flex-1 resize-none rounded-2xl border border-white/10 bg-navy px-4 py-3 text-white outline-none transition placeholder:text-white/40 focus:border-purple"
         />
-        <button
-          onClick={submit}
-          disabled={loading || (!body.trim() && files.length === 0)}
-          aria-label="Publicar"
-          className="flex h-14 w-11 shrink-0 items-center justify-center rounded-2xl bg-purple text-navy transition hover:brightness-95 disabled:opacity-50"
-        >
-          <MercuryMark navy className="h-6 w-3" />
-        </button>
+        <SlidePublish
+          onPublish={submit}
+          loading={loading}
+          disabled={!body.trim() && files.length === 0}
+        />
       </div>
 
       {previews.length > 0 && (
@@ -116,28 +116,39 @@ export default function PostComposer({
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button
-          onClick={() => fileRef.current?.click()}
-          disabled={files.length >= MAX_FILES}
-          className="flex items-center gap-2 rounded-full bg-purple/20 px-4 py-2 text-sm font-medium text-purple transition hover:bg-purple/30 disabled:opacity-40"
-        >
-          <IconImage className="h-4 w-4" />
-          Foto
-        </button>
-        {pills.map((p) => (
-          <button
-            key={p.label}
-            type="button"
-            className="flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm text-white/80 transition hover:text-white"
-          >
-            <span className="text-purple">{p.icon}</span>
-            {p.label}
-          </button>
-        ))}
+      {/* Fila de acciones: fuego (fijo izq) · pills scrollables · más (fijo der) */}
+      <div className="mt-3 flex items-center gap-2">
         <button
           type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-white/70 transition hover:text-white"
+          onClick={() => setAdult((v) => !v)}
+          aria-pressed={adult}
+          title="Marcar como contenido para adultos (18+)"
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${
+            adult
+              ? "bg-orange-500 text-white shadow-[0_0_12px] shadow-orange-500/50"
+              : "bg-purple/20 text-purple hover:bg-purple/30"
+          }`}
+        >
+          <IconFire className="h-4 w-4" />
+        </button>
+
+        <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-2 overflow-x-auto">
+          {pills.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={p.onClick}
+              className="flex shrink-0 items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm text-white/80 transition hover:text-white"
+            >
+              <span className="text-purple">{p.icon}</span>
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:text-white"
           aria-label="Más"
         >
           <IconMore className="h-4 w-4" />

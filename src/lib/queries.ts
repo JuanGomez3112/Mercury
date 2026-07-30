@@ -5,6 +5,7 @@ type Row = {
   id: string;
   body: string;
   images: string[];
+  isAdult: boolean;
   createdAt: Date;
   authorId: string;
   author: { username: string; displayName: string | null; avatarUrl: string | null };
@@ -17,6 +18,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
     id: p.id,
     body: p.body,
     images: p.images,
+    isAdult: p.isAdult,
     createdAt: p.createdAt,
     author: p.author,
     likeCount: p._count.likes,

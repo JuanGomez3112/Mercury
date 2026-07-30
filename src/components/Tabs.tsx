@@ -1,9 +1,9 @@
-import { IconPlus, IconHeart, IconGrid } from "./icons";
+import { IconPlus, IconHeart, IconFire } from "./icons";
 
 const tabs = [
   { label: "Explora", icon: IconPlus, active: true },
   { label: "Feed", icon: IconHeart },
-  { label: "Tabú", icon: IconGrid },
+  { label: "Tabú", icon: IconFire },
 ];
 
 export default function Tabs() {
