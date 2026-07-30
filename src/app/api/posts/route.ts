@@ -3,7 +3,10 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 
-const schema = z.object({ body: z.string().trim().min(1, "Vacío").max(2000) });
+const schema = z.object({
+  body: z.string().trim().max(2000).default(""),
+  images: z.array(z.string()).max(4).default([]),
+});
 
 export async function POST(req: Request) {
   const session = await currentUser();
@@ -13,9 +16,13 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
+  const { body, images } = parsed.data;
+  if (!body && images.length === 0) {
+    return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
+  }
 
   const post = await prisma.post.create({
-    data: { authorId: session.sub, body: parsed.data.body },
+    data: { authorId: session.sub, body, images },
   });
   return NextResponse.json({ ok: true, id: post.id });
 }

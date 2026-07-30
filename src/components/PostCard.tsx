@@ -6,6 +6,7 @@ import { timeAgo } from "@/lib/auth";
 export type FeedPost = {
   id: string;
   body: string;
+  images: string[];
   createdAt: Date | string;
   author: { username: string; displayName: string | null };
   likeCount: number;
@@ -27,7 +28,29 @@ export default function PostCard({ post }: { post: FeedPost }) {
         </div>
         {post.isMine && <DeletePostButton postId={post.id} />}
       </div>
-      <p className="mt-2 whitespace-pre-wrap break-words text-white/90">{post.body}</p>
+
+      {post.body && (
+        <p className="mt-2 whitespace-pre-wrap break-words text-white/90">{post.body}</p>
+      )}
+
+      {post.images.length > 0 && (
+        <div
+          className={`mt-3 grid gap-2 ${
+            post.images.length === 1 ? "grid-cols-1" : "grid-cols-2"
+          }`}
+        >
+          {post.images.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={src}
+              src={src}
+              alt=""
+              className="max-h-96 w-full rounded-xl border border-white/10 object-cover"
+            />
+          ))}
+        </div>
+      )}
+
       <div className="mt-3">
         <LikeButton postId={post.id} initialLiked={post.likedByMe} initialCount={post.likeCount} />
       </div>
