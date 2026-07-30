@@ -11,7 +11,7 @@ export default function LogoutButton() {
         router.push("/");
         router.refresh();
       }}
-      className="rounded-[1.25rem] bg-purple px-4 py-1.5 text-sm font-black text-navy transition hover:brightness-95"
+      className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white transition hover:bg-white/5"
     >
       Cerrar sesión
     </button>

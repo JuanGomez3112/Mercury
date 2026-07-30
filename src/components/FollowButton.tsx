@@ -30,10 +30,10 @@ export default function FollowButton({
     <button
       onClick={toggle}
       disabled={busy}
-      className={`rounded-[1.25rem] px-5 py-2 text-sm font-black transition disabled:opacity-60 ${
+      className={`rounded-lg px-4 py-2 text-sm font-medium transition disabled:opacity-60 ${
         following
-          ? "border-2 border-white/20 text-white hover:border-purple hover:text-purple"
-          : "bg-purple text-navy hover:brightness-95"
+          ? "border border-white/15 text-white hover:bg-white/5"
+          : "bg-purple text-navy hover:opacity-90"
       }`}
     >
       {following ? "Siguiendo" : "Seguir"}

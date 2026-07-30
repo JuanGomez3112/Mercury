@@ -18,13 +18,6 @@ export const registerSchema = z
       .min(3, "Mínimo 3 caracteres")
       .max(30)
       .regex(/^[a-zA-Z0-9_.]+$/, "Solo letras, números, _ y ."),
-    email: z
-      .string()
-      .trim()
-      .email("Correo inválido")
-      .optional()
-      .or(z.literal(""))
-      .transform((v) => (v ? v : undefined)),
     password: z.string().min(8, "Mínimo 8 caracteres").max(200),
     password2: z.string(),
     birthdate: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "Fecha inválida"),
