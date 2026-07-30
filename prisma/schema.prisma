@@ -16,6 +16,7 @@ model User {
   displayName  String?
   bio          String?
   avatarUrl    String?
+  mode         String?   // "angel" | "devil" | null
   birthdate    DateTime?
   ageVerified  Boolean   @default(false)
   createdAt    DateTime  @default(now())

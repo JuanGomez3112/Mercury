@@ -2,15 +2,17 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import LogoutButton from "./LogoutButton";
 import FollowButton from "./FollowButton";
+import ModeToggle from "./ModeToggle";
 import type { Story } from "./Stories";
 
 export default function RightPanel({
   me,
   suggestions,
 }: {
-  me: { username: string; displayName: string | null; avatarUrl: string | null };
+  me: { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
   suggestions: Story[];
 }) {
+  const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
   return (
     <aside className="sticky top-28 hidden h-max w-[448px] shrink-0 flex-col gap-4 xl:flex">
       {/* Tarjeta de perfil */}
@@ -25,6 +27,9 @@ export default function RightPanel({
             </Link>
             <span className="block truncate text-xs text-white/40">@{me.username}</span>
           </div>
+        </div>
+        <div className="mt-4">
+          <ModeToggle initial={mode} />
         </div>
         <div className="mt-4">
           <LogoutButton />
