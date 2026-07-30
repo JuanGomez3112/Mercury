@@ -50,6 +50,27 @@ export async function getFeed(viewerId: string): Promise<FeedPost[]> {
   return posts.map((p) => toFeedPost(p as Row, viewerId));
 }
 
+/** Tendencias: hashtags más usados en los posts recientes. */
+export async function getTrends(limit = 6): Promise<{ tag: string; count: number }[]> {
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 300,
+    select: { body: true },
+  });
+  const counts = new Map<string, number>();
+  for (const p of posts) {
+    const tags = p.body.match(/#[\p{L}0-9_]+/gu) ?? [];
+    for (const t of tags) {
+      const k = t.toLowerCase();
+      counts.set(k, (counts.get(k) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tag, count]) => ({ tag, count }));
+}
+
 /** Publicaciones de un autor concreto. */
 export async function getUserPosts(authorId: string, viewerId: string): Promise<FeedPost[]> {
   const posts = await prisma.post.findMany({

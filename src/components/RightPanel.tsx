@@ -8,9 +8,11 @@ import type { Story } from "./Stories";
 export default function RightPanel({
   me,
   suggestions,
+  trends = [],
 }: {
   me: { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
   suggestions: Story[];
+  trends?: { tag: string; count: number }[];
 }) {
   const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
 
@@ -32,6 +34,28 @@ export default function RightPanel({
           <LogoutButton />
         </div>
       </div>
+
+      {/* Tendencias */}
+      {trends.length > 0 && (
+        <div className="border-t border-white/10 pt-5">
+          <h2 className="mb-3 text-sm font-semibold text-white/70">Tendencias</h2>
+          <div className="space-y-2">
+            {trends.map((t, i) => (
+              <Link
+                key={t.tag}
+                href="/feed"
+                className="flex items-center justify-between rounded-xl px-2 py-1.5 transition hover:bg-white/5"
+              >
+                <div className="min-w-0">
+                  <span className="block truncate font-medium text-purple">{t.tag}</span>
+                  <span className="text-xs text-white/40">{t.count} publicaciones</span>
+                </div>
+                <span className="text-xs text-white/30">#{i + 1}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Sugerencias */}
       {suggestions.length > 0 && (
