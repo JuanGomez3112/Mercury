@@ -15,7 +15,7 @@ export default function RightPanel({
   const mode = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
 
   return (
-    <aside className="sticky top-24 hidden h-[calc(100vh-6rem)] w-[448px] shrink-0 flex-col gap-6 self-start overflow-y-auto rounded-l-3xl border-l border-white/10 bg-navy-2/70 p-6 xl:flex">
+    <aside className="sticky top-24 hidden h-[calc(100vh-7rem)] w-[448px] shrink-0 flex-col gap-6 self-start overflow-y-auto rounded-3xl border border-white/10 bg-navy-2/70 p-6 xl:flex">
       {/* Perfil */}
       <div>
         <Link href={`/u/${me.username}`} className="flex items-center gap-3">
