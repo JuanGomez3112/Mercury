@@ -1,0 +1,25 @@
+  @use 'sass/_base.sass';
+  @use 'sass/_layout.sass';
+  @use 'sass/components/components';  
+
+  $rojo-oscuro: #590202;
+  $rojo-claro: #F21B2D ;
+  $degradado-rojo: linear-gradient(157.29deg, #F20519 0%, #8C1308 100%);
+  $blanco: #F2F3F5;
+  $sombra: 0px 4px 4px rgba(0,0,0,0.25);
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Roboto", sans-serif;
+  }
+ 
+  a {
+    text-decoration: none;
+  }
+  
+  

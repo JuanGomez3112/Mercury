@@ -1,0 +1,268 @@
+* {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+}
+
+/* Contenedor Principal */
+.contenedor {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* Contenedor de Logo Principal */
+.contenedor-logo {
+  background-color: #590202;
+  width: 60vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; 
+}
+
+.contenedor-logo div {
+  max-width: 25%;
+}
+
+.contenedor-logo img {
+  max-width: 100%;
+  height: auto;
+  flex-wrap: nowrap;
+}
+
+/* Seccion Formulario */
+.formulario {
+  min-width: 470px;
+}
+
+.contenedor-formulario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(#f20519, #8c1308);
+  min-width: 40vw;
+  height: 100vh;
+}
+
+/* Contenedor De Logo Secundario */
+.contenedor-logo-secundario img {
+  margin-top: 100px;
+  margin-bottom: 60px;
+  max-width: 85px;
+}
+
+/* Contenedor De Botones */
+.botones {
+  display: flex;
+}
+
+.boton {
+  text-align: center;
+  background-color: #f2f3f5;
+  width: 150px;
+  height: 30px;
+  margin: 0px 20px;
+  border-radius: 6px;
+  padding: 3px 0px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+.boton a {
+  text-decoration: none;
+  color: #f20519;
+  font-weight: 900;
+}
+
+.boton:hover {
+  background-color: #590202;
+  color: #f2f3f5;
+}
+
+.boton a:hover {
+  color: #f2f3f5;
+}
+
+.boton:active {
+  background-color: transparent;
+}
+
+.boton a:active {
+  color: #f2f3f5;
+}
+
+/* Formulario */
+form {
+  margin: 70px auto;
+  margin-bottom: 20px;
+}
+
+.users,
+.contraseña {
+  position: relative;
+  display: block;
+  color: #f2f3f5;
+}
+
+.users {
+  margin-bottom: 20px;
+}
+
+form label {
+  display: block;
+}
+
+form input {
+  width: 270px;
+  height: 36px;
+  padding: 5px;
+  padding-left: 35px;
+  border-radius: 10px;
+  outline: none;
+  border: 1px rgba(242, 243, 245, 0.5) solid;
+  background: transparent;
+  color: #f2f3f5;
+}
+
+form input::placeholder {
+  color: rgba(242, 243, 245, 0.5);
+}
+
+.grupo__input {
+  position: absolute;
+  top: 30px;
+  left: 15px;
+  color: rgba(242, 243, 245, 0.5);
+}
+
+form input:focus {
+  color: #f2f3f5;
+  border-color: #f2f3f5;
+}
+
+form input:focus ~ .grupo__input {
+  color: #f2f3f5;
+}
+
+/* Recuerda Y Restaurar */
+.mas-opciones {
+  display: flex;
+}
+
+.recuerdame,
+.restaurar {
+  margin: 0px 20px;
+  color: #f2f3f5;
+}
+
+.restaurar a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #f2f3f5;
+}
+
+.restaurar a:hover {
+  color: #590202;
+  font-weight: 900;
+}
+
+/* Enviar Formulario */
+.submit {
+  font-weight: 500;
+  color: #f2f3f5;
+  width: 95px;
+  height: 25px;
+  text-align: center;
+  border-radius: 10px;
+  background-color: #f21b2d;
+  outline: none;
+  border: none;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.submit:hover {
+  background-color: #590202;
+  color: #f2f3f5;
+}
+
+.submit:active {
+  background-color: transparent;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Inicio Exterior*/
+.inicio-externo {
+  margin-top: 50px;
+}
+
+.inicio-externo > p {
+  color: #f2f3f5;
+  font-weight: 500;
+  text-align: center;
+}
+
+.cnt-icon {
+  display: flex;
+}
+
+.cnt-icon > div {
+  display: flex;
+  width: 35px;
+  height: 35px;
+  border-radius: 25px;
+  background-color: #f2f3f5;
+  justify-content: center;
+  align-items: center;
+  margin: 0px 15px;
+  color: #f20519;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.cnt-icon > div:hover {
+  background-color: #590202;
+  color: #f2f3f5;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.footer {
+  position: relative;
+  margin-top: 90px;
+  text-align: center;
+  color: #f2f3f5;
+}
+
+.footer a {
+  text-decoration: none;
+  color: #f2f3f5;
+  font-weight: 700;
+}
+
+.footer a:hover {
+  color: #590202;
+  font-weight: 900;
+}
+
+/* Media Query */
+
+@media screen and (max-width: 768px) {
+  .contenedor-logo {
+    display: none;
+  }
+
+  .formulario {
+    width: 100%;
+    height: 100%;
+  }
+
+  .boton {
+    margin: 0px 15px;
+  }
+}
