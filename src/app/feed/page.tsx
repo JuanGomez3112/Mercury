@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getFeed } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
 import LeftRail from "@/components/LeftRail";
+import LeftPanel from "@/components/LeftPanel";
 import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
 import PostComposer from "@/components/PostComposer";
@@ -49,15 +50,16 @@ export default async function FeedPage() {
   return (
     <>
       <TopBar username={me.username} avatarUrl={me.avatarUrl} />
-      <div className="mx-auto flex w-full max-w-7xl gap-5 px-4 py-5 sm:px-6">
+      <div className="mx-auto flex w-full max-w-[1920px] justify-center gap-8 px-6 py-6">
         <LeftRail />
+        <LeftPanel me={me} />
 
-        <main className="mx-auto w-full max-w-2xl flex-1 space-y-5">
+        <main className="w-full min-w-0 flex-1 space-y-6 xl:max-w-[896px]">
           <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl }} stories={stories} />
           <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} />
           <Tabs />
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             {posts.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
                 Tu feed está vacío.

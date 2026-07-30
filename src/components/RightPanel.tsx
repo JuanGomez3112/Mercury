@@ -12,7 +12,7 @@ export default function RightPanel({
   suggestions: Story[];
 }) {
   return (
-    <aside className="sticky top-24 hidden h-max w-72 shrink-0 flex-col gap-4 xl:flex">
+    <aside className="sticky top-28 hidden h-max w-[448px] shrink-0 flex-col gap-4 xl:flex">
       {/* Tarjeta de perfil */}
       <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-4">
         <div className="flex items-center gap-3">
