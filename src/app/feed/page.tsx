@@ -69,7 +69,7 @@ export default async function FeedPage() {
                   <span className="text-sm">Publica algo o sigue a otras personas para ver contenido.</span>
                 </div>
               ) : (
-                posts.map((p) => <PostCard key={p.id} post={p} />)
+                posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={me.avatarUrl} />)
               )}
             </div>
           </div>

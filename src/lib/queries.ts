@@ -1,5 +1,5 @@
 import { prisma } from "./db";
-import type { FeedPost } from "@/components/PostCard";
+import type { FeedPost } from "./types";
 
 type Row = {
   id: string;
@@ -9,7 +9,7 @@ type Row = {
   createdAt: Date;
   authorId: string;
   author: { username: string; displayName: string | null; avatarUrl: string | null };
-  _count: { likes: number };
+  _count: { likes: number; comments: number };
   likes: { userId: string }[];
 };
 
@@ -22,6 +22,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
     createdAt: p.createdAt,
     author: p.author,
     likeCount: p._count.likes,
+    commentCount: p._count.comments,
     likedByMe: p.likes.length > 0,
     isMine: p.authorId === viewerId,
   };
@@ -29,7 +30,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
 
 const include = (viewerId: string) => ({
   author: { select: { username: true, displayName: true, avatarUrl: true } },
-  _count: { select: { likes: true } },
+  _count: { select: { likes: true, comments: true } },
   likes: { where: { userId: viewerId }, select: { userId: true } },
 });
 

@@ -2,23 +2,19 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import LikeButton from "./LikeButton";
 import DeletePostButton from "./DeletePostButton";
-import { timeAgo } from "@/lib/auth";
+import CommentBar from "./CommentBar";
+import { timeAgo } from "@/lib/time";
+import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
 import { IconComment, IconShare, IconBookmark, IconMore, IconVerified, IconFire } from "./icons";
 
-export type FeedPost = {
-  id: string;
-  body: string;
-  images: string[];
-  isAdult: boolean;
-  createdAt: Date | string;
-  author: { username: string; displayName: string | null; avatarUrl: string | null };
-  likeCount: number;
-  likedByMe: boolean;
-  isMine: boolean;
-};
-
-export default function PostCard({ post }: { post: FeedPost }) {
+export default function PostCard({
+  post,
+  viewerAvatarUrl,
+}: {
+  post: FeedPost;
+  viewerAvatarUrl?: string | null;
+}) {
   const name = post.author.displayName ?? post.author.username;
   return (
     <article className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-base leading-5 tracking-[0.02em]">
@@ -59,8 +55,8 @@ export default function PostCard({ post }: { post: FeedPost }) {
       {/* Cuerpo */}
       {post.body && <p className="mt-4 whitespace-pre-wrap break-words text-white/90">{post.body}</p>}
 
-      {/* Media */}
-      <PostMedia images={post.images} />
+      {/* Media (abre lightbox con panel de comentarios) */}
+      <PostMedia post={post} viewerAvatarUrl={viewerAvatarUrl} />
 
       {/* Likers */}
       {post.likeCount > 0 && (
@@ -79,9 +75,10 @@ export default function PostCard({ post }: { post: FeedPost }) {
       {/* Barra de acciones */}
       <div className="mt-4 flex items-center gap-6 text-white/60">
         <LikeButton postId={post.id} initialLiked={post.likedByMe} initialCount={post.likeCount} />
-        <button className="transition hover:text-white" aria-label="Comentar">
+        <span className="flex items-center gap-1.5 text-sm">
           <IconComment className="h-7 w-7" />
-        </button>
+          {post.commentCount > 0 && post.commentCount}
+        </span>
         <button className="transition hover:text-white" aria-label="Compartir">
           <IconShare className="h-7 w-7" />
         </button>
@@ -91,13 +88,7 @@ export default function PostCard({ post }: { post: FeedPost }) {
       </div>
 
       {/* Comentario */}
-      <div className="mt-[30px] flex items-center gap-4">
-        <Avatar className="h-10 w-10" />
-        <input
-          placeholder="Escribe un comentario"
-          className="flex-1 rounded-full border border-white/10 bg-navy px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple"
-        />
-      </div>
+      <CommentBar postId={post.id} avatarUrl={viewerAvatarUrl} />
     </article>
   );
 }

@@ -23,6 +23,7 @@ model User {
 
   posts     Post[]
   likes     Like[]
+  comments  Comment[]
   following Follow[] @relation("follower")
   followers Follow[] @relation("following")
 }
@@ -36,10 +37,23 @@ model Post {
   isAdult   Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  likes Like[]
+  likes    Like[]
+  comments Comment[]
 
   @@index([authorId])
   @@index([createdAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([postId])
 }
 
 model Follow {
