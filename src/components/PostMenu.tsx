@@ -24,7 +24,11 @@ export default function PostMenu({ postId, isMine }: { postId: string; isMine: b
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-purple/20 text-purple/70 transition hover:bg-purple/30 hover:text-purple"
+        className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200 ${
+          open
+            ? "bg-gradient-to-tl from-purple to-purple-soft text-white"
+            : "bg-purple/20 text-purple hover:bg-purple hover:text-white"
+        }`}
         aria-label="Opciones"
       >
         <IconMore className="h-4 w-4" />

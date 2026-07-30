@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import SlidePublish from "./SlidePublish";
-import { IconFire, IconImage, IconLive, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink, IconMore } from "./icons";
+import ComposerMenu from "./ComposerMenu";
+import { IconFire, IconImage, IconLive, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink } from "./icons";
 
 const MAX_FILES = 10;
 
@@ -192,13 +193,7 @@ export default function PostComposer({
           ))}
         </div>
 
-        <button
-          type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:bg-navy/80 hover:text-white"
-          aria-label="Más"
-        >
-          <IconMore className="h-4 w-4" />
-        </button>
+        <ComposerMenu />
       </div>
 
       <input
