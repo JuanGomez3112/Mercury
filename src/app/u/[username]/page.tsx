@@ -2,12 +2,22 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getUserPosts } from "@/lib/queries";
-import AppHeader from "@/components/AppHeader";
+import TopBar from "@/components/TopBar";
 import PostCard from "@/components/PostCard";
 import FollowButton from "@/components/FollowButton";
-import MercuryMark from "@/components/MercuryMark";
+import Avatar from "@/components/Avatar";
+import { IconVerified } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
+
+/* eslint-disable @next/next/no-img-element */
+function Deco({ mode }: { mode?: string | null }) {
+  if (mode === "devil")
+    return <img src="/Cuernos.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%-10px)] left-1/2 h-11 w-[66px] -translate-x-1/2" />;
+  if (mode === "angel")
+    return <img src="/Aurola.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 h-5 w-16 -translate-x-1/2" />;
+  return null;
+}
 
 export default async function ProfilePage({
   params,
@@ -18,25 +28,28 @@ export default async function ProfilePage({
   if (!session) redirect("/login");
 
   const { username } = await params;
-  const profile = await prisma.user.findUnique({
-    where: { username },
-    select: {
-      id: true,
-      username: true,
-      displayName: true,
-      bio: true,
-      _count: { select: { posts: true, followers: true, following: true } },
-    },
-  });
-  if (!profile) notFound();
+  const [viewer, profile] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.sub }, select: { username: true, avatarUrl: true } }),
+    prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        displayName: true,
+        bio: true,
+        avatarUrl: true,
+        mode: true,
+        _count: { select: { posts: true, followers: true, following: true } },
+      },
+    }),
+  ]);
+  if (!profile || !viewer) notFound();
 
   const isMe = profile.id === session.sub;
   const following = isMe
     ? false
     : (await prisma.follow.findUnique({
-        where: {
-          followerId_followingId: { followerId: session.sub, followingId: profile.id },
-        },
+        where: { followerId_followingId: { followerId: session.sub, followingId: profile.id } },
         select: { followerId: true },
       })) !== null;
 
@@ -45,44 +58,46 @@ export default async function ProfilePage({
 
   return (
     <>
-      <AppHeader username={session.username} />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+      <TopBar username={viewer.username} avatarUrl={viewer.avatarUrl} />
+      <div className="mx-auto w-full max-w-[896px] space-y-6 px-6 py-6">
+        {/* Cabecera del perfil */}
+        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-navy">
-                <MercuryMark className="h-7 w-3.5" />
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                <Deco mode={profile.mode} />
+                <Avatar src={profile.avatarUrl} className="h-24 w-24 ring-2 ring-purple/40" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-white">{name}</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-semibold text-white">{name}</h1>
+                  <IconVerified className="h-5 w-5 text-purple" />
+                </div>
                 <p className="text-sm text-white/50">@{profile.username}</p>
+                {profile.bio && <p className="mt-2 max-w-md text-sm text-white/80">{profile.bio}</p>}
               </div>
             </div>
             {!isMe && <FollowButton username={profile.username} initialFollowing={following} />}
           </div>
 
-          {profile.bio && <p className="mt-4 text-sm text-white/80">{profile.bio}</p>}
-
-          <div className="mt-4 flex gap-5 text-sm text-white/60">
-            <span><b className="text-white">{profile._count.posts}</b> posts</span>
+          <div className="mt-6 flex gap-6 text-sm text-white/60">
+            <span><b className="text-white">{profile._count.posts}</b> publicaciones</span>
             <span><b className="text-white">{profile._count.followers}</b> seguidores</span>
             <span><b className="text-white">{profile._count.following}</b> siguiendo</span>
           </div>
         </section>
 
-        <div className="mt-6 space-y-4">
+        {/* Publicaciones */}
+        <div className="space-y-6">
           {posts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
               Sin publicaciones todavía.
             </div>
           ) : (
-            posts.map((p) => <PostCard key={p.id} post={p} />)
+            posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={viewer.avatarUrl} />)
           )}
         </div>
-      </main>
-      <footer className="border-t border-white/10 px-6 py-8 text-center text-xs text-white/40">
-        Mercury · Comunidad 18+ · Esqueleto v0
-      </footer>
+      </div>
     </>
   );
 }
