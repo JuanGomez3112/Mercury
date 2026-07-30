@@ -8,8 +8,7 @@ import LeftPanel from "@/components/LeftPanel";
 import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
 import PostComposer from "@/components/PostComposer";
-import Tabs from "@/components/Tabs";
-import PostCard from "@/components/PostCard";
+import FeedTabs from "@/components/FeedTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -66,21 +65,8 @@ export default async function FeedPage({
           <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl, mode: me.mode }} stories={stories} />
           <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} />
 
-          {/* Contenedor: tabs + publicaciones (padding 32, gap 32) */}
-          <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8">
-            <Tabs active={tab} />
-            <div className="mt-8 space-y-8">
-              {posts.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/50">
-                  {tab === "feed" && "Aún no hay nada en tu feed. Sigue a personas o publica algo."}
-                  {tab === "explora" && "No hay contenido nuevo para explorar por ahora."}
-                  {tab === "tabu" && "Sin contenido para adultos todavía."}
-                </div>
-              ) : (
-                posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={me.avatarUrl} />)
-              )}
-            </div>
-          </div>
+          {/* Tabs + publicaciones (cambio de tab client, solo re-pide posts) */}
+          <FeedTabs initialTab={tab} initialPosts={posts} viewerAvatarUrl={me.avatarUrl} />
         </main>
 
         <RightPanel me={me} suggestions={suggestions} chats={chats} />
