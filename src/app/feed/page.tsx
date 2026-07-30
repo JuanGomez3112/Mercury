@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
-import { getFeed, getTrends } from "@/lib/queries";
+import { getFeedByTab, type FeedTab } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
 import LeftRail from "@/components/LeftRail";
 import LeftPanel from "@/components/LeftPanel";
@@ -13,9 +13,16 @@ import PostCard from "@/components/PostCard";
 
 export const dynamic = "force-dynamic";
 
-export default async function FeedPage() {
+export default async function FeedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const session = await getSession();
   if (!session) redirect("/login");
+
+  const { tab: tabParam } = await searchParams;
+  const tab: FeedTab = tabParam === "feed" || tabParam === "tabu" ? tabParam : "explora";
 
   const me = await prisma.user.findUnique({
     where: { id: session.sub },
@@ -29,8 +36,8 @@ export default async function FeedPage() {
   });
   const followingIds = following.map((f) => f.id);
 
-  const [posts, stories, suggestions, trends] = await Promise.all([
-    getFeed(me.id),
+  const [posts, stories, suggestions] = await Promise.all([
+    getFeedByTab(me.id, tab),
     prisma.user.findMany({
       where: { id: { not: me.id } },
       orderBy: { createdAt: "desc" },
@@ -43,7 +50,6 @@ export default async function FeedPage() {
       take: 4,
       select: { username: true, displayName: true, avatarUrl: true },
     }),
-    getTrends(6),
   ]);
 
   const displayName = me.displayName ?? me.username;
@@ -61,13 +67,13 @@ export default async function FeedPage() {
 
           {/* Contenedor: tabs + publicaciones (padding 32, gap 32) */}
           <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8">
-            <Tabs />
+            <Tabs active={tab} />
             <div className="mt-8 space-y-8">
               {posts.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
-                  Tu feed está vacío.
-                  <br />
-                  <span className="text-sm">Publica algo o sigue a otras personas para ver contenido.</span>
+                <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-white/50">
+                  {tab === "feed" && "Aún no hay nada en tu feed. Sigue a personas o publica algo."}
+                  {tab === "explora" && "No hay contenido nuevo para explorar por ahora."}
+                  {tab === "tabu" && "Sin contenido para adultos todavía."}
                 </div>
               ) : (
                 posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={me.avatarUrl} />)
@@ -76,7 +82,7 @@ export default async function FeedPage() {
           </div>
         </main>
 
-        <RightPanel me={me} suggestions={suggestions} trends={trends} />
+        <RightPanel me={me} suggestions={suggestions} />
       </div>
     </>
   );

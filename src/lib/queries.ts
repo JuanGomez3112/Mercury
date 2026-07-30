@@ -34,15 +34,31 @@ const include = (viewerId: string) => ({
   likes: { where: { userId: viewerId }, select: { userId: true } },
 });
 
-/** Feed: publicaciones propias + de a quienes sigo, más recientes primero. */
-export async function getFeed(viewerId: string): Promise<FeedPost[]> {
-  const following = await prisma.follow.findMany({
-    where: { followerId: viewerId },
-    select: { followingId: true },
-  });
-  const ids = [viewerId, ...following.map((f) => f.followingId)];
+export type FeedTab = "feed" | "explora" | "tabu";
+
+/**
+ * Feed por pestaña:
+ * - feed: tuyo + a quienes sigues (sin adulto)
+ * - explora: gente que NO sigues (descubrir, sin adulto)
+ * - tabu: contenido adulto (18+)
+ */
+export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<FeedPost[]> {
+  let where;
+  if (tab === "tabu") {
+    where = { isAdult: true };
+  } else {
+    const following = await prisma.follow.findMany({
+      where: { followerId: viewerId },
+      select: { followingId: true },
+    });
+    const circle = [viewerId, ...following.map((f) => f.followingId)];
+    where =
+      tab === "feed"
+        ? { authorId: { in: circle }, isAdult: false }
+        : { authorId: { notIn: circle }, isAdult: false };
+  }
   const posts = await prisma.post.findMany({
-    where: { authorId: { in: ids } },
+    where,
     orderBy: { createdAt: "desc" },
     take: 50,
     include: include(viewerId),
