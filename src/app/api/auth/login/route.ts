@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   const { username, password } = parsed.data;
 
   const user = await prisma.user.findUnique({ where: { username } });
-  const ok = user ? await bcrypt.compare(password, user.passwordHash) : false;
+  const ok = user?.passwordHash ? await bcrypt.compare(password, user.passwordHash) : false;
   if (!user || !ok) {
     return NextResponse.json({ error: "Usuario o contraseña incorrectos" }, { status: 401 });
   }

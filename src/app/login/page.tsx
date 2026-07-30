@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthShell, { Field } from "@/components/AuthShell";
 import { IconUser, IconLock, IconGoogle, IconFacebook, IconX } from "@/components/icons";
@@ -9,6 +9,12 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const e = new URLSearchParams(window.location.search).get("error");
+    if (e === "oauth") setError("No se pudo iniciar sesión con Google. Intenta de nuevo.");
+    else if (e === "oauth_config") setError("Google aún no está configurado en el servidor.");
+  }, []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,40 +88,32 @@ export default function LoginPage() {
         <span className="h-px flex-1 bg-white/10" />
       </div>
 
-      {/* Botones sociales */}
+      {/* Botones sociales — solo icono */}
       <div className="grid grid-cols-3 gap-3">
-        <SocialButton label="Google" onClick={() => alert("Login con Google — pendiente de OAuth")}>
+        <a
+          href="/api/auth/google"
+          aria-label="Continuar con Google"
+          className="flex items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/80 transition hover:border-purple hover:text-white"
+        >
           <IconGoogle className="h-5 w-5" />
-        </SocialButton>
-        <SocialButton label="Facebook" onClick={() => alert("Login con Facebook — pendiente de OAuth")}>
+        </a>
+        <button
+          type="button"
+          onClick={() => alert("Login con Facebook — pendiente")}
+          aria-label="Continuar con Facebook"
+          className="flex items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/80 transition hover:border-purple hover:text-white"
+        >
           <IconFacebook className="h-5 w-5" />
-        </SocialButton>
-        <SocialButton label="X" onClick={() => alert("Login con X — pendiente de OAuth")}>
+        </button>
+        <button
+          type="button"
+          onClick={() => alert("Login con X — pendiente")}
+          aria-label="Continuar con X"
+          className="flex items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/80 transition hover:border-purple hover:text-white"
+        >
           <IconX className="h-5 w-5" />
-        </SocialButton>
+        </button>
       </div>
     </AuthShell>
-  );
-}
-
-function SocialButton({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={`Continuar con ${label}`}
-      className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-navy py-2.5 text-white/80 transition hover:border-purple hover:text-white"
-    >
-      {children}
-      <span className="text-sm">{label}</span>
-    </button>
   );
 }

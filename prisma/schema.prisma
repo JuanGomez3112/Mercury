@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  username     String   @unique
-  email        String?  @unique
-  passwordHash String
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String?   @unique
+  googleId     String?   @unique
+  passwordHash String?
   displayName  String?
   bio          String?
   avatarUrl    String?
-  birthdate    DateTime
-  ageVerified  Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  birthdate    DateTime?
+  ageVerified  Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   posts     Post[]
   likes     Like[]
