@@ -22,7 +22,7 @@ export default function PostCard({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           <Link href={`/u/${post.author.username}`}>
-            <Avatar src={post.author.avatarUrl} className="h-16 w-16" />
+            <Avatar src={post.author.avatarUrl} className="h-[54px] w-[54px]" />
           </Link>
           <div>
             <div className="flex items-center gap-1.5">
