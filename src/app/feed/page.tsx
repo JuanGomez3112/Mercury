@@ -57,18 +57,21 @@ export default async function FeedPage() {
         <main className="w-full min-w-0 flex-1 space-y-6 xl:max-w-[896px]">
           <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl }} stories={stories} />
           <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} />
-          <Tabs />
 
-          <div className="space-y-6">
-            {posts.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
-                Tu feed está vacío.
-                <br />
-                <span className="text-sm">Publica algo o sigue a otras personas para ver contenido.</span>
-              </div>
-            ) : (
-              posts.map((p) => <PostCard key={p.id} post={p} />)
-            )}
+          {/* Contenedor: tabs + publicaciones (padding 32, gap 32) */}
+          <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8">
+            <Tabs />
+            <div className="mt-8 space-y-8">
+              {posts.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
+                  Tu feed está vacío.
+                  <br />
+                  <span className="text-sm">Publica algo o sigue a otras personas para ver contenido.</span>
+                </div>
+              ) : (
+                posts.map((p) => <PostCard key={p.id} post={p} />)
+              )}
+            </div>
           </div>
         </main>
 
