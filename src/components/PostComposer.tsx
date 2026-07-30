@@ -116,7 +116,7 @@ export default function PostComposer({
   ];
 
   return (
-    <div className="flex min-h-[200px] flex-col rounded-2xl border border-white/10 bg-navy-2/50 p-8">
+    <div className="flex min-h-[200px] flex-col rounded-2xl bg-purple p-8">
       <div className="flex items-start gap-4">
         <Avatar src={avatarUrl} className="h-10 w-10" />
         <textarea
@@ -162,7 +162,7 @@ export default function PostComposer({
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
             adult
               ? "bg-orange-500 text-white shadow-[0_0_14px] shadow-orange-500/50"
-              : "bg-purple/20 text-purple hover:bg-purple/30"
+              : "bg-navy text-white/80 hover:bg-navy/80"
           }`}
         >
           <IconFire className="h-4 w-3.5" />
@@ -184,7 +184,7 @@ export default function PostComposer({
                 if (drag.current.moved) return; // fue arrastre, no click
                 p.onClick?.();
               }}
-              className="flex shrink-0 items-center gap-2 rounded-full bg-purple/20 px-4 py-3 text-sm text-white/80 transition hover:bg-purple/30 hover:text-white"
+              className="flex shrink-0 items-center gap-2 rounded-full bg-navy px-4 py-3 text-sm text-white/80 transition hover:bg-navy/80 hover:text-white"
             >
               <span className="text-purple">{p.icon}</span>
               {p.label}
@@ -194,7 +194,7 @@ export default function PostComposer({
 
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple/20 text-purple/80 transition hover:bg-purple/30 hover:text-purple"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:bg-navy/80 hover:text-white"
           aria-label="Más"
         >
           <IconMore className="h-4 w-4" />

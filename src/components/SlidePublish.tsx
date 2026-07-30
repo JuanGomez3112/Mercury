@@ -44,7 +44,7 @@ export default function SlidePublish({
 
   return (
     <div
-      className="relative shrink-0 rounded-full bg-purple/25"
+      className="relative shrink-0 rounded-full bg-purple-soft"
       style={{ width: KNOB + PAD * 2, height: TRACK }}
       title="Desliza hacia abajo para publicar"
     >
