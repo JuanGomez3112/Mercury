@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import MercuryMark from "./MercuryMark";
 
 export default function AuthShell({
@@ -37,21 +38,35 @@ export function Field({
   type = "text",
   name,
   autoComplete,
+  placeholder,
+  icon,
 }: {
   label: string;
   type?: string;
   name: string;
   autoComplete?: string;
+  placeholder?: string;
+  icon?: ReactNode;
 }) {
   return (
     <label className="mb-4 block">
       <span className="mb-1.5 block text-sm text-purple-soft">{label}</span>
-      <input
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        className="w-full rounded-lg border border-white/10 bg-navy px-3.5 py-2.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple"
-      />
+      <div className="relative">
+        {icon && (
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white/40">
+            {icon}
+          </span>
+        )}
+        <input
+          name={name}
+          type={type}
+          autoComplete={autoComplete}
+          placeholder={placeholder}
+          className={`w-full rounded-lg border border-white/10 bg-navy py-2.5 pr-3.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple ${
+            icon ? "pl-9" : "pl-3.5"
+          }`}
+        />
+      </div>
     </label>
   );
 }
