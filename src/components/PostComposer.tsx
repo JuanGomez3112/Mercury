@@ -80,16 +80,16 @@ export default function PostComposer({
   ];
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-4">
+    <div className="flex min-h-[200px] flex-col rounded-2xl border border-white/10 bg-navy-2/50 p-8">
       <div className="flex items-start gap-4">
-        <Avatar src={avatarUrl} className="mt-1 h-12 w-12" />
+        <Avatar src={avatarUrl} className="h-10 w-10" />
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder={`${displayName}, ¿qué te gustaría compartir?`}
           rows={2}
           maxLength={2000}
-          className="min-h-[68px] flex-1 resize-none rounded-2xl border border-white/10 bg-navy px-5 py-4 text-base text-white outline-none transition placeholder:text-white/40 focus:border-purple"
+          className="min-h-[64px] flex-1 resize-none rounded-2xl border border-white/10 bg-navy px-4 py-3 text-[15px] text-white outline-none transition placeholder:text-white/40 focus:border-purple"
         />
         <SlidePublish
           onPublish={submit}
@@ -117,28 +117,28 @@ export default function PostComposer({
       )}
 
       {/* Fila de acciones: fuego (fijo izq) · pills scrollables · más (fijo der) */}
-      <div className="mt-4 flex items-center gap-2.5">
+      <div className="mt-auto flex items-center gap-4 pt-4">
         <button
           type="button"
           onClick={() => setAdult((v) => !v)}
           aria-pressed={adult}
           title="Marcar como contenido para adultos (18+)"
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
             adult
               ? "bg-orange-500 text-white shadow-[0_0_14px] shadow-orange-500/50"
               : "bg-purple/20 text-purple hover:bg-purple/30"
           }`}
         >
-          <IconFire className="h-5 w-5" />
+          <IconFire className="h-4 w-3.5" />
         </button>
 
-        <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-2.5 overflow-x-auto">
+        <div className="no-scrollbar flex min-w-0 flex-1 items-center gap-4 overflow-x-auto">
           {pills.map((p) => (
             <button
               key={p.label}
               type="button"
               onClick={p.onClick}
-              className="flex h-11 shrink-0 items-center gap-2 rounded-full bg-navy px-5 text-sm text-white/80 transition hover:text-white"
+              className="flex shrink-0 items-center gap-2 rounded-full bg-navy px-4 py-3 text-sm text-white/80 transition hover:text-white"
             >
               <span className="text-purple">{p.icon}</span>
               {p.label}
@@ -148,10 +148,10 @@ export default function PostComposer({
 
         <button
           type="button"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:text-white"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-white/70 transition hover:text-white"
           aria-label="Más"
         >
-          <IconMore className="h-5 w-5" />
+          <IconMore className="h-1 w-3.5" />
         </button>
       </div>
 

@@ -3,9 +3,9 @@
 import { useRef, useState } from "react";
 import MercuryMark from "./MercuryMark";
 
-const TRACK = 116; // alto de la cápsula (px)
-const KNOB = 52; // diámetro del knob
-const PAD = 5;
+const TRACK = 64; // alto de la cápsula (px)
+const KNOB = 40; // diámetro del knob
+const PAD = 0;
 const TRAVEL = TRACK - KNOB - PAD * 2; // recorrido máximo
 const THRESHOLD = TRAVEL * 0.6; // umbral para publicar
 
@@ -75,7 +75,7 @@ export default function SlidePublish({
         {loading ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-navy border-t-transparent" />
         ) : (
-          <MercuryMark navy className="h-7 w-3.5" />
+          <MercuryMark navy className="h-5 w-2" />
         )}
       </button>
     </div>
