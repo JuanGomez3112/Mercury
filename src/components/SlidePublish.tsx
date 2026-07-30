@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { IconChevronDown } from "./icons";
+import MercuryMark from "./MercuryMark";
 
 const TRACK = 64; // alto de la cápsula (px)
 const KNOB = 40; // diámetro del knob
@@ -75,7 +75,7 @@ export default function SlidePublish({
         {loading ? (
           <span className="h-4 w-4 animate-spin rounded-full border-2 border-navy border-t-transparent" />
         ) : (
-          <IconChevronDown className="text-[18px]" />
+          <MercuryMark navy className="h-5 w-2" />
         )}
       </button>
     </div>
