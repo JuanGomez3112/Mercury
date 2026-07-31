@@ -46,3 +46,11 @@ export const changePasswordSchema = z
     message: "Las contraseñas no coinciden",
     path: ["confirm"],
   });
+
+export const tabuPinSchema = z
+  .object({
+    current: z.string().optional().default(""),
+    next: z.string().min(4, "Mínimo 4 caracteres").max(64),
+    confirm: z.string(),
+  })
+  .refine((d) => d.next === d.confirm, { message: "No coinciden", path: ["confirm"] });

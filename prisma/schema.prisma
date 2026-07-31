@@ -13,6 +13,7 @@ model User {
   email        String?   @unique
   googleId     String?   @unique
   passwordHash String?
+  tabuPinHash  String?
   displayName  String?
   bio          String?
   avatarUrl    String?
