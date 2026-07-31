@@ -109,7 +109,10 @@ export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatP
     const mine = m.senderId === viewerId;
     const partner = mine ? m.recipient : m.sender;
     if (!seen.has(partner.username)) {
-      const body = m.body || (m.imageUrl ? "📷 Foto" : "");
+      const body =
+        !mine && m.priceCredits != null
+          ? "💰 Mensaje de pago"
+          : m.body || (m.imageUrl ? "📷 Foto" : "");
       seen.set(partner.username, { partner, body, createdAt: m.createdAt, mine, unread: 0 });
     }
     // no leído: mensaje del interlocutor hacia mí sin leer

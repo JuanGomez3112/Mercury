@@ -23,6 +23,9 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     });
   } catch (e) {
     if (e instanceof InsufficientFunds) return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 });
+    if (e && typeof e === "object" && "code" in e && (e as { code?: string }).code === "P2002") {
+      return NextResponse.json({ ok: true, already: true });
+    }
     throw e;
   }
   await notify({ userId: msg.senderId, actorId: session.sub, type: "purchase" });

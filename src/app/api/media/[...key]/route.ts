@@ -24,7 +24,9 @@ export async function GET(
     if (!(await hasPostAccess(session.sub, post))) {
       return NextResponse.json({ error: "Sin acceso" }, { status: 403 });
     }
-    return NextResponse.redirect(await presignGet(key));
+    const res = NextResponse.redirect(await presignGet(key));
+    res.headers.set("Cache-Control", "private, no-store");
+    return res;
   }
 
   // ¿A qué mensaje?
@@ -39,7 +41,9 @@ export async function GET(
     if (!(await hasMessageAccess(session.sub, msg))) {
       return NextResponse.json({ error: "Sin acceso" }, { status: 403 });
     }
-    return NextResponse.redirect(await presignGet(key));
+    const res = NextResponse.redirect(await presignGet(key));
+    res.headers.set("Cache-Control", "private, no-store");
+    return res;
   }
 
   return NextResponse.json({ error: "No encontrado" }, { status: 404 });
