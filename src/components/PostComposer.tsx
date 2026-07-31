@@ -76,6 +76,10 @@ export default function PostComposer({
 
   async function submit() {
     if (!body.trim() && files.length === 0) return;
+    if (paid && (price === "" || Number(price) < 1)) {
+      setError("Pon un precio para el contenido de pago");
+      return;
+    }
     setLoading(true);
     setError("");
 

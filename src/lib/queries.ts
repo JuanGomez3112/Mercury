@@ -27,10 +27,11 @@ function toFeedPost(
     p.authorId === viewerId ||
     priceCredits == null ||
     (ent ? ent.purchasedPosts.has(p.id) || ent.activeSubs.has(p.authorId) : false);
+  const locked = priceCredits != null && !access;
   return {
     id: p.id,
     body: p.body,
-    images: p.images,
+    images: locked ? [] : p.images,
     isAdult: p.isAdult,
     createdAt: p.createdAt,
     author: p.author,
@@ -40,7 +41,7 @@ function toFeedPost(
     isMine: p.authorId === viewerId,
     savedByMe: p.bookmarks.length > 0,
     priceCredits,
-    locked: priceCredits != null && !access,
+    locked,
   };
 }
 
