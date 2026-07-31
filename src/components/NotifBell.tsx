@@ -12,6 +12,9 @@ const verb: Record<string, string> = {
   like: "le dio me gusta a tu publicación",
   comment: "comentó tu publicación",
   follow: "empezó a seguirte",
+  purchase: "desbloqueó tu contenido de pago",
+  tip: "te envió una propina",
+  subscribe: "se suscribió a ti",
 };
 
 export default function NotifBell() {
