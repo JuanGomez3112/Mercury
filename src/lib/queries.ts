@@ -200,3 +200,14 @@ export async function getUserPosts(authorId: string, viewerId: string): Promise<
   });
   return posts.map((p) => toFeedPost(p as Row, viewerId));
 }
+
+/** Posts guardados por el viewer, más recientes primero. */
+export async function getSavedPosts(viewerId: string): Promise<FeedPost[]> {
+  const rows = await prisma.bookmark.findMany({
+    where: { userId: viewerId },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+    include: { post: { include: include(viewerId) } },
+  });
+  return rows.map((b) => toFeedPost(b.post as Row, viewerId));
+}
