@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { getSession, isTabuUnlocked } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { searchAll, type SearchType } from "@/lib/search";
 import AppShell from "@/components/AppShell";
 import Avatar from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
 import SearchFilters from "@/components/SearchFilters";
+import TabuGate from "@/components/TabuGate";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,9 @@ export default async function BuscarPage({
   const { q: qParam, type: typeParam } = await searchParams;
   const q = (qParam ?? "").trim();
   const type: SearchType = (TYPES.includes(typeParam ?? "") ? typeParam : "all") as SearchType;
+
+  const unlocked = await isTabuUnlocked(session.sub);
+  const hasPin = (await prisma.user.findUnique({ where: { id: session.sub }, select: { tabuPinHash: true } }))!.tabuPinHash !== null;
 
   const { users, posts, tags } = await searchAll(session.sub, q, type);
 
@@ -74,7 +78,9 @@ export default async function BuscarPage({
           <section className="space-y-4">
             <h2 className="text-sm font-semibold text-white/50">Publicaciones</h2>
             {posts.map((p) => (
-              <PostCard key={p.id} post={p} viewerAvatarUrl={me.avatarUrl} fireLike={p.isAdult} />
+              <div key={p.id} className={p.isAdult && !unlocked ? "pointer-events-none blur-md" : ""}>
+                <PostCard post={p} viewerAvatarUrl={me.avatarUrl} fireLike={p.isAdult} />
+              </div>
             ))}
           </section>
         )}
@@ -82,6 +88,7 @@ export default async function BuscarPage({
         {q && users.length === 0 && posts.length === 0 && tags.length === 0 && (
           <p className="text-sm text-white/40">Sin resultados.</p>
         )}
+        {type === "tabu" && !unlocked && <TabuGate hasPin={hasPin} />}
       </div>
     </AppShell>
   );
