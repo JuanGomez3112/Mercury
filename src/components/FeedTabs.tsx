@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Tabs from "./Tabs";
 import PostCard from "./PostCard";
 import type { FeedPost } from "@/lib/types";
@@ -21,12 +22,17 @@ export default function FeedTabs({
   initialPosts: FeedPost[];
   viewerAvatarUrl?: string | null;
 }) {
+  const router = useRouter();
   const [tab, setTab] = useState<FeedTab>(initialTab);
   const [posts, setPosts] = useState<FeedPost[]>(initialPosts);
   const [loading, setLoading] = useState(false);
 
   async function select(next: FeedTab) {
     if (next === tab) return;
+    if (next === "tabu") {
+      router.push("/feed?tab=tabu");
+      return;
+    }
     setTab(next); // highlight instantáneo
     setLoading(true);
     try {
