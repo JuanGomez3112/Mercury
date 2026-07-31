@@ -14,6 +14,7 @@ export async function POST(req: Request) {
   if (!form) return NextResponse.json({ error: "Formulario inválido" }, { status: 400 });
 
   const files = form.getAll("files").filter((f): f is File => f instanceof File);
+  const isPrivate = form.get("private") === "1";
   if (files.length === 0) return NextResponse.json({ error: "Sin archivos" }, { status: 400 });
   if (files.length > MAX_FILES) {
     return NextResponse.json({ error: `Máximo ${MAX_FILES} archivos` }, { status: 400 });
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: isVideo ? "Video mayor a 50 MB" : "Imagen mayor a 10 MB" }, { status: 400 });
     }
     const buf = Buffer.from(await file.arrayBuffer());
-    urls.push(await putMedia(buf, file.type, session.sub));
+    urls.push(await putMedia(buf, file.type, session.sub, { private: isPrivate }));
   }
 
   return NextResponse.json({ ok: true, urls });

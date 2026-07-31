@@ -1,12 +1,14 @@
 import { prisma } from "./db";
 import type { FeedPost, Author } from "./types";
 import type { Prisma } from "@prisma/client";
+import { loadViewerEntitlements } from "./entitlement";
 
 type Row = {
   id: string;
   body: string;
   images: string[];
   isAdult: boolean;
+  priceCredits: number | null;
   createdAt: Date;
   authorId: string;
   author: { username: string; displayName: string | null; avatarUrl: string | null };
@@ -15,11 +17,21 @@ type Row = {
   bookmarks: { userId: string }[];
 };
 
-function toFeedPost(p: Row, viewerId: string): FeedPost {
+function toFeedPost(
+  p: Row,
+  viewerId: string,
+  ent?: { purchasedPosts: Set<string>; activeSubs: Set<string> },
+): FeedPost {
+  const priceCredits = p.priceCredits;
+  const access =
+    p.authorId === viewerId ||
+    priceCredits == null ||
+    (ent ? ent.purchasedPosts.has(p.id) || ent.activeSubs.has(p.authorId) : false);
+  const locked = priceCredits != null && !access;
   return {
     id: p.id,
     body: p.body,
-    images: p.images,
+    images: locked ? [] : p.images,
     isAdult: p.isAdult,
     createdAt: p.createdAt,
     author: p.author,
@@ -28,6 +40,8 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
     likedByMe: p.likes.length > 0,
     isMine: p.authorId === viewerId,
     savedByMe: p.bookmarks.length > 0,
+    priceCredits,
+    locked,
   };
 }
 
@@ -67,7 +81,8 @@ export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<Feed
     take: 50,
     include: include(viewerId),
   });
-  return posts.map((p) => toFeedPost(p as Row, viewerId));
+  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
+  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
 }
 
 export type ChatPreview = {
@@ -94,7 +109,10 @@ export async function getRecentChats(viewerId: string, limit = 8): Promise<ChatP
     const mine = m.senderId === viewerId;
     const partner = mine ? m.recipient : m.sender;
     if (!seen.has(partner.username)) {
-      const body = m.body || (m.imageUrl ? "📷 Foto" : "");
+      const body =
+        !mine && m.priceCredits != null
+          ? "💰 Mensaje de pago"
+          : m.body || (m.imageUrl ? "📷 Foto" : "");
       seen.set(partner.username, { partner, body, createdAt: m.createdAt, mine, unread: 0 });
     }
     // no leído: mensaje del interlocutor hacia mí sin leer
@@ -147,6 +165,8 @@ export type ThreadMessage = {
   imageUrl: string | null;
   createdAt: Date;
   mine: boolean;
+  priceCredits: number | null;
+  locked: boolean;
 };
 
 /** Hilo de mensajes entre el viewer y un usuario. */
@@ -161,13 +181,32 @@ export async function getThread(viewerId: string, partnerId: string): Promise<Th
     orderBy: { createdAt: "asc" },
     take: 200,
   });
-  return msgs.map((m) => ({
-    id: m.id,
-    body: m.body,
-    imageUrl: m.imageUrl,
-    createdAt: m.createdAt,
-    mine: m.senderId === viewerId,
-  }));
+
+  const paidIds = msgs.filter((m) => m.senderId !== viewerId && m.priceCredits != null).map((m) => m.id);
+  const purchased = paidIds.length
+    ? new Set(
+        (
+          await prisma.purchase.findMany({
+            where: { buyerId: viewerId, messageId: { in: paidIds } },
+            select: { messageId: true },
+          })
+        ).map((p) => p.messageId!),
+      )
+    : new Set<string>();
+
+  return msgs.map((m) => {
+    const mine = m.senderId === viewerId;
+    const locked = !mine && m.priceCredits != null && !purchased.has(m.id);
+    return {
+      id: m.id,
+      body: locked ? "" : m.body,
+      imageUrl: locked ? null : m.imageUrl,
+      createdAt: m.createdAt,
+      mine,
+      priceCredits: m.priceCredits,
+      locked,
+    };
+  });
 }
 
 /** Tendencias: hashtags más usados en los posts recientes. */
@@ -203,7 +242,8 @@ export async function getFeedPostsByWhere(
     take,
     include: include(viewerId),
   });
-  return posts.map((p) => toFeedPost(p as Row, viewerId));
+  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
+  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
 }
 
 /** Publicaciones de un autor concreto. */
@@ -214,7 +254,8 @@ export async function getUserPosts(authorId: string, viewerId: string): Promise<
     take: 50,
     include: include(viewerId),
   });
-  return posts.map((p) => toFeedPost(p as Row, viewerId));
+  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
+  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
 }
 
 /** Posts guardados por el viewer, más recientes primero. */
@@ -225,5 +266,7 @@ export async function getSavedPosts(viewerId: string): Promise<FeedPost[]> {
     take: 50,
     include: { post: { include: include(viewerId) } },
   });
-  return rows.map((b) => toFeedPost(b.post as Row, viewerId));
+  const posts = rows.map((b) => b.post);
+  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
+  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
 }

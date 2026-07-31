@@ -4,6 +4,7 @@ import InboxLink from "./InboxLink";
 import NotifBell from "./NotifBell";
 import ProfileMenu from "./ProfileMenu";
 import SearchBar from "./SearchBar";
+import WalletBadge from "./WalletBadge";
 import { IconMasks, IconMapPeople } from "./icons";
 
 export default function TopBar({
@@ -23,6 +24,7 @@ export default function TopBar({
         <div className="flex items-center gap-9">
           <SearchBar />
           <div className="hidden items-center gap-4 sm:flex">
+            <WalletBadge />
             <NotifBell />
             <InboxLink />
             <button className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Tabú">

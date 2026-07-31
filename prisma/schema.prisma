@@ -20,6 +20,9 @@ model User {
   mode         String?   // "angel" | "devil" | null
   birthdate    DateTime?
   ageVerified  Boolean   @default(false)
+  balance         Int      @default(500)
+  creatorMode     Boolean  @default(false)
+  subPriceCredits Int?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -33,6 +36,10 @@ model User {
   notifications    Notification[] @relation("notifs")
   actorNotifs      Notification[] @relation("actorNotifs")
   bookmarks Bookmark[]
+  walletTx      WalletTransaction[] @relation("wallet")
+  purchases     Purchase[]          @relation("buyer")
+  subsAsSub     Subscription[]      @relation("subscriber")
+  subsAsCreator Subscription[]      @relation("creator")
 }
 
 model Notification {
@@ -57,6 +64,7 @@ model Message {
   recipient   User     @relation("received", fields: [recipientId], references: [id], onDelete: Cascade)
   body        String
   imageUrl    String?
+  priceCredits Int?
   readAt      DateTime?
   createdAt   DateTime @default(now())
 
@@ -71,6 +79,7 @@ model Post {
   body      String
   images    String[] @default([])
   isAdult   Boolean  @default(false)
+  priceCredits Int?
   createdAt DateTime @default(now())
 
   likes    Like[]
@@ -127,4 +136,48 @@ model Bookmark {
 
   @@id([userId, postId])
   @@index([postId])
+}
+
+model WalletTransaction {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation("wallet", fields: [userId], references: [id], onDelete: Cascade)
+  delta          Int
+  type           String   // welcome | topup | purchase | sale | tip_out | tip_in | sub_out | sub_in
+  refType        String?
+  refId          String?
+  counterpartyId String?
+  createdAt      DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Purchase {
+  id           String   @id @default(cuid())
+  buyerId      String
+  buyer        User     @relation("buyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  kind         String   // post | message
+  postId       String?
+  messageId    String?
+  priceCredits Int
+  createdAt    DateTime @default(now())
+
+  @@unique([buyerId, postId])
+  @@unique([buyerId, messageId])
+  @@index([postId])
+  @@index([messageId])
+}
+
+model Subscription {
+  id           String   @id @default(cuid())
+  subscriberId String
+  subscriber   User     @relation("subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  creatorId    String
+  creator      User     @relation("creator", fields: [creatorId], references: [id], onDelete: Cascade)
+  expiresAt    DateTime
+  priceCredits Int
+  createdAt    DateTime @default(now())
+
+  @@unique([subscriberId, creatorId])
+  @@index([creatorId])
 }

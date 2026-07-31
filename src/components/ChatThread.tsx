@@ -4,23 +4,38 @@ import { useEffect, useRef, useState } from "react";
 import { timeAgo } from "@/lib/time";
 import { IconImage } from "./icons";
 import type { ThreadMessage } from "@/lib/queries";
+import UnlockButton from "./UnlockButton";
 
 export default function ChatThread({
   partner,
   initial,
+  creatorMode = false,
 }: {
   partner: string;
   initial: ThreadMessage[];
+  creatorMode?: boolean;
 }) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initial);
+  const [syncedInitial, setSyncedInitial] = useState(initial);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [partnerTyping, setPartnerTyping] = useState(false);
   const [image, setImage] = useState<{ url: string; preview: string } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [paid, setPaid] = useState(false);
+  const [price, setPrice] = useState<number | "">("");
+  const [error, setError] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lastPing = useRef(0);
+
+  // Re-sincroniza con lo que envíe el servidor (p.ej. tras router.refresh() de UnlockButton
+  // al desbloquear un mensaje de pago) sin depender de un efecto: se ajusta durante el render,
+  // como recomienda React para "adjusting state when a prop changes".
+  if (initial !== syncedInitial) {
+    setSyncedInitial(initial);
+    setMessages(initial);
+  }
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -31,6 +46,7 @@ export default function ChatThread({
     setUploading(true);
     const fd = new FormData();
     fd.append("files", f);
+    if (creatorMode && paid) fd.append("private", "1");
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     setUploading(false);
     if (res.ok) {
@@ -50,7 +66,7 @@ export default function ChatThread({
     if (res.ok) {
       const d = await res.json();
       setPartnerTyping(!!d.typing);
-      setMessages((prev) => (d.messages.length !== prev.length ? d.messages : prev));
+      setMessages(d.messages);
     }
   }
 
@@ -78,17 +94,28 @@ export default function ChatThread({
 
   async function send() {
     if ((!body.trim() && !image?.url) || busy || uploading) return;
+    if (creatorMode && paid && (price === "" || Number(price) < 1)) {
+      setError("Pon un precio para el contenido de pago");
+      return;
+    }
     setBusy(true);
+    setError("");
+    const priceCredits = creatorMode && paid && price !== "" ? Number(price) : null;
     const res = await fetch("/api/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ to: partner, body, imageUrl: image?.url || undefined }),
+      body: JSON.stringify({ to: partner, body, imageUrl: image?.url || undefined, priceCredits }),
     });
     setBusy(false);
     if (res.ok) {
       setBody("");
       setImage(null);
+      setPaid(false);
+      setPrice("");
       await load();
+    } else {
+      const d = await res.json().catch(() => ({}));
+      setError(d.error ?? "Error al enviar");
     }
   }
 
@@ -100,20 +127,28 @@ export default function ChatThread({
         ) : (
           messages.map((m) => (
             <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[75%] overflow-hidden rounded-2xl text-sm ${m.mine ? "bg-purple text-navy" : "bg-navy text-white"}`}>
-                {m.imageUrl && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <a href={m.imageUrl} target="_blank" rel="noreferrer">
-                    <img src={m.imageUrl} alt="" className="max-h-72 w-full object-cover" />
-                  </a>
-                )}
-                <div className="px-4 py-2">
-                  {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
-                  <span className={`mt-0.5 block text-[10px] ${m.mine ? "text-navy/60" : "text-white/40"}`}>
-                    {timeAgo(m.createdAt)}
-                  </span>
+              {m.locked ? (
+                <div className="flex max-w-[75%] flex-col items-center gap-2 rounded-2xl border border-purple/20 bg-navy px-4 py-4 text-sm text-white">
+                  <span className="text-2xl">🔒</span>
+                  <p className="text-white/60">Contenido de pago</p>
+                  <UnlockButton kind="message" id={m.id} price={m.priceCredits ?? 0} />
                 </div>
-              </div>
+              ) : (
+                <div className={`max-w-[75%] overflow-hidden rounded-2xl text-sm ${m.mine ? "bg-purple text-navy" : "bg-navy text-white"}`}>
+                  {m.imageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <a href={m.imageUrl} target="_blank" rel="noreferrer">
+                      <img src={m.imageUrl} alt="" className="max-h-72 w-full object-cover" />
+                    </a>
+                  )}
+                  <div className="px-4 py-2">
+                    {m.body && <p className="whitespace-pre-wrap break-words">{m.body}</p>}
+                    <span className={`mt-0.5 block text-[10px] ${m.mine ? "text-navy/60" : "text-white/40"}`}>
+                      {timeAgo(m.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         )}
@@ -145,6 +180,7 @@ export default function ChatThread({
             </button>
           </div>
         )}
+        {error && <p className="mb-2 text-xs text-red-400">{error}</p>}
         <div className="flex items-center gap-3">
           <button
             onClick={() => fileRef.current?.click()}
@@ -153,6 +189,30 @@ export default function ChatThread({
           >
             <IconImage className="h-5 w-5" />
           </button>
+          {creatorMode && (
+            <button
+              type="button"
+              onClick={() => setPaid((v) => !v)}
+              aria-pressed={paid}
+              title="Marcar como contenido de pago"
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base transition ${
+                paid ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50" : "bg-navy text-white/80 hover:bg-navy/80"
+              }`}
+            >
+              💰
+            </button>
+          )}
+          {creatorMode && paid && (
+            <input
+              type="number"
+              min={1}
+              max={100000}
+              value={price}
+              onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
+              placeholder="Precio ☾"
+              className="w-20 shrink-0 rounded-full border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-purple"
+            />
+          )}
           <input
             value={body}
             onChange={(e) => { setBody(e.target.value); pingTyping(); }}

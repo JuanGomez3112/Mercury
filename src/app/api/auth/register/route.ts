@@ -21,14 +21,18 @@ export async function POST(req: Request) {
   const passwordHash = await bcrypt.hash(password, 12);
   const displayName = [nombre, apellido].filter(Boolean).join(" ").trim();
 
-  const user = await prisma.user.create({
-    data: {
-      username,
-      passwordHash,
-      displayName: displayName || nombre,
-      birthdate: new Date(birthdate),
-      ageVerified: true,
-    },
+  const user = await prisma.$transaction(async (tx) => {
+    const u = await tx.user.create({
+      data: {
+        username,
+        passwordHash,
+        displayName: displayName || nombre,
+        birthdate: new Date(birthdate),
+        ageVerified: true,
+      },
+    });
+    await tx.walletTransaction.create({ data: { userId: u.id, delta: 500, type: "welcome" } });
+    return u;
   });
 
   await createSession({ sub: user.id, username: user.username });

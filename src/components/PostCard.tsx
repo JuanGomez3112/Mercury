@@ -9,6 +9,7 @@ import PostMedia from "./PostMedia";
 import { IconComment, IconShare, IconFire } from "./icons";
 import { VerifiedGrad } from "./GradientIcons";
 import BookmarkButton from "./BookmarkButton";
+import TipButton from "./TipButton";
 
 export default function PostCard({
   post,
@@ -84,6 +85,7 @@ export default function PostCard({
           <IconShare className="text-[24px]" />
         </button>
         <BookmarkButton postId={post.id} initialSaved={post.savedByMe} />
+        {!post.isMine && <TipButton toUsername={post.author.username} postId={post.id} />}
       </div>
 
       {/* Comentario */}

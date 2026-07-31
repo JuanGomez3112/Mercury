@@ -5,6 +5,7 @@ import Avatar from "./Avatar";
 import { IconHeart, IconHeartFill } from "./icons";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost, CommentDTO } from "@/lib/types";
+import UnlockButton from "./UnlockButton";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -84,6 +85,19 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
       setLiked(d.liked);
       setLikeCount(d.count);
     }
+  }
+
+  if (post.locked) {
+    return (
+      <div className="relative mt-4 flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border border-purple/20 bg-navy">
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,#171334,#171334_12px,#1d1840_12px,#1d1840_24px)] opacity-60" />
+        <div className="relative flex flex-col items-center gap-3 text-center">
+          <span className="text-3xl">🔒</span>
+          <p className="text-sm text-white/60">Contenido de pago</p>
+          <UnlockButton kind="post" id={post.id} price={post.priceCredits ?? 0} />
+        </div>
+      </div>
+    );
   }
 
   if (images.length === 0) return null;
