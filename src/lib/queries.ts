@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import type { FeedPost, Author } from "./types";
+import type { Prisma } from "@prisma/client";
 
 type Row = {
   id: string;
@@ -188,6 +189,21 @@ export async function getTrends(limit = 6): Promise<{ tag: string; count: number
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit)
     .map(([tag, count]) => ({ tag, count }));
+}
+
+/** Posts por filtro arbitrario, shaping FeedPost. Reutilizado por búsqueda. */
+export async function getFeedPostsByWhere(
+  viewerId: string,
+  where: Prisma.PostWhereInput,
+  take = 20,
+): Promise<FeedPost[]> {
+  const posts = await prisma.post.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take,
+    include: include(viewerId),
+  });
+  return posts.map((p) => toFeedPost(p as Row, viewerId));
 }
 
 /** Publicaciones de un autor concreto. */
