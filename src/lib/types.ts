@@ -16,6 +16,8 @@ export type FeedPost = {
   likedByMe: boolean;
   isMine: boolean;
   savedByMe: boolean;
+  priceCredits: number | null;
+  locked: boolean;
 };
 
 export type CommentDTO = {

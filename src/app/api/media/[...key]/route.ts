@@ -16,16 +16,12 @@ export async function GET(
   const url = `/api/media/${key}`;
 
   // ¿A qué post pertenece?
-  // Nota: Post.priceCredits aún no existe en el schema (llega en Bloque 4); se
-  // pasa `priceCredits: null` explícitamente, lo que hoy es siempre correcto
-  // (ningún post puede tener precio todavía) y es forward-compatible con
-  // hasPostAccess una vez que el campo se agregue.
   const post = await prisma.post.findFirst({
     where: { images: { has: url } },
-    select: { id: true, authorId: true },
+    select: { id: true, authorId: true, priceCredits: true },
   });
   if (post) {
-    if (!(await hasPostAccess(session.sub, { ...post, priceCredits: null }))) {
+    if (!(await hasPostAccess(session.sub, post))) {
       return NextResponse.json({ error: "Sin acceso" }, { status: 403 });
     }
     return NextResponse.redirect(await presignGet(key));
