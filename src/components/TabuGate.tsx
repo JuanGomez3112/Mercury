@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function TabuGate({ hasPin }: { hasPin: boolean }) {
+export default function TabuGate({
+  hasPin,
+  onUnlocked,
+  onClose,
+}: {
+  hasPin: boolean;
+  onUnlocked?: () => void;
+  onClose?: () => void;
+}) {
   const router = useRouter();
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
@@ -29,13 +37,19 @@ export default function TabuGate({ hasPin }: { hasPin: boolean }) {
       body: JSON.stringify({ pin }),
     });
     setBusy(false);
-    if (res.ok) { setPin(""); router.refresh(); }
+    if (res.ok) { setPin(""); if (onUnlocked) onUnlocked(); else router.refresh(); }
     else { const d = await res.json().catch(() => ({})); setError(d.error ?? "Error"); }
   }
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/80 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm rounded-3xl border border-orange-500/30 bg-navy-2 p-8 text-center shadow-2xl">
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/80 p-4 backdrop-blur-sm"
+      onClick={onClose ? () => onClose() : undefined}
+    >
+      <div
+        className="w-full max-w-sm rounded-3xl border border-orange-500/30 bg-navy-2 p-8 text-center shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-500/15 text-2xl">🔥</div>
         <h2 className="text-lg font-semibold text-white">Contenido Tabú</h2>
         {hasPin ? (
@@ -63,6 +77,11 @@ export default function TabuGate({ hasPin }: { hasPin: boolean }) {
               Crear clave en Ajustes
             </a>
           </>
+        )}
+        {onClose && (
+          <button onClick={() => onClose()} className="mt-4 text-xs text-white/40 transition hover:text-white/70">
+            Cancelar
+          </button>
         )}
       </div>
     </div>

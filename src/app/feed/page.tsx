@@ -9,7 +9,6 @@ import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
 import PostComposer from "@/components/PostComposer";
 import FeedTabs from "@/components/FeedTabs";
-import TabuGate from "@/components/TabuGate";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +29,11 @@ export default async function FeedPage({
   });
   if (!me) redirect("/login");
 
-  const tabuLocked = tab === "tabu" ? !(await isTabuUnlocked(me.id)) : false;
-  const hasPin = tab === "tabu"
-    ? (await prisma.user.findUnique({ where: { id: me.id }, select: { tabuPinHash: true } }))!.tabuPinHash !== null
-    : false;
+  // Estado Tabú (para el gate client-side en FeedTabs). hasPin como booleano;
+  // el hash nunca sale al cliente.
+  const tabuUnlocked = await isTabuUnlocked(me.id);
+  const hasPin =
+    (await prisma.user.findUnique({ where: { id: me.id }, select: { tabuPinHash: true } }))!.tabuPinHash !== null;
 
   const following = await prisma.user.findMany({
     where: { followers: { some: { followerId: me.id } } },
@@ -72,12 +72,11 @@ export default async function FeedPage({
           <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} />
 
           {/* Tabs + publicaciones (cambio de tab client, solo re-pide posts) */}
-          <FeedTabs initialTab={tab} initialPosts={posts} viewerAvatarUrl={me.avatarUrl} />
+          <FeedTabs initialTab={tab} initialPosts={posts} viewerAvatarUrl={me.avatarUrl} tabuUnlocked={tabuUnlocked} hasPin={hasPin} />
         </main>
 
         <RightPanel suggestions={suggestions} chats={chats} />
       </div>
-      {tabuLocked && <TabuGate hasPin={hasPin} />}
     </>
   );
 }
