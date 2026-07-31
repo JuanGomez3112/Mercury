@@ -46,3 +46,37 @@ export async function clearSession() {
   const jar = await cookies();
   jar.delete(COOKIE);
 }
+
+const TABU_COOKIE = "mercury_tabu";
+
+export async function setTabuUnlock(userId: string) {
+  const token = await new SignJWT({ sub: userId, tabu: true })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("12h")
+    .sign(secret());
+  const jar = await cookies();
+  jar.set(TABU_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.COOKIE_SECURE === "1",
+    path: "/",
+  });
+}
+
+export async function clearTabuUnlock() {
+  const jar = await cookies();
+  jar.delete(TABU_COOKIE);
+}
+
+export async function isTabuUnlocked(userId: string): Promise<boolean> {
+  const jar = await cookies();
+  const token = jar.get(TABU_COOKIE)?.value;
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    return payload.tabu === true && String(payload.sub) === userId;
+  } catch {
+    return false;
+  }
+}
