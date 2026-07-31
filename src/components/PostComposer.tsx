@@ -18,6 +18,7 @@ export default function PostComposer({
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
   const [body, setBody] = useState("");
@@ -106,7 +107,8 @@ export default function PostComposer({
   }
 
   const pills = [
-    { label: "Foto | Video", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
+    { label: "Foto", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
+    { label: "Video", icon: <IconLive className="h-4 w-4" />, onClick: () => videoRef.current?.click() },
     { label: "Video en vivo", icon: <IconLive className="h-4 w-4" /> },
     { label: "Cámara", icon: <IconCamera className="h-4 w-4" /> },
     { label: "Música", icon: <IconMusic className="h-4 w-4" /> },
@@ -139,8 +141,15 @@ export default function PostComposer({
         <div className="mt-3 grid grid-cols-4 gap-2">
           {previews.map((p, i) => (
             <div key={p.url} className="relative">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.url} alt="" className="h-20 w-full rounded-lg object-cover" />
+              {p.f.type.startsWith("video/") ? (
+                <video src={p.url} className="h-20 w-full rounded-lg object-cover" muted />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.url} alt="" className="h-20 w-full rounded-lg object-cover" />
+              )}
+              {p.f.type.startsWith("video/") && (
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-2xl text-white/90">▶</span>
+              )}
               <button
                 onClick={() => removeAt(i)}
                 className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-navy text-xs text-white/80 ring-1 ring-white/20"
@@ -200,6 +209,15 @@ export default function PostComposer({
         ref={fileRef}
         type="file"
         accept="image/jpeg,image/png,image/webp,image/gif"
+        multiple
+        onChange={onPick}
+        className="hidden"
+      />
+
+      <input
+        ref={videoRef}
+        type="file"
+        accept="video/mp4,video/webm"
         multiple
         onChange={onPick}
         className="hidden"
