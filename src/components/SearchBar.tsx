@@ -19,11 +19,12 @@ export default function SearchBar() {
 
   useEffect(() => {
     if (!q.trim()) { setRes(null); return; }
+    let ignore = false;
     const t = setTimeout(async () => {
       const r = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      if (r.ok) setRes(await r.json());
+      if (!ignore && r.ok) setRes(await r.json());
     }, 250);
-    return () => clearTimeout(t);
+    return () => { ignore = true; clearTimeout(t); };
   }, [q]);
 
   function reveal() {

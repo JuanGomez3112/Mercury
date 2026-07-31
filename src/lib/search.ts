@@ -38,15 +38,15 @@ export async function searchAll(viewerId: string, qRaw: string, type: SearchType
       type === "tabu"
         ? { ...bodyWhere, isAdult: true }
         : bodyWhere;
-    posts = await getFeedPostsByWhere(viewerId, where, 20);
-    if (type === "reels") posts = posts.filter((p) => p.images.some((u) => VIDEO_RE.test(u)));
+    posts = await getFeedPostsByWhere(viewerId, where, type === "reels" ? 100 : 20);
+    if (type === "reels") posts = posts.filter((p) => p.images.some((u) => VIDEO_RE.test(u))).slice(0, 20);
   }
 
   let tags: TagHit[] = [];
   if (wantTags) {
     const needle = q.replace(/^#/, "").toLowerCase();
     const recent = await prisma.post.findMany({
-      where: { body: { contains: `#${needle}`, mode: "insensitive" } },
+      where: { body: { contains: needle, mode: "insensitive" } },
       orderBy: { createdAt: "desc" },
       take: 300,
       select: { body: true },
