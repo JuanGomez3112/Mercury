@@ -11,6 +11,7 @@ type Row = {
   author: { username: string; displayName: string | null; avatarUrl: string | null };
   _count: { likes: number; comments: number };
   likes: { userId: string }[];
+  bookmarks: { userId: string }[];
 };
 
 function toFeedPost(p: Row, viewerId: string): FeedPost {
@@ -25,6 +26,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
     commentCount: p._count.comments,
     likedByMe: p.likes.length > 0,
     isMine: p.authorId === viewerId,
+    savedByMe: p.bookmarks.length > 0,
   };
 }
 
@@ -32,6 +34,7 @@ const include = (viewerId: string) => ({
   author: { select: { username: true, displayName: true, avatarUrl: true } },
   _count: { select: { likes: true, comments: true } },
   likes: { where: { userId: viewerId }, select: { userId: true } },
+  bookmarks: { where: { userId: viewerId }, select: { userId: true } },
 });
 
 export type FeedTab = "feed" | "explora" | "tabu";

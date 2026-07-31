@@ -15,6 +15,7 @@ export type FeedPost = {
   commentCount: number;
   likedByMe: boolean;
   isMine: boolean;
+  savedByMe: boolean;
 };
 
 export type CommentDTO = {
