@@ -92,6 +92,7 @@ Añadir relaciones inversas en `User` (`bookmarks Bookmark[]`) y `Post` (`bookma
 
 **UI barra de búsqueda** — `src/components/SearchBar.tsx` (client)
 - Reemplaza el input estático del `TopBar`.
+- **Revelar al clic:** por defecto el `TopBar` muestra solo el **botón/ícono de búsqueda** 🔍. Al hacer clic, el input **aparece** (expande con transición suave) y toma foco. Vacío + blur/Escape → se colapsa de vuelta al ícono. Estilo del input calcado del diseño `public/Home.svg` (buscar 36px de alto, ícono 16, fondo/paleta del sistema visual). *(Si el usuario aporta un screenshot de referencia, se ajusta a ese exacto.)*
 - Debounce ~250ms al teclear → fetch `/api/search?q=`; dropdown de resultados agrupados (Personas, Post, Hashtag). Adultos difuminados con candado (§4).
 - Enter → navega a `/buscar?q=`.
 
