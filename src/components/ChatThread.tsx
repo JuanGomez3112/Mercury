@@ -16,6 +16,7 @@ export default function ChatThread({
   creatorMode?: boolean;
 }) {
   const [messages, setMessages] = useState<ThreadMessage[]>(initial);
+  const [syncedInitial, setSyncedInitial] = useState(initial);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [partnerTyping, setPartnerTyping] = useState(false);
@@ -27,6 +28,14 @@ export default function ChatThread({
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lastPing = useRef(0);
+
+  // Re-sincroniza con lo que envíe el servidor (p.ej. tras router.refresh() de UnlockButton
+  // al desbloquear un mensaje de pago) sin depender de un efecto: se ajusta durante el render,
+  // como recomienda React para "adjusting state when a prop changes".
+  if (initial !== syncedInitial) {
+    setSyncedInitial(initial);
+    setMessages(initial);
+  }
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -57,7 +66,7 @@ export default function ChatThread({
     if (res.ok) {
       const d = await res.json();
       setPartnerTyping(!!d.typing);
-      setMessages((prev) => (d.messages.length !== prev.length ? d.messages : prev));
+      setMessages(d.messages);
     }
   }
 
