@@ -20,10 +20,13 @@ export async function transfer(
   const { fromId, toId, amount, kind, refType, refId } = args;
   if (amount <= 0) throw new Error("Monto inválido");
 
-  const from = await tx.user.findUnique({ where: { id: fromId }, select: { balance: true } });
-  if (!from || from.balance < amount) throw new InsufficientFunds();
+  // Débito atómico: solo decrementa si hay saldo suficiente (evita carrera TOCTOU).
+  const debit = await tx.user.updateMany({
+    where: { id: fromId, balance: { gte: amount } },
+    data: { balance: { decrement: amount } },
+  });
+  if (debit.count === 0) throw new InsufficientFunds();
 
-  await tx.user.update({ where: { id: fromId }, data: { balance: { decrement: amount } } });
   await tx.user.update({ where: { id: toId }, data: { balance: { increment: amount } } });
 
   const outType = kind === "purchase" ? "purchase" : kind === "sub" ? "sub_out" : "tip_out";
