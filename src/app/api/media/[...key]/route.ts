@@ -27,16 +27,16 @@ export async function GET(
     return NextResponse.redirect(await presignGet(key));
   }
 
-  // ¿A qué mensaje? (Message.priceCredits llega en Bloque 7; mismo razonamiento que arriba.)
+  // ¿A qué mensaje?
   const msg = await prisma.message.findFirst({
     where: { imageUrl: url },
-    select: { id: true, senderId: true, recipientId: true },
+    select: { id: true, senderId: true, recipientId: true, priceCredits: true },
   });
   if (msg) {
     if (msg.recipientId !== session.sub && msg.senderId !== session.sub) {
       return NextResponse.json({ error: "Sin acceso" }, { status: 403 });
     }
-    if (!(await hasMessageAccess(session.sub, { ...msg, priceCredits: null }))) {
+    if (!(await hasMessageAccess(session.sub, msg))) {
       return NextResponse.json({ error: "Sin acceso" }, { status: 403 });
     }
     return NextResponse.redirect(await presignGet(key));
