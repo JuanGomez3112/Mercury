@@ -15,18 +15,21 @@ export async function POST(_req: Request, { params }: { params: Promise<{ userna
   if (!creator.creatorMode || creator.subPriceCredits == null) return NextResponse.json({ error: "Este usuario no ofrece suscripción" }, { status: 400 });
 
   const price = creator.subPriceCredits;
-  const now = new Date();
   try {
     await prisma.$transaction(async (tx) => {
       await transfer(tx, { fromId: session.sub, toId: creator.id, amount: price, kind: "sub", refType: "subscription", refId: creator.id });
-      const existing = await tx.subscription.findUnique({ where: { subscriberId_creatorId: { subscriberId: session.sub, creatorId: creator.id } } });
-      const base = existing && existing.expiresAt > now ? existing.expiresAt : now;
-      const expiresAt = new Date(base.getTime() + 30 * 24 * 60 * 60 * 1000);
-      await tx.subscription.upsert({
-        where: { subscriberId_creatorId: { subscriberId: session.sub, creatorId: creator.id } },
-        create: { subscriberId: session.sub, creatorId: creator.id, expiresAt, priceCredits: price },
-        update: { expiresAt, priceCredits: price },
-      });
+      // Extensión atómica: el UPDATE toma lock de fila, así renovaciones concurrentes
+      // componen +30d desde el expiresAt vigente (o desde ahora si ya venció) sin perder pagos.
+      const affected = await tx.$executeRaw`
+        UPDATE "Subscription"
+        SET "expiresAt" = GREATEST("expiresAt", NOW()) + INTERVAL '30 days',
+            "priceCredits" = ${price}
+        WHERE "subscriberId" = ${session.sub} AND "creatorId" = ${creator.id}`;
+      if (affected === 0) {
+        await tx.subscription.create({
+          data: { subscriberId: session.sub, creatorId: creator.id, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), priceCredits: price },
+        });
+      }
     });
   } catch (e) {
     if (e instanceof InsufficientFunds) return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 });

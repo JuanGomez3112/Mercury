@@ -94,7 +94,7 @@ export default async function ProfilePage({
                   Mensaje
                 </a>
                 <FollowButton username={profile.username} initialFollowing={following} />
-                {profile.creatorMode && profile.subPriceCredits && (
+                {profile.creatorMode && profile.subPriceCredits != null && (
                   <SubscribeButton username={profile.username} price={profile.subPriceCredits} activeUntil={subActiveUntil} />
                 )}
               </div>
