@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Tabs from "./Tabs";
 import PostCard from "./PostCard";
@@ -26,6 +26,14 @@ export default function FeedTabs({
   const [tab, setTab] = useState<FeedTab>(initialTab);
   const [posts, setPosts] = useState<FeedPost[]>(initialPosts);
   const [loading, setLoading] = useState(false);
+
+  // Seguir al server cuando cambia por navegación (push a Tabú) o router.refresh
+  // (tras desbloquear el gate). Sin esto, FeedTabs no se remonta en cambios de
+  // query param y mantiene el estado viejo (la pestaña "no pasa" a Tabú).
+  useEffect(() => {
+    setTab(initialTab);
+    setPosts(initialPosts);
+  }, [initialTab, initialPosts]);
 
   async function select(next: FeedTab) {
     if (next === tab) return;
