@@ -64,7 +64,7 @@ export default function PostComposer({
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
     setFiles((prev) => [...prev, ...picked].slice(0, MAX_FILES));
-    if (fileRef.current) fileRef.current.value = "";
+    e.target.value = "";
   }
   function removeAt(i: number) {
     setFiles((prev) => prev.filter((_, idx) => idx !== i));
