@@ -12,9 +12,11 @@ const MAX_FILES = 10;
 export default function PostComposer({
   displayName,
   avatarUrl,
+  creatorMode = false,
 }: {
   displayName: string;
   avatarUrl?: string | null;
+  creatorMode?: boolean;
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -24,6 +26,8 @@ export default function PostComposer({
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [adult, setAdult] = useState(false);
+  const [paid, setPaid] = useState(false);
+  const [price, setPrice] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -79,6 +83,7 @@ export default function PostComposer({
     if (files.length > 0) {
       const fd = new FormData();
       files.forEach((f) => fd.append("files", f));
+      if (paid) fd.append("private", "1");
       const up = await fetch("/api/upload", { method: "POST", body: fd });
       if (!up.ok) {
         const d = await up.json().catch(() => ({}));
@@ -89,16 +94,20 @@ export default function PostComposer({
       images = (await up.json()).urls;
     }
 
+    const priceCredits = paid && price !== "" ? Number(price) : null;
+
     const res = await fetch("/api/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body, images, adult }),
+      body: JSON.stringify({ body, images, adult, priceCredits }),
     });
     setLoading(false);
     if (res.ok) {
       setBody("");
       setFiles([]);
       setAdult(false);
+      setPaid(false);
+      setPrice("");
       router.refresh();
     } else {
       const d = await res.json().catch(() => ({}));
@@ -177,6 +186,34 @@ export default function PostComposer({
         >
           <IconFire className="h-4 w-3.5" />
         </button>
+
+        {creatorMode && (
+          <button
+            type="button"
+            onClick={() => setPaid((v) => !v)}
+            aria-pressed={paid}
+            title="Marcar como contenido de pago"
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base transition ${
+              paid
+                ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50"
+                : "bg-navy text-white/80 hover:bg-navy/80"
+            }`}
+          >
+            💰
+          </button>
+        )}
+
+        {creatorMode && paid && (
+          <input
+            type="number"
+            min={1}
+            max={100000}
+            value={price}
+            onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
+            placeholder="Precio ☾"
+            className="w-24 shrink-0 rounded-full border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-purple"
+          />
+        )}
 
         <div
           ref={scrollRef}

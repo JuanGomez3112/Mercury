@@ -25,7 +25,7 @@ export default async function FeedPage({
 
   const me = await prisma.user.findUnique({
     where: { id: session.sub },
-    select: { id: true, username: true, displayName: true, avatarUrl: true, mode: true },
+    select: { id: true, username: true, displayName: true, avatarUrl: true, mode: true, creatorMode: true },
   });
   if (!me) redirect("/login");
 
@@ -69,7 +69,7 @@ export default async function FeedPage({
 
         <main className="w-full min-w-0 flex-1 space-y-6 xl:max-w-[896px]">
           <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl, mode: me.mode }} stories={stories} />
-          <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} />
+          <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} creatorMode={me.creatorMode} />
 
           {/* Tabs + publicaciones (cambio de tab client, solo re-pide posts) */}
           <FeedTabs initialTab={tab} initialPosts={posts} viewerAvatarUrl={me.avatarUrl} tabuUnlocked={tabuUnlocked} hasPin={hasPin} />
