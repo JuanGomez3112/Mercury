@@ -8,10 +8,21 @@ import type { FeedPost, CommentDTO } from "@/lib/types";
 
 /* eslint-disable @next/next/no-img-element */
 
+const VIDEO_RE = /\.(mp4|webm)(\?|$)/i;
+function isVideo(url: string) { return VIDEO_RE.test(url); }
+
 function Tile({ src, size, plus, onOpen }: { src: string; size: number; plus?: number; onOpen: () => void }) {
+  const video = isVideo(src);
   return (
     <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden" style={{ width: size, height: size }}>
-      <img src={src} alt="" className="h-full w-full object-cover transition hover:opacity-90" />
+      {video ? (
+        <video src={src} className="h-full w-full object-cover" muted preload="metadata" />
+      ) : (
+        <img src={src} alt="" className="h-full w-full object-cover transition hover:opacity-90" />
+      )}
+      {video && !plus && (
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-4xl text-white/90">▶</span>
+      )}
       {plus ? (
         <div className="absolute inset-0 flex items-center justify-center bg-navy/[0.64] text-3xl font-bold text-white">+{plus}</div>
       ) : null}
@@ -80,7 +91,11 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
   const grid =
     images.length === 1 ? (
       <button type="button" onClick={() => setOpen(0)} className="mt-4 block h-[640px] w-full overflow-hidden rounded-xl bg-navy">
-        <img src={images[0]} alt="" className="h-full w-full object-contain" />
+        {isVideo(images[0]) ? (
+          <video src={images[0]} className="h-full w-full object-contain" controls preload="metadata" />
+        ) : (
+          <img src={images[0]} alt="" className="h-full w-full object-contain" />
+        )}
       </button>
     ) : (
       (() => {
@@ -119,7 +134,11 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
           <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-navy-2" onClick={(e) => e.stopPropagation()}>
             {/* Contenedor 1: foto */}
             <div className="relative flex flex-1 items-center justify-center bg-black">
-              <img src={images[open]} alt="" className="max-h-[90vh] max-w-full object-contain" />
+              {isVideo(images[open]) ? (
+                <video src={images[open]} className="max-h-[90vh] max-w-full object-contain" controls autoPlay />
+              ) : (
+                <img src={images[open]} alt="" className="max-h-[90vh] max-w-full object-contain" />
+              )}
               {images.length > 1 && (
                 <>
                   <button className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" onClick={() => setOpen((i) => (i === null ? i : (i - 1 + images.length) % images.length))} aria-label="Anterior">‹</button>
