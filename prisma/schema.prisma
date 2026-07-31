@@ -31,6 +31,7 @@ model User {
   receivedMessages Message[] @relation("received")
   notifications    Notification[] @relation("notifs")
   actorNotifs      Notification[] @relation("actorNotifs")
+  bookmarks Bookmark[]
 }
 
 model Notification {
@@ -73,6 +74,7 @@ model Post {
 
   likes    Like[]
   comments Comment[]
+  bookmarks Bookmark[]
 
   @@index([authorId])
   @@index([createdAt])
@@ -103,6 +105,18 @@ model Follow {
 }
 
 model Like {
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId])
+}
+
+model Bookmark {
   userId    String
   postId    String
   createdAt DateTime @default(now())
