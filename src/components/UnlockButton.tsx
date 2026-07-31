@@ -9,7 +9,7 @@ export default function UnlockButton({ kind, id, price }: { kind: "post" | "mess
 
   async function unlock() {
     setBusy(true); setErr("");
-    const url = kind === "post" ? `/api/posts/${id}/unlock` : `/api/messages/${id}/unlock`;
+    const url = kind === "post" ? `/api/posts/${id}/unlock` : `/api/messages/unlock/${id}`;
     const res = await fetch(url, { method: "POST" });
     setBusy(false);
     if (res.ok) router.refresh();

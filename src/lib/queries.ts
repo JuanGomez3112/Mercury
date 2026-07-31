@@ -162,6 +162,8 @@ export type ThreadMessage = {
   imageUrl: string | null;
   createdAt: Date;
   mine: boolean;
+  priceCredits: number | null;
+  locked: boolean;
 };
 
 /** Hilo de mensajes entre el viewer y un usuario. */
@@ -176,13 +178,32 @@ export async function getThread(viewerId: string, partnerId: string): Promise<Th
     orderBy: { createdAt: "asc" },
     take: 200,
   });
-  return msgs.map((m) => ({
-    id: m.id,
-    body: m.body,
-    imageUrl: m.imageUrl,
-    createdAt: m.createdAt,
-    mine: m.senderId === viewerId,
-  }));
+
+  const paidIds = msgs.filter((m) => m.senderId !== viewerId && m.priceCredits != null).map((m) => m.id);
+  const purchased = paidIds.length
+    ? new Set(
+        (
+          await prisma.purchase.findMany({
+            where: { buyerId: viewerId, messageId: { in: paidIds } },
+            select: { messageId: true },
+          })
+        ).map((p) => p.messageId!),
+      )
+    : new Set<string>();
+
+  return msgs.map((m) => {
+    const mine = m.senderId === viewerId;
+    const locked = !mine && m.priceCredits != null && !purchased.has(m.id);
+    return {
+      id: m.id,
+      body: locked ? "" : m.body,
+      imageUrl: locked ? null : m.imageUrl,
+      createdAt: m.createdAt,
+      mine,
+      priceCredits: m.priceCredits,
+      locked,
+    };
+  });
 }
 
 /** Tendencias: hashtags más usados en los posts recientes. */

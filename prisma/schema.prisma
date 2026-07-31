@@ -64,6 +64,7 @@ model Message {
   recipient   User     @relation("received", fields: [recipientId], references: [id], onDelete: Cascade)
   body        String
   imageUrl    String?
+  priceCredits Int?
   readAt      DateTime?
   createdAt   DateTime @default(now())
 

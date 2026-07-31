@@ -19,7 +19,7 @@ export default async function ChatPage({
 
   const { username } = await params;
   const [viewer, partner] = await Promise.all([
-    prisma.user.findUnique({ where: { id: session.sub }, select: { username: true, avatarUrl: true } }),
+    prisma.user.findUnique({ where: { id: session.sub }, select: { username: true, avatarUrl: true, creatorMode: true } }),
     prisma.user.findUnique({ where: { username }, select: { id: true, username: true, displayName: true, avatarUrl: true } }),
   ]);
   if (!viewer || !partner) notFound();
@@ -44,7 +44,7 @@ export default async function ChatPage({
           </Link>
 
           {/* Mensajes (tiempo real) */}
-          <ChatThread partner={partner.username} initial={messages} />
+          <ChatThread partner={partner.username} initial={messages} creatorMode={viewer.creatorMode} />
       </div>
     </AppShell>
   );

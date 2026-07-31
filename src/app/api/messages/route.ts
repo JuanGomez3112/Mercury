@@ -7,6 +7,7 @@ const schema = z.object({
   to: z.string().min(1),
   body: z.string().trim().max(2000).default(""),
   imageUrl: z.string().optional(),
+  priceCredits: z.number().int().min(1).max(100000).nullable().default(null),
 });
 
 export async function POST(req: Request) {
@@ -18,9 +19,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
 
-  const { to, body, imageUrl } = parsed.data;
+  const { to, body, imageUrl, priceCredits } = parsed.data;
   if (!body && !imageUrl) {
     return NextResponse.json({ error: "Mensaje vacío" }, { status: 400 });
+  }
+
+  if (priceCredits != null) {
+    const sender = await prisma.user.findUnique({ where: { id: session.sub }, select: { creatorMode: true } });
+    if (!sender?.creatorMode) {
+      return NextResponse.json({ error: "Activa modo creador" }, { status: 403 });
+    }
   }
 
   const recipient = await prisma.user.findUnique({ where: { username: to }, select: { id: true } });
@@ -30,7 +38,7 @@ export async function POST(req: Request) {
   }
 
   const msg = await prisma.message.create({
-    data: { senderId: session.sub, recipientId: recipient.id, body, imageUrl: imageUrl ?? null },
+    data: { senderId: session.sub, recipientId: recipient.id, body, imageUrl: imageUrl ?? null, priceCredits },
   });
   return NextResponse.json({ ok: true, id: msg.id });
 }
