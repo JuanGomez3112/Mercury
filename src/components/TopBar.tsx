@@ -3,7 +3,8 @@ import MercuryMark from "./MercuryMark";
 import InboxLink from "./InboxLink";
 import NotifBell from "./NotifBell";
 import ProfileMenu from "./ProfileMenu";
-import { IconSearch, IconMasks, IconMapPeople } from "./icons";
+import SearchBar from "./SearchBar";
+import { IconMasks, IconMapPeople } from "./icons";
 
 export default function TopBar({
   username,
@@ -20,12 +21,7 @@ export default function TopBar({
         </Link>
 
         <div className="flex items-center gap-9">
-          <button
-            aria-label="Buscar"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-navy transition hover:brightness-95"
-          >
-            <IconSearch className="h-4 w-4" />
-          </button>
+          <SearchBar />
           <div className="hidden items-center gap-4 sm:flex">
             <NotifBell />
             <InboxLink />

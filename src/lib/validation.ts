@@ -35,3 +35,22 @@ export const loginSchema = z.object({
   username: z.string().trim().min(1, "Requerido"),
   password: z.string().min(1, "Requerido"),
 });
+
+export const changePasswordSchema = z
+  .object({
+    current: z.string().optional().default(""),
+    next: z.string().min(8, "Mínimo 8 caracteres").max(200),
+    confirm: z.string(),
+  })
+  .refine((d) => d.next === d.confirm, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirm"],
+  });
+
+export const tabuPinSchema = z
+  .object({
+    current: z.string().optional().default(""),
+    next: z.string().min(4, "Mínimo 4 caracteres").max(64),
+    confirm: z.string(),
+  })
+  .refine((d) => d.next === d.confirm, { message: "No coinciden", path: ["confirm"] });

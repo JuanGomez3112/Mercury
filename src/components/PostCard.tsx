@@ -6,8 +6,9 @@ import CommentBar from "./CommentBar";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
-import { IconComment, IconShare, IconBookmark, IconFire } from "./icons";
+import { IconComment, IconShare, IconFire } from "./icons";
 import { VerifiedGrad } from "./GradientIcons";
+import BookmarkButton from "./BookmarkButton";
 
 export default function PostCard({
   post,
@@ -82,9 +83,7 @@ export default function PostCard({
         <button className="transition hover:text-white" aria-label="Compartir">
           <IconShare className="text-[24px]" />
         </button>
-        <button className="ml-auto transition hover:text-white" aria-label="Guardar">
-          <IconBookmark className="text-[28px]" />
-        </button>
+        <BookmarkButton postId={post.id} initialSaved={post.savedByMe} />
       </div>
 
       {/* Comentario */}

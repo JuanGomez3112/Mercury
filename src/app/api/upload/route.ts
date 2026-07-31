@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { currentUser } from "@/lib/auth";
 import { putMedia, extFor } from "@/lib/s3";
 
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_IMG = 10 * 1024 * 1024;  // 10 MB
+const MAX_VID = 50 * 1024 * 1024;  // 50 MB
 const MAX_FILES = 10;
 
 export async function POST(req: Request) {
@@ -23,8 +24,10 @@ export async function POST(req: Request) {
     if (!extFor(file.type)) {
       return NextResponse.json({ error: `Tipo no permitido: ${file.type}` }, { status: 400 });
     }
-    if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: "Archivo mayor a 10 MB" }, { status: 400 });
+    const isVideo = file.type.startsWith("video/");
+    const cap = isVideo ? MAX_VID : MAX_IMG;
+    if (file.size > cap) {
+      return NextResponse.json({ error: isVideo ? "Video mayor a 50 MB" : "Imagen mayor a 10 MB" }, { status: 400 });
     }
     const buf = Buffer.from(await file.arrayBuffer());
     urls.push(await putMedia(buf, file.type, session.sub));

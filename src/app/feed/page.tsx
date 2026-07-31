@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { getSession, isTabuUnlocked } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getFeedByTab, getRecentChats, type FeedTab } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
@@ -9,6 +9,7 @@ import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
 import PostComposer from "@/components/PostComposer";
 import FeedTabs from "@/components/FeedTabs";
+import TabuGate from "@/components/TabuGate";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,11 @@ export default async function FeedPage({
     select: { id: true, username: true, displayName: true, avatarUrl: true, mode: true },
   });
   if (!me) redirect("/login");
+
+  const tabuLocked = tab === "tabu" ? !(await isTabuUnlocked(me.id)) : false;
+  const hasPin = tab === "tabu"
+    ? (await prisma.user.findUnique({ where: { id: me.id }, select: { tabuPinHash: true } }))!.tabuPinHash !== null
+    : false;
 
   const following = await prisma.user.findMany({
     where: { followers: { some: { followerId: me.id } } },
@@ -71,6 +77,7 @@ export default async function FeedPage({
 
         <RightPanel suggestions={suggestions} chats={chats} />
       </div>
+      {tabuLocked && <TabuGate hasPin={hasPin} />}
     </>
   );
 }

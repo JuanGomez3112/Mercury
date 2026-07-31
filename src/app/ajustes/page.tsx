@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import AppShell from "@/components/AppShell";
 import ModeToggle from "@/components/ModeToggle";
 import LogoutButton from "@/components/LogoutButton";
+import PasswordForm from "@/components/PasswordForm";
+import TabuPinForm from "@/components/TabuPinForm";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +15,7 @@ export default async function SettingsPage() {
 
   const me = await prisma.user.findUnique({
     where: { id: session.sub },
-    select: { username: true, displayName: true, avatarUrl: true, email: true, mode: true },
+    select: { username: true, displayName: true, avatarUrl: true, email: true, mode: true, passwordHash: true, tabuPinHash: true },
   });
   if (!me) redirect("/login");
 
@@ -42,8 +44,16 @@ export default async function SettingsPage() {
           <LogoutButton />
         </section>
 
+        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+          <PasswordForm hasPassword={me.passwordHash !== null} />
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+          <TabuPinForm hasPin={me.tabuPinHash !== null} />
+        </section>
+
         <p className="text-center text-xs text-white/30">
-          Cambio de contraseña, verificación de edad y privacidad — próximamente.
+          Verificación de edad y privacidad — próximamente.
         </p>
       </div>
     </AppShell>

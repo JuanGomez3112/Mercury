@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import type { FeedPost, Author } from "./types";
+import type { Prisma } from "@prisma/client";
 
 type Row = {
   id: string;
@@ -11,6 +12,7 @@ type Row = {
   author: { username: string; displayName: string | null; avatarUrl: string | null };
   _count: { likes: number; comments: number };
   likes: { userId: string }[];
+  bookmarks: { userId: string }[];
 };
 
 function toFeedPost(p: Row, viewerId: string): FeedPost {
@@ -25,6 +27,7 @@ function toFeedPost(p: Row, viewerId: string): FeedPost {
     commentCount: p._count.comments,
     likedByMe: p.likes.length > 0,
     isMine: p.authorId === viewerId,
+    savedByMe: p.bookmarks.length > 0,
   };
 }
 
@@ -32,6 +35,7 @@ const include = (viewerId: string) => ({
   author: { select: { username: true, displayName: true, avatarUrl: true } },
   _count: { select: { likes: true, comments: true } },
   likes: { where: { userId: viewerId }, select: { userId: true } },
+  bookmarks: { where: { userId: viewerId }, select: { userId: true } },
 });
 
 export type FeedTab = "feed" | "explora" | "tabu";
@@ -187,6 +191,21 @@ export async function getTrends(limit = 6): Promise<{ tag: string; count: number
     .map(([tag, count]) => ({ tag, count }));
 }
 
+/** Posts por filtro arbitrario, shaping FeedPost. Reutilizado por búsqueda. */
+export async function getFeedPostsByWhere(
+  viewerId: string,
+  where: Prisma.PostWhereInput,
+  take = 20,
+): Promise<FeedPost[]> {
+  const posts = await prisma.post.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take,
+    include: include(viewerId),
+  });
+  return posts.map((p) => toFeedPost(p as Row, viewerId));
+}
+
 /** Publicaciones de un autor concreto. */
 export async function getUserPosts(authorId: string, viewerId: string): Promise<FeedPost[]> {
   const posts = await prisma.post.findMany({
@@ -196,4 +215,15 @@ export async function getUserPosts(authorId: string, viewerId: string): Promise<
     include: include(viewerId),
   });
   return posts.map((p) => toFeedPost(p as Row, viewerId));
+}
+
+/** Posts guardados por el viewer, más recientes primero. */
+export async function getSavedPosts(viewerId: string): Promise<FeedPost[]> {
+  const rows = await prisma.bookmark.findMany({
+    where: { userId: viewerId },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+    include: { post: { include: include(viewerId) } },
+  });
+  return rows.map((b) => toFeedPost(b.post as Row, viewerId));
 }
