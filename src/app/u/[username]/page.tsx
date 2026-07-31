@@ -7,6 +7,7 @@ import PostCard from "@/components/PostCard";
 import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
 import { VerifiedGrad } from "@/components/GradientIcons";
+import SubscribeButton from "@/components/SubscribeButton";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,8 @@ export default async function ProfilePage({
         bio: true,
         avatarUrl: true,
         mode: true,
+        creatorMode: true,
+        subPriceCredits: true,
         _count: { select: { posts: true, followers: true, following: true } },
       },
     }),
@@ -52,6 +55,12 @@ export default async function ProfilePage({
         where: { followerId_followingId: { followerId: session.sub, followingId: profile.id } },
         select: { followerId: true },
       })) !== null;
+
+  const sub = isMe ? null : await prisma.subscription.findUnique({
+    where: { subscriberId_creatorId: { subscriberId: session.sub, creatorId: profile.id } },
+    select: { expiresAt: true },
+  });
+  const subActiveUntil = sub && sub.expiresAt > new Date() ? sub.expiresAt.toISOString() : null;
 
   const posts = await getUserPosts(profile.id, session.sub);
   const name = profile.displayName ?? profile.username;
@@ -85,6 +94,9 @@ export default async function ProfilePage({
                   Mensaje
                 </a>
                 <FollowButton username={profile.username} initialFollowing={following} />
+                {profile.creatorMode && profile.subPriceCredits && (
+                  <SubscribeButton username={profile.username} price={profile.subPriceCredits} activeUntil={subActiveUntil} />
+                )}
               </div>
             )}
           </div>
