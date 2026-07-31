@@ -118,13 +118,23 @@ Añadir relaciones inversas en `User` (`bookmarks Bookmark[]`) y `Post` (`bookma
 - Popup estilizado (fondo navy, borde `white/10`, acento degradado morado `#mercuryGrad`).
 - Se dispara al: (a) entrar a la pestaña **Tabú** del feed, (b) tocar un resultado/contenido **adulto** en búsqueda.
 - Pide la clave → `POST /api/me/tabu/unlock` (verifica contra `tabuPinHash`).
-  - Éxito → setea cookie **httpOnly firmada** `tabu_unlocked` con expiración (sesión / 1h). Mientras viva, no vuelve a pedir; el server puede leerla para no marcar blur.
+  - Éxito → setea cookie **httpOnly firmada** `tabu_unlocked` **de sesión (sin Max-Age)**. Mientras viva, no vuelve a pedir; el server la lee para no marcar blur.
   - Si el usuario **no tiene clave** → el popup ofrece **crear clave** primero (enlaza/incrusta el flujo de `POST /api/me/tabu/pin`).
 - Contenido adulto: envuelto en wrapper con `blur` + candado hasta que `tabu_unlocked` sea válido.
 
+**Duración inteligente (por ciclo de vida, no por tiempo)**
+
+El desbloqueo debe persistir mientras la app esté abierta y en primer plano, y re-bloquearse al cerrar la app o mandarla a segundo plano:
+- **Cerrar app / navegador** → cookie de sesión muere sola → re-bloqueado. ✔
+- **Segundo plano y volver** → re-pide clave. Se implementa con un listener cliente (en `AppShell`/`TabuGate`) a `visibilitychange`: al pasar a `document.hidden` → `POST /api/me/tabu/lock` (borra la cookie `tabu_unlocked`). Al volver a primer plano, la cookie ya no existe → el gate re-aparece. ✔
+- **Navegar dentro de la app** (salir de la pestaña Tabú hacia el feed y volver) **no** dispara background → sigue desbloqueado. ✔
+- Sin expiración por tiempo. *(Opcional futuro: gracia de ~1–2s para ignorar backgrounds fugaces tipo pull-down de notificaciones; por ahora estricto, tal como se pidió.)*
+- **Móvil (futuro):** mismo patrón con lifecycle nativo (onPause → lock, onResume → gate) + biometría (WebAuthn/FaceID).
+
 **Estado de desbloqueo**
-- Fuente de verdad: cookie httpOnly `tabu_unlocked` (firmada con el mismo secreto de sesión, patrón `jose`).
-- Server components (feed Tabú, búsqueda) leen la cookie para decidir si difuminan. Cliente refleja tras desbloquear (router.refresh).
+- Fuente de verdad: cookie httpOnly de sesión `tabu_unlocked` (firmada con el mismo secreto de sesión, patrón `jose`).
+- Endpoints: `POST /api/me/tabu/unlock` (setea) · `POST /api/me/tabu/lock` (borra).
+- Server components (feed Tabú, búsqueda) leen la cookie para decidir si difuminan. Cliente refleja tras desbloquear/bloquear (router.refresh).
 
 **⚠️ Nota de seguridad (documentada, no bloqueante):** hoy el bucket MinIO es **público** (`mercury-media` anonymous download) → las URLs de media adulta son accesibles directo sin gate. Por tanto el Tabú Gate es una **capa de consentimiento/UX**, no un candado real. La protección dura requiere **URLs firmadas** (ya en el roadmap de contenido de pago). Este spec no cierra ese hueco; lo deja explícito para la fase de pagos.
 
