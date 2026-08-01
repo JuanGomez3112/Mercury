@@ -1,5 +1,6 @@
 import { prisma } from "./db";
 import type { Prisma } from "@prisma/client";
+import { mint, burnToTreasury } from "./token";
 
 export const WELCOME_CREDITS = 500;
 
@@ -12,25 +13,28 @@ export class InsufficientFunds extends Error {
 
 type Tx = Prisma.TransactionClient;
 
-/** Transferencia atómica entre dos usuarios. Debe correr dentro de un $transaction. */
+/** Transferencia atómica. Ventas (purchase|sub|tip) acreditan earnings; P2P (transfer) acredita balance. */
 export async function transfer(
   tx: Tx,
-  args: { fromId: string; toId: string; amount: number; kind: "purchase" | "sub" | "tip"; refType?: string; refId?: string },
+  args: { fromId: string; toId: string; amount: number; kind: "purchase" | "sub" | "tip" | "transfer"; refType?: string; refId?: string },
 ) {
   const { fromId, toId, amount, kind, refType, refId } = args;
   if (amount <= 0) throw new Error("Monto inválido");
 
-  // Débito atómico: solo decrementa si hay saldo suficiente (evita carrera TOCTOU).
   const debit = await tx.user.updateMany({
     where: { id: fromId, balance: { gte: amount } },
     data: { balance: { decrement: amount } },
   });
   if (debit.count === 0) throw new InsufficientFunds();
 
-  await tx.user.update({ where: { id: toId }, data: { balance: { increment: amount } } });
+  const toEarnings = kind !== "transfer";
+  await tx.user.update({
+    where: { id: toId },
+    data: toEarnings ? { earnings: { increment: amount } } : { balance: { increment: amount } },
+  });
 
-  const outType = kind === "purchase" ? "purchase" : kind === "sub" ? "sub_out" : "tip_out";
-  const inType = kind === "purchase" ? "sale" : kind === "sub" ? "sub_in" : "tip_in";
+  const outType = kind === "purchase" ? "purchase" : kind === "sub" ? "sub_out" : kind === "tip" ? "tip_out" : "transfer_out";
+  const inType = kind === "purchase" ? "sale" : kind === "sub" ? "sub_in" : kind === "tip" ? "tip_in" : "transfer_in";
   await tx.walletTransaction.create({
     data: { userId: fromId, delta: -amount, type: outType, refType: refType ?? null, refId: refId ?? null, counterpartyId: toId },
   });
@@ -39,10 +43,28 @@ export async function transfer(
   });
 }
 
-/** Recarga simulada (sin cobro real). */
+/** Gasto (sumidero de tienda): debita balance atómico + devuelve al treasury + ledger. */
+export async function spend(
+  tx: Tx,
+  args: { userId: string; amount: number; refType?: string; refId?: string },
+) {
+  const { userId, amount, refType, refId } = args;
+  if (amount <= 0) throw new Error("Monto inválido");
+  const debit = await tx.user.updateMany({
+    where: { id: userId, balance: { gte: amount } },
+    data: { balance: { decrement: amount } },
+  });
+  if (debit.count === 0) throw new InsufficientFunds();
+  await burnToTreasury(tx, amount);
+  await tx.walletTransaction.create({
+    data: { userId, delta: -amount, type: "store_purchase", refType: refType ?? null, refId: refId ?? null },
+  });
+}
+
+/** Recarga simulada (mintea del treasury a balance). */
 export async function topup(userId: string, amount: number) {
   return prisma.$transaction(async (tx) => {
-    await tx.user.update({ where: { id: userId }, data: { balance: { increment: amount } } });
+    await mint(tx, userId, amount);
     await tx.walletTransaction.create({ data: { userId, delta: amount, type: "topup" } });
   });
 }
