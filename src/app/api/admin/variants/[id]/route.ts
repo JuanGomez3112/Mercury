@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "@/lib/admin";
+import { requireAdminUnlocked } from "@/lib/admin";
 
 const schema = z.object({
   label: z.string().min(1).optional(),
@@ -12,7 +12,7 @@ const schema = z.object({
 });
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminUnlocked();
   if (!admin) return NextResponse.json({ error: "Prohibido" }, { status: 403 });
   const { id } = await params;
   const parsed = schema.safeParse(await req.json().catch(() => null));
@@ -22,7 +22,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminUnlocked();
   if (!admin) return NextResponse.json({ error: "Prohibido" }, { status: 403 });
   const { id } = await params;
   await prisma.productVariant.delete({ where: { id } });

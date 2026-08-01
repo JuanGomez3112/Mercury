@@ -54,3 +54,11 @@ export const tabuPinSchema = z
     confirm: z.string(),
   })
   .refine((d) => d.next === d.confirm, { message: "No coinciden", path: ["confirm"] });
+
+export const adminPinSchema = z
+  .object({
+    current: z.string().optional().default(""),
+    next: z.string().min(6, "Mínimo 6 caracteres").max(64),
+    confirm: z.string(),
+  })
+  .refine((d) => d.next === d.confirm, { message: "No coinciden", path: ["confirm"] });
