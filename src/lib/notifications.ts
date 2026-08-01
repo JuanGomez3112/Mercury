@@ -1,6 +1,6 @@
 import { prisma } from "./db";
 
-type NotifType = "like" | "comment" | "follow" | "purchase" | "subscribe" | "tip";
+type NotifType = "like" | "comment" | "follow" | "purchase" | "subscribe" | "tip" | "transfer";
 
 export async function notify(args: {
   userId: string;
