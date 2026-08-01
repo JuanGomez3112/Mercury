@@ -16,6 +16,9 @@ const verb: Record<string, string> = {
   purchase: "desbloqueó tu contenido de pago",
   tip: "te envió una propina",
   subscribe: "se suscribió a ti",
+  transfer: "te envió MeryCoin",
+  order: "— actualización de tu pedido",
+  withdrawal: "actualizó tu retiro",
 };
 
 export default async function NotificationsPage() {

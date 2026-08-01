@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { registerSchema } from "@/lib/validation";
 import { createSession } from "@/lib/session";
+import { getConfig, mint } from "@/lib/token";
+import { WELCOME_CREDITS } from "@/lib/wallet";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -21,6 +23,7 @@ export async function POST(req: Request) {
   const passwordHash = await bcrypt.hash(password, 12);
   const displayName = [nombre, apellido].filter(Boolean).join(" ").trim();
 
+  await getConfig();
   const user = await prisma.$transaction(async (tx) => {
     const u = await tx.user.create({
       data: {
@@ -31,7 +34,8 @@ export async function POST(req: Request) {
         ageVerified: true,
       },
     });
-    await tx.walletTransaction.create({ data: { userId: u.id, delta: 500, type: "welcome" } });
+    await mint(tx, u.id, WELCOME_CREDITS);
+    await tx.walletTransaction.create({ data: { userId: u.id, delta: WELCOME_CREDITS, type: "welcome" } });
     return u;
   });
 
