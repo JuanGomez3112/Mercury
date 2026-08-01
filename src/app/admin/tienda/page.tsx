@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin";
+import { isAdminUnlocked } from "@/lib/session";
 import { getConfig } from "@/lib/token";
 import AppShell from "@/components/AppShell";
+import AdminUnlock from "@/components/AdminUnlock";
 import AdminTabs from "@/components/AdminTabs";
 import ProductAdmin from "@/components/ProductAdmin";
 import ZoneAdmin from "@/components/ZoneAdmin";
@@ -24,8 +26,17 @@ export default async function AdminTiendaPage() {
   const admin = await requireAdmin();
   if (!admin) redirect("/");
 
-  const me = await prisma.user.findUnique({ where: { id: admin.id }, select: { username: true, avatarUrl: true } });
+  const me = await prisma.user.findUnique({ where: { id: admin.id }, select: { username: true, avatarUrl: true, adminPinHash: true } });
   if (!me) redirect("/");
+
+  // Segundo factor: aunque tenga sesión de admin, exige desbloqueo con PIN.
+  if (!(await isAdminUnlocked(admin.id))) {
+    return (
+      <AppShell username={me.username} avatarUrl={me.avatarUrl}>
+        <AdminUnlock hasPin={me.adminPinHash !== null} />
+      </AppShell>
+    );
+  }
 
   const [products, zones, cfg, withdrawals, orders] = await Promise.all([
     prisma.product.findMany({ include: { variants: true }, orderBy: { createdAt: "desc" } }),

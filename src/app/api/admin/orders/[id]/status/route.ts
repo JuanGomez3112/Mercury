@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "@/lib/admin";
+import { requireAdminUnlocked } from "@/lib/admin";
 
 const schema = z.object({ status: z.enum(["paid", "shipped", "delivered", "cancelled"]) });
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const admin = await requireAdmin();
+  const admin = await requireAdminUnlocked();
   if (!admin) return NextResponse.json({ error: "Prohibido" }, { status: 403 });
   const { id } = await params;
   const parsed = schema.safeParse(await req.json().catch(() => null));

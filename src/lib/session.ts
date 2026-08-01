@@ -80,3 +80,38 @@ export async function isTabuUnlocked(userId: string): Promise<boolean> {
     return false;
   }
 }
+
+const ADMIN_COOKIE = "mercury_admin";
+
+/** Segundo factor del panel admin: cookie firmada de corta duración. */
+export async function setAdminUnlock(userId: string) {
+  const token = await new SignJWT({ sub: userId, admin: true })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("30m")
+    .sign(secret());
+  const jar = await cookies();
+  jar.set(ADMIN_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.COOKIE_SECURE === "1",
+    path: "/",
+  });
+}
+
+export async function clearAdminUnlock() {
+  const jar = await cookies();
+  jar.delete(ADMIN_COOKIE);
+}
+
+export async function isAdminUnlocked(userId: string): Promise<boolean> {
+  const jar = await cookies();
+  const token = jar.get(ADMIN_COOKIE)?.value;
+  if (!token) return false;
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    return payload.admin === true && String(payload.sub) === userId;
+  } catch {
+    return false;
+  }
+}

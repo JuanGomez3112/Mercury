@@ -23,6 +23,7 @@ model User {
   balance         Int      @default(0)
   earnings Int     @default(0)
   isAdmin  Boolean @default(false)
+  adminPinHash String?
   creatorMode     Boolean  @default(false)
   subPriceCredits Int?
   createdAt    DateTime  @default(now())
