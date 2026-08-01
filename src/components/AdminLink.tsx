@@ -21,7 +21,7 @@ export default function AdminLink({ className, onClick }: { className?: string; 
 
   if (!isAdmin) return null;
   return (
-    <Link href="/admin/tienda" onClick={onClick} className={className}>
+    <Link href="/admin" onClick={onClick} className={className}>
       <span className="w-4 text-center">🛠</span> Panel admin
     </Link>
   );
