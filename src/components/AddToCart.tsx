@@ -48,7 +48,15 @@ export default function AddToCart({ variants }: { variants: Variant[] }) {
     <div className="space-y-3 rounded-2xl border border-white/10 bg-navy-2/50 p-6">
       <div className="space-y-1.5">
         <label className="text-xs font-semibold uppercase tracking-wide text-white/40">Variante</label>
-        <select value={variantId} onChange={(e) => setVariantId(e.target.value)} className={select}>
+        <select
+          value={variantId}
+          onChange={(e) => {
+            const next = variants.find((v) => v.id === e.target.value);
+            setVariantId(e.target.value);
+            if (next) setQty((q) => Math.min(q, next.stock) || 1);
+          }}
+          className={select}
+        >
           {variants.map((v) => (
             <option key={v.id} value={v.id} disabled={v.stock <= 0}>
               {v.label} {v.stock <= 0 ? "— agotada" : `(${v.stock} disp.)`}

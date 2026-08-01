@@ -33,11 +33,9 @@ export default async function TiendaPage() {
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
             {products.map((p) => {
-              const variants = p.variants.filter((v) => v.stock > 0);
-              const pool = variants.length > 0 ? variants : p.variants;
-              const minCredits = pool.length > 0 ? Math.min(...pool.map((v) => v.priceCredits)) : null;
-              const minCents = pool.length > 0 ? Math.min(...pool.map((v) => v.priceCents)) : null;
-              const soldOut = p.variants.length > 0 && variants.length === 0;
+              const minCredits = p.variants.length > 0 ? Math.min(...p.variants.map((v) => v.priceCredits)) : null;
+              const minCents = p.variants.length > 0 ? Math.min(...p.variants.map((v) => v.priceCents)) : null;
+              const soldOut = p.variants.length > 0 && p.variants.every((v) => v.stock <= 0);
 
               return (
                 <Link
