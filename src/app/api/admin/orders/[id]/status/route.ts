@@ -17,17 +17,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     await prisma.$transaction(async (tx) => {
       const order = await tx.order.findUnique({ where: { id }, include: { items: true } });
       if (!order) throw new Error("NF");
-      if (status === "cancelled" && order.status !== "cancelled") {
+      if (status === "cancelled") {
+        // Claim el cancel atómicamente: solo si no estaba ya cancelada (evita doble restock por carrera/doble-cancel).
+        const claim = await tx.order.updateMany({ where: { id, status: { not: "cancelled" } }, data: { status: "cancelled" } });
+        if (claim.count === 0) throw new Error("TERMINAL");
         for (const it of order.items) {
           if (it.variantId) {
             await tx.productVariant.updateMany({ where: { id: it.variantId }, data: { stock: { increment: it.qty } } });
           }
         }
+      } else {
+        // No permitir transiciones saliendo de "cancelled" (estado terminal).
+        const upd = await tx.order.updateMany({ where: { id, status: { not: "cancelled" } }, data: { status } });
+        if (upd.count === 0) throw new Error("TERMINAL");
       }
-      await tx.order.update({ where: { id }, data: { status } });
     });
   } catch (e) {
-    if (e instanceof Error && e.message === "NF") return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+    if (e instanceof Error && e.message === "NF") return NextResponse.json({ error: "No existe" }, { status: 404 });
+    if (e instanceof Error && e.message === "TERMINAL") return NextResponse.json({ error: "Orden cancelada (estado terminal) o no modificable" }, { status: 400 });
     throw e;
   }
 
