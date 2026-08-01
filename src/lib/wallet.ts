@@ -1,6 +1,6 @@
 import { prisma } from "./db";
 import type { Prisma } from "@prisma/client";
-import { mint, burnToTreasury } from "./token";
+import { mint, burnToTreasury, getConfig } from "./token";
 
 export const WELCOME_CREDITS = 500;
 
@@ -63,6 +63,7 @@ export async function spend(
 
 /** Recarga simulada (mintea del treasury a balance). */
 export async function topup(userId: string, amount: number) {
+  await getConfig();
   return prisma.$transaction(async (tx) => {
     await mint(tx, userId, amount);
     await tx.walletTransaction.create({ data: { userId, delta: amount, type: "topup" } });

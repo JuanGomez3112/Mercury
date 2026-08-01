@@ -17,8 +17,10 @@ export async function getConfig() {
   const agg = await prisma.user.aggregate({ _sum: { balance: true, earnings: true } });
   const circulating = BigInt(agg._sum.balance ?? 0) + BigInt(agg._sum.earnings ?? 0);
   const maxSupply = BigInt(1000000000);
-  return prisma.tokenConfig.create({
-    data: { id: "singleton", maxSupply, treasury: maxSupply - circulating },
+  return prisma.tokenConfig.upsert({
+    where: { id: "singleton" },
+    create: { id: "singleton", maxSupply, treasury: maxSupply - circulating },
+    update: {},
   });
 }
 
