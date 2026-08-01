@@ -1,7 +1,7 @@
 # Mercury — Moderación (reportes + cola admin + baneo)
 
 - **Fecha:** 2026-08-01
-- **Estado:** DISEÑO / documentado. **No implementado aún** (por decisión del usuario: en esta iteración solo se documenta).
+- **Estado:** ✅ IMPLEMENTADO y DESPLEGADO en CT 106 (commit `dbf65ac`, 2026-08-01). Los 5 bloques construidos, verificados en producción (tabla `Report` + columnas `User.banned/suspendedUntil` aplicadas, servicio activo).
 - **Proyecto:** Mercury (`E:\Proyectos\Proyectos\Programacion\Mercury`, GitHub `JuanGomez3112/Mercury`, branch `master`)
 - **Servidor dev:** Proxmox CT 106 (192.168.1.106).
 - **Stack:** Next.js 16 (App Router) · React 19 · TS · Tailwind v4 · Prisma **6** · PostgreSQL · zod · jose.
