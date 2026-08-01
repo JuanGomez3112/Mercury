@@ -51,6 +51,7 @@ model User {
   orders    Order[]
   reportsMade     Report[]  @relation("reporter")
   reportsResolved Report[]  @relation("resolver")
+  payments        Payment[]
 }
 
 model Report {
@@ -215,12 +216,32 @@ model Subscription {
 }
 
 model TokenConfig {
-  id        String   @id @default("singleton")
-  maxSupply BigInt   @default(1000000000)
-  treasury  BigInt   @default(1000000000)
-  rateCents Int      @default(100)
-  launched  Boolean  @default(false)
-  updatedAt DateTime @updatedAt
+  id          String   @id @default("singleton")
+  maxSupply   BigInt   @default(1000000000)
+  treasury    BigInt   @default(1000000000)
+  rateCents   Int      @default(100)
+  reserveCents BigInt  @default(0)  // dinero real en reserva que respalda ☾ retirables (solvencia)
+  launched    Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    String   // btcpay | ...
+  providerRef String   @unique   // id del cobro en el proveedor (idempotencia)
+  kind        String   // buy_credits | store_order
+  credits     Int?     // ☾ a emitir (si buy_credits)
+  amountCents Int
+  currency    String   @default("USD")
+  status      String   @default("pending") // pending | paid | failed | refunded
+  orderId     String?  // si store_order
+  createdAt   DateTime @default(now())
+  paidAt      DateTime?
+
+  @@index([userId, createdAt])
+  @@index([status])
 }
 
 model Withdrawal {
