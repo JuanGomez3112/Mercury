@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -21,6 +21,11 @@ export default function CheckoutForm({
   rateCents: number;
 }) {
   const router = useRouter();
+  // Clave de idempotencia estable por montaje: reintentos (red, doble-clic, fallo+reenvío) usan la misma
+  // clave; si un intento ya creó la orden, el server la devuelve en vez de recobrar.
+  const idemKey = useRef<string>(
+    typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   const [shipName, setShipName] = useState("");
   const [shipLine1, setShipLine1] = useState("");
   const [shipLine2, setShipLine2] = useState("");
@@ -68,6 +73,7 @@ export default function CheckoutForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          idempotencyKey: idemKey.current,
           paymentMethod,
           shipName: shipName.trim(),
           shipLine1: shipLine1.trim(),

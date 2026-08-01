@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { currentUser, ensureNotBlocked } from "@/lib/auth";
 import { spend, InsufficientFunds } from "@/lib/wallet";
 import { resolveZone } from "@/lib/store";
 
 const schema = z.object({
+  idempotencyKey: z.string().trim().min(8).max(64),
   paymentMethod: z.enum(["merycoin", "external"]),
   shipName: z.string().min(1),
   shipLine1: z.string().min(1),
@@ -25,6 +27,14 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
   const s = parsed.data;
+
+  // Idempotencia: si este intento ya produjo una orden, devolverla sin recobrar ni redecrementar stock.
+  // Cubre el caso "primer request ya comprometido" (doble-clic, reintento de red, respuesta perdida).
+  const existing = await prisma.order.findUnique({ where: { idempotencyKey: s.idempotencyKey }, select: { id: true, userId: true } });
+  if (existing) {
+    if (existing.userId !== session.sub) return NextResponse.json({ error: "Clave inválida" }, { status: 409 });
+    return NextResponse.json({ ok: true, orderId: existing.id, duplicate: true });
+  }
 
   const items = await prisma.cartItem.findMany({
     where: { userId: session.sub },
@@ -58,6 +68,7 @@ export async function POST(req: Request) {
       const order = await tx.order.create({
         data: {
           userId: session.sub,
+          idempotencyKey: s.idempotencyKey,
           status: s.paymentMethod === "merycoin" ? "paid" : "pending",
           paymentMethod: s.paymentMethod,
           subtotalCents,
@@ -92,6 +103,13 @@ export async function POST(req: Request) {
     if (e instanceof InsufficientFunds) return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 });
     if (e instanceof Error && e.message.startsWith("STOCK:")) {
       return NextResponse.json({ error: `Sin stock: ${e.message.slice(6)}` }, { status: 400 });
+    }
+    // Dup concurrente: otro request con la misma clave ganó la carrera. El tx actual revirtió
+    // (stock/cobro deshechos). Postgres bloquea el insert hasta que el ganador comitea, así que
+    // aquí ya existe; devolverlo idempotente.
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      const won = await prisma.order.findUnique({ where: { idempotencyKey: s.idempotencyKey }, select: { id: true } });
+      if (won) return NextResponse.json({ ok: true, orderId: won.id, duplicate: true });
     }
     throw e;
   }
