@@ -19,6 +19,7 @@ export async function POST(req: Request) {
   if (!cfg.launched) return NextResponse.json({ error: "Retiros no disponibles (pre-lanzamiento)" }, { status: 400 });
   if (credits < MIN_WITHDRAW) return NextResponse.json({ error: `Mínimo ${MIN_WITHDRAW} ☾` }, { status: 400 });
   const amountCents = credits * cfg.rateCents;
+  if (amountCents > 2_000_000_000) return NextResponse.json({ error: "Monto demasiado grande" }, { status: 400 });
 
   try {
     await prisma.$transaction(async (tx) => {

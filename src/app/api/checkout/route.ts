@@ -32,21 +32,25 @@ export async function POST(req: Request) {
 
   const subtotalCredits = items.reduce((a, it) => a + it.variant.priceCredits * it.qty, 0);
   const subtotalCents = items.reduce((a, it) => a + it.variant.priceCents * it.qty, 0);
-  const zone = await resolveZone(s.shipCountry);
+  const shipCountry = s.shipCountry.trim().toUpperCase();
+  const zone = await resolveZone(shipCountry);
   const shippingCredits = zone?.priceCredits ?? 0;
   const shippingCents = zone?.priceCents ?? 0;
 
   let orderId = "";
   try {
     orderId = await prisma.$transaction(async (tx) => {
-      for (const it of items) {
-        const dec = await tx.productVariant.updateMany({
-          where: { id: it.variantId, stock: { gte: it.qty } },
-          data: { stock: { decrement: it.qty } },
-        });
-        if (dec.count === 0) throw new Error(`STOCK:${it.variant.product.name}`);
-      }
       if (s.paymentMethod === "merycoin") {
+        for (const it of items) {
+          const dec = await tx.productVariant.updateMany({
+            where: { id: it.variantId, active: true, stock: { gte: it.qty } },
+            data: { stock: { decrement: it.qty } },
+          });
+          if (dec.count === 0) throw new Error(`STOCK:${it.variant.product.name}`);
+        }
+      }
+      // v1: externo no reserva stock — reserve-on-pay cuando exista el procesador real
+      if (s.paymentMethod === "merycoin" && (subtotalCredits + shippingCredits) > 0) {
         await spend(tx, { userId: session.sub, amount: subtotalCredits + shippingCredits, refType: "order" });
       }
       const order = await tx.order.create({
@@ -64,7 +68,7 @@ export async function POST(req: Request) {
           shipLine2: s.shipLine2 ?? null,
           shipCity: s.shipCity,
           shipState: s.shipState ?? null,
-          shipCountry: s.shipCountry,
+          shipCountry,
           shipZip: s.shipZip ?? null,
           shipPhone: s.shipPhone ?? null,
           items: {
