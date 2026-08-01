@@ -20,7 +20,9 @@ model User {
   mode         String?   // "angel" | "devil" | null
   birthdate    DateTime?
   ageVerified  Boolean   @default(false)
-  balance         Int      @default(500)
+  balance         Int      @default(0)
+  earnings Int     @default(0)
+  isAdmin  Boolean @default(false)
   creatorMode     Boolean  @default(false)
   subPriceCredits Int?
   createdAt    DateTime  @default(now())
@@ -40,6 +42,7 @@ model User {
   purchases     Purchase[]          @relation("buyer")
   subsAsSub     Subscription[]      @relation("subscriber")
   subsAsCreator Subscription[]      @relation("creator")
+  withdrawals Withdrawal[]
 }
 
 model Notification {
@@ -180,4 +183,27 @@ model Subscription {
 
   @@unique([subscriberId, creatorId])
   @@index([creatorId])
+}
+
+model TokenConfig {
+  id        String   @id @default("singleton")
+  maxSupply BigInt   @default(1000000000)
+  treasury  BigInt   @default(1000000000)
+  rateCents Int      @default(100)
+  launched  Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}
+
+model Withdrawal {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credits     Int
+  amountCents Int
+  status      String   @default("pending")
+  payoutInfo  String   @default("")
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+  @@index([status])
+  @@index([userId, createdAt])
 }
