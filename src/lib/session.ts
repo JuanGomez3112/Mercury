@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { SignJWT, jwtVerify } from "jose";
+import { prisma } from "./db";
 
 const COOKIE = "mercury_session";
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 días
@@ -30,13 +32,31 @@ export async function createSession(payload: SessionPayload) {
   });
 }
 
+/**
+ * Estado de bloqueo del usuario, deduplicado por request (React cache): una sola lectura a DB
+ * aunque getSession se llame varias veces en el mismo render/handler.
+ */
+const loadBlockState = cache(async (userId: string) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: { banned: true, suspendedUntil: true },
+  });
+});
+
 export async function getSession(): Promise<SessionPayload | null> {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret());
-    return { sub: String(payload.sub), username: String(payload.username) };
+    const sub = String(payload.sub);
+    // Revocación de sesión: baneo/suspensión invalidan la cookie JWT viva al instante (logout forzado
+    // global, no solo en la próxima escritura). Cuenta borrada → sesión muerta también.
+    const u = await loadBlockState(sub);
+    if (!u) return null;
+    if (u.banned) return null;
+    if (u.suspendedUntil && u.suspendedUntil > new Date()) return null;
+    return { sub, username: String(payload.username) };
   } catch {
     return null;
   }
