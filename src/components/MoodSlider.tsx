@@ -64,13 +64,9 @@ export default function MoodSlider({ initial }: { initial: Mode }) {
 
   const shown = dragging ? preview : mode;
   const pos = shown === "angel" ? "translate-x-0" : shown === "devil" ? "translate-x-10" : "translate-x-5";
-  const bg =
-    shown === "angel"
-      ? "bg-gradient-to-tl from-purple-soft to-purple"
-      : shown === "devil"
-        ? "bg-gradient-to-tl from-orange-400 to-orange-500"
-        : "bg-gradient-to-tl from-purple-soft to-purple opacity-60";
-  const track = shown === "devil" ? "bg-orange-500/15" : "bg-purple/15";
+  const bg = shown === "angel" ? "mood-angel" : shown === "devil" ? "mood-devil" : "mood-default";
+  // Track por estado (calca mood-*.svg): ángel .32, neutral .16, devil .15.
+  const track = shown === "angel" ? "mood-track-angel" : shown === "devil" ? "mood-track-devil" : "mood-track-default";
   const label = shown === "angel" ? "Ángel" : shown === "devil" ? "Diablito" : "Neutral";
 
   return (

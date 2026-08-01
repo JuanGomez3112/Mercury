@@ -46,6 +46,28 @@ body {
   background: var(--navy);
 }
 
+/* Degradados del mood (calca Mood.svg: paint2 ángel/neutral, paint0 devil).
+   default = mismo morado que ángel pero medio claro (translúcido). */
+.mood-angel {
+  background-image: linear-gradient(to top left, #9379f2, #cabfd9);
+}
+.mood-default {
+  background-image: linear-gradient(to top left, rgba(147, 121, 242, 0.64), rgba(202, 191, 217, 0.64));
+}
+.mood-devil {
+  background-image: linear-gradient(to top left, #ff6900, #ff8000);
+}
+/* Track del slider por estado (opacidades exactas de mood-*.svg). */
+.mood-track-angel {
+  background-color: rgba(147, 121, 242, 0.32);
+}
+.mood-track-default {
+  background-color: rgba(147, 121, 242, 0.16);
+}
+.mood-track-devil {
+  background-color: rgba(255, 105, 0, 0.15);
+}
+
 /* Scroll horizontal sin barra visible (fila de tags del composer) */
 .no-scrollbar {
   -ms-overflow-style: none;
