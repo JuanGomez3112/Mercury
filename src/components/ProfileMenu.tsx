@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
+import AdminLink from "./AdminLink";
 import { useOutside } from "@/lib/useOutside";
 import { IconUser, IconBookmark } from "./icons";
 
@@ -52,6 +53,7 @@ export default function ProfileMenu({
           <Link href="/ajustes" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">⚙</span> Ajustes
           </Link>
+          <AdminLink onClick={() => setOpen(false)} className={item} />
 
           <button onClick={logout} className={`${item} w-full border-t border-white/10 text-red-400 hover:text-red-300`}>
             <span className="w-4 text-center">⏻</span> Cerrar sesión
