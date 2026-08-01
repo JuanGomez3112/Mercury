@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
+import { currentUser, ensureNotBlocked } from "@/lib/auth";
 
 const schema = z.object({
   to: z.string().min(1),
@@ -13,6 +13,8 @@ const schema = z.object({
 export async function POST(req: Request) {
   const session = await currentUser();
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  const blk = await ensureNotBlocked(session.sub);
+  if (blk.blocked) return NextResponse.json({ error: blk.reason }, { status: 403 });
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {

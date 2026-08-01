@@ -8,6 +8,7 @@ import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
 import { VerifiedGrad } from "@/components/GradientIcons";
 import SubscribeButton from "@/components/SubscribeButton";
+import ReportUserButton from "@/components/ReportUserButton";
 import TipButton from "@/components/TipButton";
 
 export const dynamic = "force-dynamic";
@@ -99,6 +100,7 @@ export default async function ProfilePage({
                   <SubscribeButton username={profile.username} price={profile.subPriceCredits} activeUntil={subActiveUntil} />
                 )}
                 <TipButton toUsername={profile.username} />
+                <ReportUserButton targetId={profile.id} />
               </div>
             )}
           </div>

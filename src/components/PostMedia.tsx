@@ -6,6 +6,7 @@ import { IconHeart, IconHeartFill } from "./icons";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost, CommentDTO } from "@/lib/types";
 import UnlockButton from "./UnlockButton";
+import ReportModal from "./ReportModal";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -41,6 +42,7 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
   const [text, setText] = useState("");
   const [liked, setLiked] = useState(post.likedByMe);
   const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [reportComment, setReportComment] = useState<string | null>(null);
 
   useEffect(() => {
     if (open === null) return;
@@ -177,12 +179,20 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
                 {loadingC && <p className="text-sm text-white/40">Cargando comentarios…</p>}
                 {!loadingC && comments.length === 0 && <p className="text-sm text-white/40">Sé el primero en comentar.</p>}
                 {comments.map((c) => (
-                  <div key={c.id} className="flex gap-2.5">
+                  <div key={c.id} className="group flex gap-2.5">
                     <Avatar src={c.author.avatarUrl} className="h-8 w-8" />
-                    <div>
+                    <div className="flex-1">
                       <span className="text-sm font-semibold text-white">{c.author.displayName ?? c.author.username}</span>{" "}
                       <span className="text-sm text-white/80">{c.body}</span>
-                      <div className="text-xs text-white/30">{timeAgo(c.createdAt)}</div>
+                      <div className="flex items-center gap-2 text-xs text-white/30">
+                        <span>{timeAgo(c.createdAt)}</span>
+                        <button
+                          onClick={() => setReportComment(c.id)}
+                          className="opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+                        >
+                          reportar
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -209,6 +219,10 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
             </div>
           </div>
         </div>
+      )}
+
+      {reportComment && (
+        <ReportModal targetType="comment" targetId={reportComment} onClose={() => setReportComment(null)} />
       )}
     </>
   );

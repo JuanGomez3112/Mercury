@@ -4,10 +4,12 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOutside } from "@/lib/useOutside";
 import { IconMore } from "./icons";
+import ReportModal from "./ReportModal";
 
 export default function PostMenu({ postId, isMine }: { postId: string; isMine: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useOutside(ref, () => setOpen(false), open);
 
@@ -36,7 +38,7 @@ export default function PostMenu({ postId, isMine }: { postId: string; isMine: b
 
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-white/10 bg-navy-2 py-1 shadow-2xl">
-          <button onClick={() => { setOpen(false); alert("Reporte enviado (pendiente)"); }} className={`${item} text-white/80 hover:text-white`}>
+          <button onClick={() => { setOpen(false); setReporting(true); }} className={`${item} text-white/80 hover:text-white`}>
             Reportar
           </button>
           <button onClick={() => { setOpen(false); alert("Enlace copiado (pendiente)"); }} className={`${item} text-white/80 hover:text-white`}>
@@ -49,6 +51,8 @@ export default function PostMenu({ postId, isMine }: { postId: string; isMine: b
           )}
         </div>
       )}
+
+      {reporting && <ReportModal targetType="post" targetId={postId} onClose={() => setReporting(false)} />}
     </div>
   );
 }

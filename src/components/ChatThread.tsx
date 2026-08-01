@@ -5,6 +5,7 @@ import { timeAgo } from "@/lib/time";
 import { IconImage } from "./icons";
 import type { ThreadMessage } from "@/lib/queries";
 import UnlockButton from "./UnlockButton";
+import ReportModal from "./ReportModal";
 
 export default function ChatThread({
   partner,
@@ -25,6 +26,7 @@ export default function ChatThread({
   const [paid, setPaid] = useState(false);
   const [price, setPrice] = useState<number | "">("");
   const [error, setError] = useState("");
+  const [reportMsg, setReportMsg] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lastPing = useRef(0);
@@ -126,7 +128,7 @@ export default function ChatThread({
           <p className="py-10 text-center text-sm text-white/40">No hay mensajes. Escribe el primero.</p>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
+            <div key={m.id} className={`group flex items-center gap-2 ${m.mine ? "justify-end" : "justify-start"}`}>
               {m.locked ? (
                 <div className="flex max-w-[75%] flex-col items-center gap-2 rounded-2xl border border-purple/20 bg-navy px-4 py-4 text-sm text-white">
                   <span className="text-2xl">🔒</span>
@@ -148,6 +150,15 @@ export default function ChatThread({
                     </span>
                   </div>
                 </div>
+              )}
+              {!m.mine && !m.locked && (
+                <button
+                  onClick={() => setReportMsg(m.id)}
+                  title="Reportar mensaje"
+                  className="shrink-0 text-[10px] text-white/25 opacity-0 transition hover:text-red-400 group-hover:opacity-100"
+                >
+                  reportar
+                </button>
               )}
             </div>
           ))
@@ -230,6 +241,8 @@ export default function ChatThread({
         </div>
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={onPick} className="hidden" />
       </div>
+
+      {reportMsg && <ReportModal targetType="message" targetId={reportMsg} onClose={() => setReportMsg(null)} />}
     </>
   );
 }

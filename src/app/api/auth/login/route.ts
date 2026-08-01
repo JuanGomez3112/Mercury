@@ -18,6 +18,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Usuario o contraseña incorrectos" }, { status: 401 });
   }
 
+  // Bloqueo de sesión para cuentas baneadas/suspendidas.
+  if (user.banned) {
+    return NextResponse.json({ error: "Cuenta baneada" }, { status: 403 });
+  }
+  if (user.suspendedUntil && user.suspendedUntil > new Date()) {
+    return NextResponse.json({ error: `Cuenta suspendida hasta ${user.suspendedUntil.toLocaleDateString("es")}` }, { status: 403 });
+  }
+
   await createSession({ sub: user.id, username: user.username });
   return NextResponse.json({ ok: true });
 }

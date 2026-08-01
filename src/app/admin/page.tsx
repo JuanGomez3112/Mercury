@@ -14,7 +14,7 @@ const SECTIONS: Section[] = [
   { key: "tienda", label: "Tienda", desc: "Productos, variantes, zonas de envío, órdenes", icon: "🛍", href: "/admin/tienda" },
   { key: "economia", label: "Economía / MeryCoin", desc: "Tasa, supply, retiros (dentro de Tienda por ahora)", icon: "☾", href: "/admin/tienda" },
   { key: "usuarios", label: "Usuarios", desc: "Gestión de cuentas y roles", icon: "👥" },
-  { key: "moderacion", label: "Moderación", desc: "Reportes, retiro de contenido", icon: "🛡" },
+  { key: "moderacion", label: "Moderación", desc: "Reportes, retiro de contenido, baneos", icon: "🛡", href: "/admin/moderacion" },
   { key: "cumplimiento", label: "Cumplimiento", desc: "Verificación de edad, T&C, pagos", icon: "📋" },
   { key: "stats", label: "Estadísticas", desc: "Métricas de la plataforma", icon: "📊" },
 ];

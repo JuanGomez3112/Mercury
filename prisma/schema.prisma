@@ -24,6 +24,8 @@ model User {
   earnings Int     @default(0)
   isAdmin  Boolean @default(false)
   adminPinHash String?
+  banned          Boolean   @default(false)
+  suspendedUntil  DateTime?
   creatorMode     Boolean  @default(false)
   subPriceCredits Int?
   createdAt    DateTime  @default(now())
@@ -47,6 +49,29 @@ model User {
   products  Product[] @relation("seller")
   cartItems CartItem[]
   orders    Order[]
+  reportsMade     Report[]  @relation("reporter")
+  reportsResolved Report[]  @relation("resolver")
+}
+
+model Report {
+  id           String   @id @default(cuid())
+  reporterId   String
+  reporter     User     @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType   String   // post | user | comment | message
+  targetId     String   // id polimórfico (sin FK; el target puede borrarse y el reporte queda de histórico)
+  reason       String   // menor_edad | no_consentido | acoso | spam | suplantacion | otro
+  note         String   @default("")
+  priority     Boolean  @default(false) // true si reason ∈ {menor_edad, no_consentido}
+  status       String   @default("pending") // pending | resolved | dismissed
+  action       String?  // remove | ban | suspend | dismiss
+  resolvedById String?
+  resolvedBy   User?    @relation("resolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  resolvedAt   DateTime?
+  createdAt    DateTime @default(now())
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([status, priority, createdAt])
+  @@index([targetType, targetId])
 }
 
 model Notification {
