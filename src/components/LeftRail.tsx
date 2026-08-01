@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser } from "./icons";
+import CartBadge from "./CartBadge";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser, IconTable } from "./icons";
 
 export default function LeftRail({ username }: { username: string }) {
   const path = usePathname();
@@ -12,6 +13,7 @@ export default function LeftRail({ username }: { username: string }) {
     { icon: IconSearch, href: "/feed?tab=explora", label: "Explorar", match: () => false },
     { icon: IconFire, href: "/feed?tab=tabu", label: "Tabú", match: () => false },
     { icon: IconInbox, href: "/mensajes", label: "Mensajes", match: (p: string) => p.startsWith("/mensajes") },
+    { icon: IconTable, href: "/tienda", label: "Tienda", match: (p: string) => p.startsWith("/tienda") },
     { icon: IconBell, href: "/notificaciones", label: "Notificaciones", match: (p: string) => p.startsWith("/notificaciones") },
     { icon: IconUser, href: `/u/${username}`, label: "Perfil", match: (p: string) => p === `/u/${username}` },
   ];
@@ -25,11 +27,16 @@ export default function LeftRail({ username }: { username: string }) {
             key={label}
             href={href}
             aria-label={label}
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl transition ${
+            className={`relative flex h-12 w-12 items-center justify-center rounded-2xl transition ${
               active ? "bg-purple text-navy" : "bg-navy-2/60 text-white/60 hover:text-white"
             }`}
           >
             <Icon className="h-8 w-8" />
+            {label === "Tienda" && (
+              <span className="absolute right-1 top-1">
+                <CartBadge />
+              </span>
+            )}
           </Link>
         );
       })}

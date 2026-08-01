@@ -1,13 +1,15 @@
 import Link from "next/link";
 import Avatar from "./Avatar";
 import MoodSlider from "./MoodSlider";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser } from "./icons";
+import CartBadge from "./CartBadge";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable } from "./icons";
 
 const nav = [
   { icon: IconGrid, label: "Inicio", href: "/feed?tab=feed", active: true },
   { icon: IconSearch, label: "Explorar", href: "/feed?tab=explora" },
   { icon: IconFire, label: "Tabú", href: "/feed?tab=tabu" },
   { icon: IconInbox, label: "Mensajes", href: "/mensajes" },
+  { icon: IconTable, label: "Tienda", href: "/tienda" },
   { icon: IconBookmark, label: "Guardados", href: "/guardados" },
   { icon: IconUser, label: "Perfil", href: "#perfil" },
 ];
@@ -42,6 +44,7 @@ export default function LeftPanel({
           >
             <Icon className="h-5 w-5" />
             {label}
+            {label === "Tienda" && <CartBadge />}
           </Link>
         ))}
         <Link
