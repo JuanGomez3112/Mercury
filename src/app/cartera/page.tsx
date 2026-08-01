@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import AppShell from "@/components/AppShell";
+import SendCreditsForm from "@/components/SendCreditsForm";
 import { timeAgo } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 const label: Record<string, string> = {
   welcome: "Bienvenida", topup: "Recarga", purchase: "Compra", sale: "Venta",
   tip_out: "Propina enviada", tip_in: "Propina recibida", sub_out: "Suscripción", sub_in: "Suscriptor",
+  transfer_out: "Enviado", transfer_in: "Recibido", store_purchase: "Compra tienda", withdraw: "Retiro",
 };
 
 export default async function CarteraPage() {
@@ -27,6 +29,7 @@ export default async function CarteraPage() {
           <p className="my-1 text-4xl font-bold text-white">{me.balance} ☾</p>
           <Link href="/recargar" className="mt-2 inline-block rounded-xl bg-gradient-to-tl from-purple to-purple-soft px-5 py-2.5 text-sm font-semibold text-white">Recargar</Link>
         </div>
+        <SendCreditsForm />
         <div className="rounded-2xl border border-white/10 bg-navy-2/50">
           <h2 className="border-b border-white/10 p-4 text-sm font-semibold text-white/70">Historial</h2>
           {tx.length === 0 ? (
