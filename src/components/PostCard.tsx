@@ -22,7 +22,7 @@ export default function PostCard({
 }) {
   const name = post.author.displayName ?? post.author.username;
   return (
-    <article className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-base leading-5 tracking-[0.02em]">
+    <article className="rounded-none border-x-0 border-y border-white/10 bg-navy-2/50 p-5 text-base leading-5 tracking-[0.02em] sm:rounded-2xl sm:border-x sm:p-8">
       {/* Cabecera */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">

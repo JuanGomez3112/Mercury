@@ -17,7 +17,7 @@ export default function AppShell({
   return (
     <>
       <TopBar username={username} avatarUrl={avatarUrl} />
-      <div className="mx-auto flex w-full max-w-[1920px] gap-8 py-6 pl-4 pr-8">
+      <div className="mx-auto flex w-full max-w-[1920px] gap-8 px-0 py-4 sm:py-6 lg:pl-4 lg:pr-8">
         <LeftRail username={username} />
         <main className={`mx-auto w-full flex-1 ${wide ? "max-w-[896px]" : "max-w-2xl"}`}>{children}</main>
       </div>
