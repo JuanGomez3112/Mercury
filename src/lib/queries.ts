@@ -167,6 +167,7 @@ export type ThreadMessage = {
   mine: boolean;
   priceCredits: number | null;
   locked: boolean;
+  readAt: Date | null; // en mensajes míos: cuándo lo leyó el interlocutor ("Visto")
 };
 
 /** Hilo de mensajes entre el viewer y un usuario. */
@@ -205,6 +206,7 @@ export async function getThread(viewerId: string, partnerId: string): Promise<Th
       mine,
       priceCredits: m.priceCredits,
       locked,
+      readAt: m.readAt,
     };
   });
 }

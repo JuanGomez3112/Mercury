@@ -121,6 +121,9 @@ export default function ChatThread({
     }
   }
 
+  // "Visto": id del último mensaje mío que el interlocutor ya leyó.
+  const lastReadMineId = [...messages].reverse().find((m) => m.mine && m.readAt)?.id ?? null;
+
   return (
     <>
       <div className="flex-1 space-y-2 overflow-y-auto p-4">
@@ -128,7 +131,8 @@ export default function ChatThread({
           <p className="py-10 text-center text-sm text-white/40">No hay mensajes. Escribe el primero.</p>
         ) : (
           messages.map((m) => (
-            <div key={m.id} className={`group flex items-center gap-2 ${m.mine ? "justify-end" : "justify-start"}`}>
+            <div key={m.id}>
+            <div className={`group flex items-center gap-2 ${m.mine ? "justify-end" : "justify-start"}`}>
               {m.locked ? (
                 <div className="flex max-w-[75%] flex-col items-center gap-2 rounded-2xl border border-purple/20 bg-navy px-4 py-4 text-sm text-white">
                   <span className="text-2xl">🔒</span>
@@ -160,6 +164,10 @@ export default function ChatThread({
                   reportar
                 </button>
               )}
+            </div>
+            {m.id === lastReadMineId && (
+              <div className="mt-0.5 pr-1 text-right text-[10px] text-white/35">Visto ✓✓</div>
+            )}
             </div>
           ))
         )}
