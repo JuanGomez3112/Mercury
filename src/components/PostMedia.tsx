@@ -162,8 +162,8 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
               )}
             </div>
 
-            {/* Contenedor 2: comentarios + likes */}
-            <div className="flex w-[380px] shrink-0 flex-col border-l border-white/10">
+            {/* Contenedor 2: comentarios + likes (oculto en móvil: la foto ocupa todo) */}
+            <div className="flex w-[380px] shrink-0 flex-col border-l border-white/10 max-sm:hidden">
               <div className="flex items-center gap-3 border-b border-white/10 p-4">
                 <Avatar src={post.author.avatarUrl} className="h-10 w-10" />
                 <div className="leading-tight">
