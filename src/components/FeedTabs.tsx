@@ -83,9 +83,11 @@ export default function FeedTabs({
   const gated = tab === "tabu" && !unlocked;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-4">
-      <Tabs active={tab} onSelect={select} />
-      <div className="mt-8 space-y-8">
+    <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8 max-sm:rounded-none max-sm:border-0 max-sm:bg-transparent max-sm:p-0">
+      <div className="max-sm:px-4">
+        <Tabs active={tab} onSelect={select} />
+      </div>
+      <div className="mt-8 space-y-8 max-sm:mt-3 max-sm:space-y-2">
         {loading ? (
           <div className="flex justify-center py-12">
             <span className="h-8 w-8 animate-spin rounded-full border-2 border-purple border-t-transparent" />

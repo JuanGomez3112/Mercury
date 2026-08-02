@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import SlidePublish from "./SlidePublish";
 import ComposerMenu from "./ComposerMenu";
-import { IconFire, IconImage, IconLive, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink } from "./icons";
+import { IconFire, IconImage, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink } from "./icons";
 
 const MAX_FILES = 10;
 
@@ -20,7 +20,6 @@ export default function PostComposer({
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const drag = useRef({ down: false, startX: 0, startScroll: 0, moved: false });
   const [body, setBody] = useState("");
@@ -120,9 +119,7 @@ export default function PostComposer({
   }
 
   const pills = [
-    { label: "Foto", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
-    { label: "Video", icon: <IconLive className="h-4 w-4" />, onClick: () => videoRef.current?.click() },
-    { label: "Video en vivo", icon: <IconLive className="h-4 w-4" /> },
+    { label: "Foto | Video", icon: <IconImage className="h-4 w-4" />, onClick: () => fileRef.current?.click() },
     { label: "Cámara", icon: <IconCamera className="h-4 w-4" /> },
     { label: "Música", icon: <IconMusic className="h-4 w-4" /> },
     { label: "Etiqueta", icon: <IconTag className="h-4 w-4" /> },
@@ -186,10 +183,10 @@ export default function PostComposer({
           }}
           aria-pressed={adult}
           title="Marcar como contenido para adultos (18+)"
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white transition ${
             adult
-              ? "bg-orange-500 text-white shadow-[0_0_14px] shadow-orange-500/50"
-              : "bg-navy text-white/80 hover:bg-navy/80"
+              ? "shadow-[0_0_16px] shadow-orange-500/60 ring-2 ring-white/70"
+              : "opacity-90 hover:opacity-100"
           }`}
         >
           <IconFire className="h-4 w-3.5" />
@@ -202,10 +199,10 @@ export default function PostComposer({
             onClick={() => setPaid((v) => !v)}
             aria-pressed={paid}
             title="Poner precio a este contenido"
-            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition ${
+            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium text-white transition ${
               paid
-                ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50"
-                : "bg-purple/20 text-purple hover:bg-purple/30"
+                ? "bg-purple shadow-[0_0_14px] shadow-purple/50"
+                : "bg-purple/30 hover:bg-purple/40"
             }`}
           >
             <span>💰</span> Precio
@@ -255,16 +252,7 @@ export default function PostComposer({
       <input
         ref={fileRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        multiple
-        onChange={onPick}
-        className="hidden"
-      />
-
-      <input
-        ref={videoRef}
-        type="file"
-        accept="video/mp4,video/webm"
+        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
         multiple
         onChange={onPick}
         className="hidden"

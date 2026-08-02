@@ -16,7 +16,7 @@ function isVideo(url: string) { return VIDEO_RE.test(url); }
 function Tile({ src, size, plus, onOpen }: { src: string; size: number; plus?: number; onOpen: () => void }) {
   const video = isVideo(src);
   return (
-    <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden" style={{ width: size, height: size }}>
+    <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden rounded-lg" style={{ width: `min(${size}px, 66vw)`, height: `min(${size}px, 66vw)` }}>
       {video ? (
         <video src={src} className="h-full w-full object-cover" muted preload="metadata" />
       ) : (
@@ -106,7 +106,7 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
 
   const grid =
     images.length === 1 ? (
-      <button type="button" onClick={() => setOpen(0)} className="mt-4 block h-[640px] w-full overflow-hidden rounded-xl bg-navy">
+      <button type="button" onClick={() => setOpen(0)} className="mt-4 block h-[640px] w-full overflow-hidden rounded-xl bg-navy max-sm:h-[420px]">
         {isVideo(images[0]) ? (
           <video src={images[0]} className="h-full w-full object-contain" controls preload="metadata" />
         ) : (
