@@ -143,12 +143,12 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
       {grid}
 
       {open !== null && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4" onClick={() => setOpen(null)}>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 max-sm:p-0" onClick={() => setOpen(null)}>
           <button className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" onClick={() => setOpen(null)} aria-label="Cerrar">×</button>
 
-          <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-navy-2 max-sm:max-h-[94vh] max-sm:flex-col" onClick={(e) => e.stopPropagation()}>
+          <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-navy-2 max-sm:h-[100dvh] max-sm:max-h-none max-sm:flex-col max-sm:rounded-none" onClick={(e) => e.stopPropagation()}>
             {/* Contenedor 1: foto */}
-            <div className="relative flex flex-1 items-center justify-center bg-black max-sm:w-full max-sm:min-h-[50vh]">
+            <div className="relative flex flex-1 items-center justify-center bg-black max-sm:w-full">
               {isVideo(images[open]) ? (
                 <video src={images[open]} className="max-h-[90vh] max-w-full object-contain" controls autoPlay />
               ) : (
