@@ -202,13 +202,13 @@ export default function PostComposer({
             onClick={() => setPaid((v) => !v)}
             aria-pressed={paid}
             title="Poner precio a este contenido"
-            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition ${
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base transition ${
               paid
                 ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50"
-                : "bg-purple/20 text-white/60 hover:bg-purple/30 hover:text-white/80"
+                : "bg-purple/20 opacity-70 hover:bg-purple/30 hover:opacity-100"
             }`}
           >
-            <span>💰</span> Precio
+            💰
           </button>
         )}
 
@@ -219,7 +219,7 @@ export default function PostComposer({
             max={100000}
             value={price}
             onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
-            placeholder="Precio ☾"
+            placeholder="Precio"
             autoFocus
             className="w-24 shrink-0 rounded-full border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-purple"
           />
