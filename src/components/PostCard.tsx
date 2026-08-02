@@ -88,6 +88,25 @@ export default function PostCard({
         {!post.isMine && <TipButton toUsername={post.author.username} postId={post.id} />}
       </div>
 
+      {/* Preview de comentarios */}
+      {post.commentPreview.length > 0 && (
+        <div className="mt-3 space-y-1">
+          {post.commentCount > post.commentPreview.length && (
+            <Link href={`/p/${post.id}`} className="text-sm text-white/40 transition hover:text-white/70">
+              Ver los {post.commentCount} comentarios
+            </Link>
+          )}
+          {post.commentPreview.map((c) => (
+            <div key={c.id} className="text-sm">
+              <Link href={`/u/${c.username}`} className="font-semibold text-white hover:underline">
+                {c.displayName ?? c.username}
+              </Link>{" "}
+              <span className="break-words text-white/80">{c.body}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Comentario */}
       <CommentBar postId={post.id} avatarUrl={viewerAvatarUrl} />
     </article>

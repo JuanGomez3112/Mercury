@@ -15,6 +15,7 @@ type Row = {
   _count: { likes: number; comments: number };
   likes: { userId: string }[];
   bookmarks: { userId: string }[];
+  comments: { id: string; body: string; author: { username: string; displayName: string | null } }[];
 };
 
 function toFeedPost(
@@ -42,6 +43,9 @@ function toFeedPost(
     savedByMe: p.bookmarks.length > 0,
     priceCredits,
     locked,
+    commentPreview: [...p.comments]
+      .reverse()
+      .map((c) => ({ id: c.id, username: c.author.username, displayName: c.author.displayName, body: c.body })),
   };
 }
 
@@ -50,6 +54,11 @@ const include = (viewerId: string) => ({
   _count: { select: { likes: true, comments: true } },
   likes: { where: { userId: viewerId }, select: { userId: true } },
   bookmarks: { where: { userId: viewerId }, select: { userId: true } },
+  comments: {
+    orderBy: { createdAt: "desc" as const },
+    take: 2,
+    select: { id: true, body: true, author: { select: { username: true, displayName: true } } },
+  },
 });
 
 export type FeedTab = "feed" | "explora" | "tabu";

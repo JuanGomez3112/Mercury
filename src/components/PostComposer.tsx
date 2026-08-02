@@ -179,7 +179,11 @@ export default function PostComposer({
       <div className="mt-auto flex items-center gap-4 pt-4">
         <button
           type="button"
-          onClick={() => setAdult((v) => !v)}
+          onClick={() => {
+            const next = !adult;
+            setAdult(next);
+            if (!next) { setPaid(false); setPrice(""); } // apagar adulto oculta y resetea el precio
+          }}
           aria-pressed={adult}
           title="Marcar como contenido para adultos (18+)"
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
@@ -191,23 +195,24 @@ export default function PostComposer({
           <IconFire className="h-4 w-3.5" />
         </button>
 
-        {creatorMode && (
+        {/* Adulto revela "Precio"; "Precio" despliega el input. Sólo creadores pueden cobrar. */}
+        {creatorMode && adult && (
           <button
             type="button"
             onClick={() => setPaid((v) => !v)}
             aria-pressed={paid}
-            title="Marcar como contenido de pago"
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-base transition ${
+            title="Poner precio a este contenido"
+            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition ${
               paid
                 ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50"
-                : "bg-navy text-white/80 hover:bg-navy/80"
+                : "bg-purple/20 text-purple hover:bg-purple/30"
             }`}
           >
-            💰
+            <span>💰</span> Precio
           </button>
         )}
 
-        {creatorMode && paid && (
+        {creatorMode && adult && paid && (
           <input
             type="number"
             min={1}
@@ -215,6 +220,7 @@ export default function PostComposer({
             value={price}
             onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
             placeholder="Precio ☾"
+            autoFocus
             className="w-24 shrink-0 rounded-full border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-purple"
           />
         )}
