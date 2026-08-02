@@ -83,7 +83,7 @@ export default function FeedTabs({
   const gated = tab === "tabu" && !unlocked;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8">
+    <div className="rounded-2xl border border-white/10 bg-navy-2/30 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-4">
       <Tabs active={tab} onSelect={select} />
       <div className="mt-8 space-y-8">
         {loading ? (

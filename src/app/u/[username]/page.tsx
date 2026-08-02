@@ -71,7 +71,7 @@ export default async function ProfilePage({
     <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl} wide>
       <div className="space-y-6">
         {/* Cabecera del perfil */}
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8">
+        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-5">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-5">
               <div className="relative">

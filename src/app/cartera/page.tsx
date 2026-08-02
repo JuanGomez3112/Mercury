@@ -28,12 +28,12 @@ export default async function CarteraPage() {
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
       <div className="space-y-5">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center">
+          <div className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0 p-8 text-center">
             <p className="text-sm text-white/50">Gastable</p>
             <p className="my-1 text-4xl font-bold text-white">{me.balance} ☾</p>
             <Link href="/recargar" className="mt-2 inline-block rounded-xl bg-gradient-to-tl from-purple to-purple-soft px-5 py-2.5 text-sm font-semibold text-white">Recargar</Link>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center">
+          <div className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0 p-8 text-center">
             <p className="text-sm text-white/50">Ganancias</p>
             <p className="my-1 text-4xl font-bold text-white">{me.earnings} ☾</p>
             <p className="text-xs text-white/40">≈ ${((me.earnings * cfg.rateCents) / 100).toFixed(2)}</p>
@@ -41,7 +41,7 @@ export default async function CarteraPage() {
           </div>
         </div>
         <SendCreditsForm />
-        <div className="rounded-2xl border border-white/10 bg-navy-2/50">
+        <div className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0">
           <h2 className="border-b border-white/10 p-4 text-sm font-semibold text-white/70">Historial</h2>
           {tx.length === 0 ? (
             <p className="p-8 text-center text-sm text-white/40">Sin movimientos.</p>

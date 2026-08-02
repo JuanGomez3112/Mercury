@@ -25,7 +25,7 @@ export default async function MessagesPage() {
     <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
       <div>
         <h1 className="mb-4 text-xl font-semibold text-white">Mensajes</h1>
-        <div className="rounded-2xl border border-white/10 bg-navy-2/50">
+        <div className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0">
           {chats.length === 0 ? (
             <p className="p-10 text-center text-sm text-white/40">Sin conversaciones todavía.</p>
           ) : (

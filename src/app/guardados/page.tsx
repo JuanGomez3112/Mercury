@@ -24,7 +24,7 @@ export default async function GuardadosPage() {
       <div className="space-y-4">
         <h1 className="text-xl font-semibold text-white">Guardados</h1>
         {posts.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center text-sm text-white/40">
+          <p className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0 p-8 text-center text-sm text-white/40">
             Aún no guardas nada. Toca el marcador en un post para guardarlo.
           </p>
         ) : (

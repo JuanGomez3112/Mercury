@@ -27,7 +27,7 @@ export default async function TiendaPage() {
       <div className="space-y-5">
         <h1 className="text-xl font-semibold text-white">Tienda</h1>
         {products.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center text-sm text-white/40">
+          <p className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center text-sm text-white/40 max-sm:rounded-none max-sm:border-x-0">
             Aún no hay productos en la tienda.
           </p>
         ) : (
