@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getFeedByTab, getRecentChats, type FeedTab } from "@/lib/queries";
 import TopBar from "@/components/TopBar";
 import LeftRail from "@/components/LeftRail";
+import MobileNav from "@/components/MobileNav";
 import LeftPanel from "@/components/LeftPanel";
 import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
@@ -63,7 +64,7 @@ export default async function FeedPage({
   return (
     <>
       <TopBar username={me.username} avatarUrl={me.avatarUrl} />
-      <div className="mx-auto flex w-full max-w-[1920px] gap-8 px-0 py-4 sm:py-6 lg:pl-4 lg:pr-8">
+      <div className="mx-auto flex w-full max-w-[1920px] gap-8 px-0 py-4 pb-20 sm:py-6 lg:pb-6 lg:pl-4 lg:pr-8">
         <LeftRail username={me.username} />
         <LeftPanel me={me} />
 
@@ -77,6 +78,7 @@ export default async function FeedPage({
 
         <RightPanel suggestions={suggestions} chats={chats} />
       </div>
+      <MobileNav username={me.username} />
     </>
   );
 }
