@@ -99,17 +99,19 @@ export default function LoginPage() {
         </a>
         <button
           type="button"
-          onClick={() => alert("Login con Facebook — pendiente")}
-          aria-label="Continuar con Facebook"
-          className="flex items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/80 transition hover:border-purple hover:text-white"
+          disabled
+          title="Próximamente"
+          aria-label="Continuar con Facebook (próximamente)"
+          className="flex cursor-not-allowed items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/25"
         >
           <IconFacebook className="h-5 w-5" />
         </button>
         <button
           type="button"
-          onClick={() => alert("Login con X — pendiente")}
-          aria-label="Continuar con X"
-          className="flex items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/80 transition hover:border-purple hover:text-white"
+          disabled
+          title="Próximamente"
+          aria-label="Continuar con X (próximamente)"
+          className="flex cursor-not-allowed items-center justify-center rounded-lg border border-white/10 bg-navy py-3 text-white/25"
         >
           <IconX className="h-5 w-5" />
         </button>

@@ -10,8 +10,26 @@ export default function PostMenu({ postId, isMine }: { postId: string; isMine: b
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [reporting, setReporting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useOutside(ref, () => setOpen(false), open);
+
+  async function copiarEnlace() {
+    const url = `${window.location.origin}/p/${postId}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // Fallback si el portapapeles no está disponible (http/permiso).
+      const ta = document.createElement("textarea");
+      ta.value = url;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    setTimeout(() => { setCopied(false); setOpen(false); }, 1000);
+  }
 
   async function borrar() {
     setOpen(false);
@@ -41,8 +59,8 @@ export default function PostMenu({ postId, isMine }: { postId: string; isMine: b
           <button onClick={() => { setOpen(false); setReporting(true); }} className={`${item} text-white/80 hover:text-white`}>
             Reportar
           </button>
-          <button onClick={() => { setOpen(false); alert("Enlace copiado (pendiente)"); }} className={`${item} text-white/80 hover:text-white`}>
-            Copiar enlace
+          <button onClick={copiarEnlace} className={`${item} text-white/80 hover:text-white`}>
+            {copied ? "¡Enlace copiado!" : "Copiar enlace"}
           </button>
           {isMine && (
             <button onClick={borrar} className={`${item} border-t border-white/10 text-red-400 hover:text-red-300`}>

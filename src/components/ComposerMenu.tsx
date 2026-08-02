@@ -34,14 +34,13 @@ export default function ComposerMenu() {
       {open && (
         <div className="absolute right-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-navy-2 py-1 shadow-2xl">
           {options.map((o) => (
-            <button
+            <div
               key={o}
-              type="button"
-              onClick={() => { setOpen(false); alert(`${o} (pendiente)`); }}
-              className="flex w-full items-center px-4 py-2.5 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+              className="flex w-full cursor-not-allowed items-center justify-between px-4 py-2.5 text-left text-sm text-white/40"
             >
-              {o}
-            </button>
+              <span>{o}</span>
+              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">pronto</span>
+            </div>
           ))}
         </div>
       )}
