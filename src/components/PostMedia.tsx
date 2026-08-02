@@ -13,10 +13,10 @@ import ReportModal from "./ReportModal";
 const VIDEO_RE = /\.(mp4|webm)(\?|$)/i;
 function isVideo(url: string) { return VIDEO_RE.test(url); }
 
-function Tile({ src, size, plus, onOpen }: { src: string; size: number; plus?: number; onOpen: () => void }) {
+function Tile({ src, plus, onOpen }: { src: string; plus?: number; onOpen: () => void }) {
   const video = isVideo(src);
   return (
-    <button type="button" onClick={onOpen} className="relative shrink-0 overflow-hidden rounded-lg" style={{ width: `min(${size}px, 66vw)`, height: `min(${size}px, 66vw)` }}>
+    <button type="button" onClick={onOpen} className="relative aspect-square w-full overflow-hidden">
       {video ? (
         <video src={src} className="h-full w-full object-cover" muted preload="metadata" />
       ) : (
@@ -119,19 +119,17 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
         const bottom = images.slice(2, 5);
         const extra = images.length - 5;
         return (
-          <div className="no-scrollbar mt-4 max-w-full overflow-x-auto">
-            <div className="flex w-fit flex-col overflow-hidden rounded-xl">
-              <div className="flex">
-                {top.map((s, i) => <Tile key={s} src={s} size={384} onOpen={() => setOpen(i)} />)}
-              </div>
-              {bottom.length > 0 && (
-                <div className="flex">
-                  {bottom.map((s, i) => (
-                    <Tile key={s} src={s} size={256} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} onOpen={() => setOpen(2 + i)} />
-                  ))}
-                </div>
-              )}
+          <div className="mt-4 w-full overflow-hidden rounded-xl">
+            <div className="grid grid-cols-2 gap-0.5">
+              {top.map((s, i) => <Tile key={s} src={s} onOpen={() => setOpen(i)} />)}
             </div>
+            {bottom.length > 0 && (
+              <div className="mt-0.5 grid grid-cols-3 gap-0.5">
+                {bottom.map((s, i) => (
+                  <Tile key={s} src={s} plus={i === bottom.length - 1 && extra > 0 ? extra : undefined} onOpen={() => setOpen(2 + i)} />
+                ))}
+              </div>
+            )}
           </div>
         );
       })()
