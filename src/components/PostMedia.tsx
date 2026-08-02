@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Avatar from "./Avatar";
-import { IconHeart, IconHeartFill } from "./icons";
+import { IconHeart, IconHeartFill, IconComment, IconShare } from "./icons";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost, CommentDTO } from "@/lib/types";
 import UnlockButton from "./UnlockButton";
@@ -43,6 +43,7 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
   const [liked, setLiked] = useState(post.likedByMe);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [reportComment, setReportComment] = useState<string | null>(null);
+  const [mComments, setMComments] = useState(false); // móvil: comentarios abiertos en el lightbox
 
   useEffect(() => {
     if (open === null) return;
@@ -145,9 +146,9 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4" onClick={() => setOpen(null)}>
           <button className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" onClick={() => setOpen(null)} aria-label="Cerrar">×</button>
 
-          <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-navy-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-navy-2 max-sm:max-h-[94vh] max-sm:flex-col" onClick={(e) => e.stopPropagation()}>
             {/* Contenedor 1: foto */}
-            <div className="relative flex flex-1 items-center justify-center bg-black">
+            <div className="relative flex flex-1 items-center justify-center bg-black max-sm:w-full max-sm:min-h-[50vh]">
               {isVideo(images[open]) ? (
                 <video src={images[open]} className="max-h-[90vh] max-w-full object-contain" controls autoPlay />
               ) : (
@@ -162,9 +163,9 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
               )}
             </div>
 
-            {/* Contenedor 2: comentarios + likes (oculto en móvil: la foto ocupa todo) */}
-            <div className="flex w-[380px] shrink-0 flex-col border-l border-white/10 max-sm:hidden">
-              <div className="flex items-center gap-3 border-b border-white/10 p-4">
+            {/* Contenedor 2: comentarios + acciones */}
+            <div className="flex w-[380px] shrink-0 flex-col border-l border-white/10 max-sm:w-full max-sm:border-l-0 max-sm:border-t">
+              <div className="flex items-center gap-3 border-b border-white/10 p-4 max-sm:hidden">
                 <Avatar src={post.author.avatarUrl} className="h-10 w-10" />
                 <div className="leading-tight">
                   <div className="font-semibold text-white">{authorName}</div>
@@ -172,7 +173,7 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
                 </div>
               </div>
 
-              <div className="flex-1 space-y-4 overflow-y-auto p-4">
+              <div className={`flex-1 space-y-4 overflow-y-auto p-4 ${mComments ? "" : "max-sm:hidden"}`}>
                 {post.body && <p className="text-sm text-white/90">{post.body}</p>}
                 {loadingC && <p className="text-sm text-white/40">Cargando comentarios…</p>}
                 {!loadingC && comments.length === 0 && <p className="text-sm text-white/40">Sé el primero en comentar.</p>}
@@ -197,13 +198,27 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
               </div>
 
               <div className="border-t border-white/10 p-4">
-                <div className="mb-3 flex items-center gap-4 text-white/60">
+                <div className="mb-3 flex items-center gap-5 text-white/60">
                   <button onClick={toggleLike} aria-label="Me gusta" className={liked ? "text-purple" : "hover:text-white"}>
                     {liked ? <IconHeartFill className="h-7 w-7" /> : <IconHeart className="h-7 w-7" />}
                   </button>
+                  <button
+                    onClick={() => setMComments((v) => !v)}
+                    aria-label="Comentar"
+                    className="hover:text-white sm:hidden"
+                  >
+                    <IconComment className="text-[26px]" />
+                  </button>
+                  <button
+                    onClick={() => { navigator.clipboard?.writeText(`${location.origin}/p/${post.id}`).catch(() => {}); }}
+                    aria-label="Compartir"
+                    className="hover:text-white"
+                  >
+                    <IconShare className="text-[22px]" />
+                  </button>
                   <span className="text-sm text-white/70">{likeCount} me gusta</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={`flex items-center gap-2 ${mComments ? "" : "max-sm:hidden"}`}>
                   <Avatar src={viewerAvatarUrl} className="h-8 w-8" />
                   <input
                     value={text}
