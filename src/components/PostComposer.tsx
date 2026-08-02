@@ -212,19 +212,6 @@ export default function PostComposer({
           </button>
         )}
 
-        {creatorMode && adult && paid && (
-          <input
-            type="number"
-            min={1}
-            max={100000}
-            value={price}
-            onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
-            placeholder="Precio"
-            autoFocus
-            className="w-24 shrink-0 rounded-full border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-purple"
-          />
-        )}
-
         <div
           ref={scrollRef}
           onPointerDown={dragDown}
@@ -251,6 +238,21 @@ export default function PostComposer({
 
         <ComposerMenu />
         </div>
+
+        {/* Fila 3: input de precio, se despliega bajo el botón con transición suave. */}
+        {creatorMode && adult && (
+          <div className={`overflow-hidden transition-all duration-300 ease-out ${paid ? "mt-3 max-h-16 opacity-100" : "max-h-0 opacity-0"}`}>
+            <input
+              type="number"
+              min={1}
+              max={100000}
+              value={price}
+              onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
+              placeholder="Precio ☾"
+              className="w-40 rounded-full border border-purple/50 bg-purple/10 px-4 py-2 text-sm text-white outline-none placeholder:text-purple/50 focus:border-purple"
+            />
+          </div>
+        )}
       </div>
 
       <input
