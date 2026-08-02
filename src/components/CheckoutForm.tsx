@@ -1,7 +1,6 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export type CheckoutItem = { productName: string; label: string; priceCredits: number; priceCents: number; qty: number };
 export type CheckoutZone = { id: string; countries: string[]; priceCredits: number; priceCents: number; isDefault: boolean };
@@ -37,7 +36,6 @@ export default function CheckoutForm({
   const [paymentMethod, setPaymentMethod] = useState<"merycoin" | "external">("merycoin");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [done, setDone] = useState<{ orderId: string } | null>(null);
 
   const subtotalCredits = useMemo(() => items.reduce((a, it) => a + it.priceCredits * it.qty, 0), [items]);
   const subtotalCents = useMemo(() => items.reduce((a, it) => a + it.priceCents * it.qty, 0), [items]);
@@ -90,27 +88,14 @@ export default function CheckoutForm({
         setMsg({ ok: false, text: d.error ?? "Error" });
         return;
       }
-      if (paymentMethod === "external") {
-        setDone({ orderId: d.orderId });
-      } else {
-        router.push(`/pedidos/${d.orderId}`);
+      if (d.redirectUrl) {
+        window.location.href = d.redirectUrl; // checkout de pago externo (BTCPay)
+        return;
       }
+      router.push(`/pedidos/${d.orderId}`);
     } finally {
       setBusy(false);
     }
-  }
-
-  if (done) {
-    return (
-      <div className="space-y-3 rounded-2xl border border-orange-500/30 bg-orange-500/10 p-6 text-center">
-        <p className="text-sm text-orange-300">
-          Pago externo próximamente. Tu pedido quedó registrado como pendiente de pago.
-        </p>
-        <Link href={`/pedidos/${done.orderId}`} className="inline-block text-sm font-semibold text-purple hover:underline">
-          Ver pedido
-        </Link>
-      </div>
-    );
   }
 
   return (
@@ -158,7 +143,7 @@ export default function CheckoutForm({
           </button>
         </div>
         {paymentMethod === "external" && (
-          <p className="text-xs text-orange-300">Próximamente. El pedido se crea pendiente de pago.</p>
+          <p className="text-xs text-white/50">Pagas en cripto (BTC / Lightning). Te llevamos al checkout seguro.</p>
         )}
         {paymentMethod === "merycoin" && totalCredits > balance && (
           <p className="text-xs text-red-400">Saldo insuficiente (tienes {balance} ☾).</p>

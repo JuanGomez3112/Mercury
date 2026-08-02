@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { currentUser, ensureNotBlocked } from "@/lib/auth";
 import { spend, InsufficientFunds } from "@/lib/wallet";
 import { resolveZone } from "@/lib/store";
+import { activeProvider } from "@/lib/payments";
 
 const schema = z.object({
   idempotencyKey: z.string().trim().min(8).max(64),
@@ -36,6 +37,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, orderId: existing.id, duplicate: true });
   }
 
+  // Pago externo = cripto vía proveedor (BTCPay). Verificar disponibilidad antes de crear nada.
+  const provider = s.paymentMethod === "external" ? activeProvider() : null;
+  if (s.paymentMethod === "external" && !provider) {
+    return NextResponse.json({ error: "Pago externo no configurado" }, { status: 503 });
+  }
+
   const items = await prisma.cartItem.findMany({
     where: { userId: session.sub },
     include: { variant: { include: { product: true } } },
@@ -48,6 +55,7 @@ export async function POST(req: Request) {
   const zone = await resolveZone(shipCountry);
   const shippingCredits = zone?.priceCredits ?? 0;
   const shippingCents = zone?.priceCents ?? 0;
+  const totalCents = subtotalCents + shippingCents;
 
   let orderId = "";
   try {
@@ -96,7 +104,11 @@ export async function POST(req: Request) {
           },
         },
       });
-      await tx.cartItem.deleteMany({ where: { userId: session.sub } });
+      // MeryCoin: pago inmediato → vacía carrito ya. Externo: se vacía tras iniciar el cobro (abajo),
+      // para no perder el carrito si el proveedor falla.
+      if (s.paymentMethod === "merycoin") {
+        await tx.cartItem.deleteMany({ where: { userId: session.sub } });
+      }
       return order.id;
     });
   } catch (e) {
@@ -114,11 +126,49 @@ export async function POST(req: Request) {
     throw e;
   }
 
-  // `notify` ignora auto-notificaciones (userId===actorId); la confirmación de pedido es para el propio
-  // comprador, así que se crea la notificación directo saltando ese guard.
-  await prisma.notification.create({
-    data: { userId: session.sub, actorId: session.sub, type: "order" },
-  });
+  if (s.paymentMethod === "merycoin") {
+    // `notify` ignora auto-notificaciones (userId===actorId); la confirmación de pedido es para el propio
+    // comprador, así que se crea la notificación directo saltando ese guard.
+    await prisma.notification.create({
+      data: { userId: session.sub, actorId: session.sub, type: "order" },
+    });
+    return NextResponse.json({ ok: true, orderId });
+  }
 
-  return NextResponse.json({ ok: true, orderId });
+  // --- Externo (cripto): reserve-on-pay. Se cobra ahora; stock + paid + reserva ocurren en el webhook. ---
+  if (totalCents <= 0) {
+    // Nada que cobrar → marcar pagado directo (raro: ítems y envío gratis).
+    await prisma.order.update({ where: { id: orderId }, data: { status: "paid" } });
+    await prisma.cartItem.deleteMany({ where: { userId: session.sub } });
+    await prisma.notification.create({ data: { userId: session.sub, actorId: session.sub, type: "order" } });
+    return NextResponse.json({ ok: true, orderId });
+  }
+
+  let charge: { redirectUrl?: string; providerRef: string };
+  try {
+    charge = await provider!.createCharge({
+      amountCents: totalCents,
+      currency: "USD",
+      ref: orderId,
+      metadata: { orderId, kind: "store_order" },
+    });
+  } catch {
+    // Orden queda `pending` sin cobro; el carrito sigue intacto para reintentar (recargar da nueva clave).
+    return NextResponse.json({ error: "No se pudo iniciar el pago externo" }, { status: 502 });
+  }
+
+  await prisma.payment.create({
+    data: {
+      userId: session.sub,
+      provider: provider!.name,
+      providerRef: charge.providerRef,
+      kind: "store_order",
+      amountCents: totalCents,
+      orderId,
+      status: "pending",
+    },
+  });
+  await prisma.cartItem.deleteMany({ where: { userId: session.sub } });
+
+  return NextResponse.json({ ok: true, orderId, redirectUrl: charge.redirectUrl });
 }

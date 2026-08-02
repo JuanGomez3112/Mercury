@@ -34,8 +34,42 @@ export async function POST(req: Request) {
         await tx.walletTransaction.create({
           data: { userId: payment.userId, delta: payment.credits, type: "buy" },
         });
+      } else if (payment.kind === "store_order" && payment.orderId) {
+        // Reserve-on-pay: el stock se descuenta AHORA que el pago está confirmado.
+        const order = await tx.order.findUnique({ where: { id: payment.orderId }, include: { items: true } });
+        if (order) {
+          const claimOrder = await tx.order.updateMany({
+            where: { id: order.id, status: "pending" },
+            data: { status: "paid" },
+          });
+          if (claimOrder.count > 0) {
+            const decremented: { variantId: string; qty: number }[] = [];
+            let failName: string | null = null;
+            for (const it of order.items) {
+              if (!it.variantId) continue;
+              const dec = await tx.productVariant.updateMany({
+                where: { id: it.variantId, active: true, stock: { gte: it.qty } },
+                data: { stock: { decrement: it.qty } },
+              });
+              if (dec.count === 0) { failName = it.nameSnapshot; break; }
+              decremented.push({ variantId: it.variantId, qty: it.qty });
+            }
+            if (failName) {
+              // Sin stock tras el pago: compensa lo decrementado y marca reembolso (dinero ya cobrado).
+              for (const d of decremented) {
+                await tx.productVariant.updateMany({ where: { id: d.variantId }, data: { stock: { increment: d.qty } } });
+              }
+              await tx.order.update({ where: { id: order.id }, data: { status: "refund_pending" } });
+            } else {
+              await tx.tokenConfig.update({
+                where: { id: "singleton" },
+                data: { reserveCents: { increment: BigInt(payment.amountCents) } }, // ingreso plataforma
+              });
+            }
+            await tx.notification.create({ data: { userId: order.userId, actorId: order.userId, type: "order" } });
+          }
+        }
       }
-      // kind store_order → se maneja en el bloque de checkout externo (reserve-on-pay), fuera de alcance aquí.
     });
   } else if (evt.status === "failed" || evt.status === "refunded") {
     await prisma.payment.updateMany({
