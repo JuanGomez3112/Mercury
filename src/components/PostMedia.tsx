@@ -200,7 +200,7 @@ export default function PostMedia({ post, viewerAvatarUrl }: { post: FeedPost; v
               <div className="border-t border-white/10 p-4">
                 <div className="mb-3 flex items-center gap-5 text-white/60">
                   <button onClick={toggleLike} aria-label="Me gusta" className={liked ? "text-purple" : "hover:text-white"}>
-                    {liked ? <IconHeartFill className="h-7 w-7" /> : <IconHeart className="h-7 w-7" />}
+                    {liked ? <IconHeartFill className="text-[26px]" /> : <IconHeart className="text-[26px]" />}
                   </button>
                   <button
                     onClick={() => setMComments((v) => !v)}
