@@ -15,7 +15,7 @@ type Row = {
   _count: { likes: number; comments: number };
   likes: { userId: string }[];
   bookmarks: { userId: string }[];
-  comments: { id: string; body: string; author: { username: string; displayName: string | null } }[];
+  comments: { id: string; body: string; author: { username: string; displayName: string | null; avatarUrl: string | null } }[];
 };
 
 function toFeedPost(
@@ -45,7 +45,7 @@ function toFeedPost(
     locked,
     commentPreview: [...p.comments]
       .reverse()
-      .map((c) => ({ id: c.id, username: c.author.username, displayName: c.author.displayName, body: c.body })),
+      .map((c) => ({ id: c.id, username: c.author.username, displayName: c.author.displayName, avatarUrl: c.author.avatarUrl, body: c.body })),
   };
 }
 
@@ -57,7 +57,7 @@ const include = (viewerId: string) => ({
   comments: {
     orderBy: { createdAt: "desc" as const },
     take: 2,
-    select: { id: true, body: true, author: { select: { username: true, displayName: true } } },
+    select: { id: true, body: true, author: { select: { username: true, displayName: true, avatarUrl: true } } },
   },
 });
 

@@ -18,7 +18,7 @@ export type FeedPost = {
   savedByMe: boolean;
   priceCredits: number | null;
   locked: boolean;
-  commentPreview: { id: string; username: string; displayName: string | null; body: string }[];
+  commentPreview: { id: string; username: string; displayName: string | null; avatarUrl: string | null; body: string }[];
 };
 
 export type CommentDTO = {
@@ -26,4 +26,6 @@ export type CommentDTO = {
   body: string;
   createdAt: string;
   author: Author;
+  likeCount: number;
+  likedByMe: boolean;
 };

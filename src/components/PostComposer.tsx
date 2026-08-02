@@ -173,7 +173,8 @@ export default function PostComposer({
       )}
 
       {/* Fila de acciones: fuego (fijo izq) · pills scrollables · más (fijo der) */}
-      <div className="mt-auto flex items-center gap-4 pt-4">
+      <div className="mt-auto pt-4">
+        {/* Fila 1: botón fuego (adulto), solo. Inactivo = sin color; activo = naranja. */}
         <button
           type="button"
           onClick={() => {
@@ -183,15 +184,17 @@ export default function PostComposer({
           }}
           aria-pressed={adult}
           title="Marcar como contenido para adultos (18+)"
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-500 text-white transition ${
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
             adult
-              ? "shadow-[0_0_16px] shadow-orange-500/60 ring-2 ring-white/70"
-              : "opacity-90 hover:opacity-100"
+              ? "bg-orange-500 text-white shadow-[0_0_16px] shadow-orange-500/60"
+              : "bg-navy text-white/80 hover:bg-navy/80"
           }`}
         >
           <IconFire className="h-4 w-3.5" />
         </button>
 
+        {/* Fila 2: Precio (aparece si adulto, opaco hasta activar) + input + pills + menú. */}
+        <div className="mt-3 flex items-center gap-4">
         {/* Adulto revela "Precio"; "Precio" despliega el input. Sólo creadores pueden cobrar. */}
         {creatorMode && adult && (
           <button
@@ -199,10 +202,10 @@ export default function PostComposer({
             onClick={() => setPaid((v) => !v)}
             aria-pressed={paid}
             title="Poner precio a este contenido"
-            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium text-white transition ${
+            className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-medium transition ${
               paid
-                ? "bg-purple shadow-[0_0_14px] shadow-purple/50"
-                : "bg-purple/30 hover:bg-purple/40"
+                ? "bg-purple text-white shadow-[0_0_14px] shadow-purple/50"
+                : "bg-purple/20 text-white/60 hover:bg-purple/30 hover:text-white/80"
             }`}
           >
             <span>💰</span> Precio
@@ -247,6 +250,7 @@ export default function PostComposer({
         </div>
 
         <ComposerMenu />
+        </div>
       </div>
 
       <input
