@@ -11,6 +11,7 @@ import ZoneAdmin from "@/components/ZoneAdmin";
 import TokenConfigForm from "@/components/TokenConfigForm";
 import WithdrawalRow from "@/components/WithdrawalRow";
 import OrderStatusButton from "@/components/OrderStatusButton";
+import PaymentRow from "@/components/PaymentRow";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ const STATUS_LABEL: Record<string, string> = {
   shipped: "Enviado",
   delivered: "Entregado",
   cancelled: "Cancelado",
+  refund_pending: "Reembolso pendiente",
 };
 
 export default async function AdminTiendaPage() {
@@ -38,17 +40,28 @@ export default async function AdminTiendaPage() {
     );
   }
 
-  const [products, zones, cfg, withdrawals, orders] = await Promise.all([
+  const [products, zones, cfg, withdrawals, orders, sums, payments] = await Promise.all([
     prisma.product.findMany({ include: { variants: true }, orderBy: { createdAt: "desc" } }),
     prisma.shippingZone.findMany({ orderBy: { createdAt: "desc" } }),
     getConfig(),
     prisma.withdrawal.findMany({ where: { status: "pending" }, include: { user: { select: { username: true } } }, orderBy: { createdAt: "asc" } }),
     prisma.order.findMany({ include: { items: true, user: { select: { username: true } } }, orderBy: { createdAt: "desc" } }),
+    prisma.user.aggregate({ _sum: { balance: true, earnings: true } }),
+    prisma.payment.findMany({ take: 50, orderBy: { createdAt: "desc" }, include: { user: { select: { username: true } } } }),
   ]);
 
   const maxSupply = Number(cfg.maxSupply);
   const treasury = Number(cfg.treasury);
   const circulating = maxSupply - treasury;
+
+  // Solvencia: la reserva real debe cubrir las ☾ retirables (earnings) valoradas al peg.
+  const balanceSum = sums._sum.balance ?? 0;
+  const earningsSum = sums._sum.earnings ?? 0;
+  const reserveCents = Number(cfg.reserveCents);
+  const obligationsCents = earningsSum * cfg.rateCents; // lo que se debería si todos retiran
+  const solvencyCents = reserveCents - obligationsCents;
+  const supplyOk = treasury + balanceSum + earningsSum === maxSupply;
+  const usd = (c: number) => `$${(c / 100).toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl} wide>
@@ -69,6 +82,84 @@ export default async function AdminTiendaPage() {
                   rateCents={cfg.rateCents}
                   launched={cfg.launched}
                 />
+              ),
+            },
+            {
+              id: "solvencia",
+              label: "Solvencia",
+              content: (
+                <div className="space-y-4">
+                  <div
+                    className={`rounded-2xl border p-5 ${
+                      solvencyCents >= 0 ? "border-emerald-500/30 bg-emerald-500/[0.05]" : "border-red-500/40 bg-red-500/[0.06]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold text-white">
+                        {solvencyCents >= 0 ? "Solvente" : "INSOLVENTE"}
+                      </span>
+                      <span className={`text-sm font-semibold ${solvencyCents >= 0 ? "text-emerald-300" : "text-red-300"}`}>
+                        {solvencyCents >= 0 ? "+" : ""}{usd(solvencyCents)}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <div className="text-white/40">Reserva real</div>
+                        <div className="text-white">{usd(reserveCents)}</div>
+                      </div>
+                      <div>
+                        <div className="text-white/40">Obligaciones (retirable × peg)</div>
+                        <div className="text-white">{usd(obligationsCents)}</div>
+                      </div>
+                    </div>
+                    {solvencyCents < 0 && (
+                      <p className="mt-3 text-xs text-red-300">
+                        La reserva no cubre las ☾ retirables. No actives `launched` ni pagues retiros hasta cerrar el hueco.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-5 text-sm">
+                    <div className="mb-2 font-semibold text-white/70">Supply</div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div><div className="text-white/40">Treasury</div><div className="text-white">{treasury.toLocaleString("es")} ☾</div></div>
+                      <div><div className="text-white/40">Gastable (balance)</div><div className="text-white">{balanceSum.toLocaleString("es")} ☾</div></div>
+                      <div><div className="text-white/40">Retirable (earnings)</div><div className="text-white">{earningsSum.toLocaleString("es")} ☾</div></div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2 text-xs">
+                      <span className={supplyOk ? "text-emerald-300" : "text-red-300"}>
+                        {supplyOk ? "✓ invariante de supply OK" : "✗ invariante roto"}
+                      </span>
+                      <span className="text-white/30">(treasury + balance + earnings = {maxSupply.toLocaleString("es")})</span>
+                    </div>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: "pagos",
+              label: "Pagos",
+              content: (
+                <div className="divide-y divide-white/5 rounded-2xl border border-white/10 bg-navy-2/50">
+                  {payments.length === 0 ? (
+                    <p className="p-8 text-center text-sm text-white/40">Sin pagos.</p>
+                  ) : (
+                    payments.map((pay) => (
+                      <PaymentRow
+                        key={pay.id}
+                        payment={{
+                          id: pay.id,
+                          kind: pay.kind,
+                          credits: pay.credits,
+                          amountCents: pay.amountCents,
+                          status: pay.status,
+                          username: pay.user.username,
+                          createdAt: pay.createdAt.toISOString(),
+                        }}
+                      />
+                    ))
+                  )}
+                </div>
               ),
             },
             {
