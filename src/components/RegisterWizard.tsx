@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { SEXUALITIES, NATIONALITIES } from "@/lib/profile-options";
 
-const field = "w-full rounded-full border border-navy/20 bg-white/70 px-4 py-2.5 text-sm text-navy outline-none placeholder:text-navy/40 focus:border-navy";
-const labelCls = "mb-1 block text-sm font-medium text-navy/80";
+const labelCls = "mb-1.5 block text-sm text-purple-soft";
+const inputCls = "w-full rounded-lg border border-white/10 bg-navy px-3.5 py-2.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple";
 
 export default function RegisterWizard() {
   const router = useRouter();
@@ -52,53 +51,51 @@ export default function RegisterWizard() {
 
   return (
     <div>
-      {/* Tabs */}
-      <div className="mb-6 flex justify-center gap-3">
-        <Link href="/login" className="rounded-full bg-navy px-6 py-2 text-sm font-bold text-white/90 hover:text-white">Inicia Sesión</Link>
-        <span className="rounded-full border-2 border-navy px-6 py-2 text-sm font-bold text-navy">Registrate</span>
-      </div>
+      <p className="mb-4 text-center text-xs text-white/40">Paso {step} de 2</p>
 
       {step === 1 ? (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label><span className={labelCls}>Nombre</span><input className={field} placeholder="Escribe tus nombres" value={f.nombre} onChange={set("nombre")} /></label>
-          <label><span className={labelCls}>Apellido</span><input className={field} placeholder="Escribe tus apellidos" value={f.apellido} onChange={set("apellido")} /></label>
-          <label><span className={labelCls}>Usuario</span><input className={field} placeholder="Escribe tu usuario" value={f.username} onChange={set("username")} /></label>
-          <label><span className={labelCls}>E-mail</span><input className={field} type="email" placeholder="Escribe tu email" value={f.email} onChange={set("email")} /></label>
-          <label><span className={labelCls}>Contraseña</span><input className={field} type="password" placeholder="••••••" value={f.password} onChange={set("password")} /></label>
-          <label><span className={labelCls}>Confirma Contraseña</span><input className={field} type="password" placeholder="••••••" value={f.password2} onChange={set("password2")} /></label>
-        </div>
+        <>
+          <label className="mb-4 block"><span className={labelCls}>Nombre</span><input className={inputCls} placeholder="Escribe tus nombres" value={f.nombre} onChange={set("nombre")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>Apellido</span><input className={inputCls} placeholder="Escribe tus apellidos" value={f.apellido} onChange={set("apellido")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>Usuario</span><input className={inputCls} placeholder="Escribe tu usuario" value={f.username} onChange={set("username")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>E-mail</span><input className={inputCls} type="email" placeholder="Escribe tu email" value={f.email} onChange={set("email")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>Contraseña</span><input className={inputCls} type="password" placeholder="Mínimo 8 caracteres" value={f.password} onChange={set("password")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>Confirma contraseña</span><input className={inputCls} type="password" placeholder="Repite la contraseña" value={f.password2} onChange={set("password2")} /></label>
+        </>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label><span className={labelCls}>Sexualidad</span>
-            <select className={field} value={f.sexuality} onChange={set("sexuality")}>
+        <>
+          <label className="mb-4 block"><span className={labelCls}>Sexualidad</span>
+            <select className={inputCls} value={f.sexuality} onChange={set("sexuality")}>
               <option value="">Elige tu sexualidad</option>
               {SEXUALITIES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </label>
-          <label><span className={labelCls}>Nacionalidad</span>
-            <select className={field} value={f.nationality} onChange={set("nationality")}>
+          <label className="mb-4 block"><span className={labelCls}>Nacionalidad</span>
+            <select className={inputCls} value={f.nationality} onChange={set("nationality")}>
               <option value="">Elige tu nacionalidad</option>
               {NATIONALITIES.map((n) => <option key={n} value={n}>{n}</option>)}
             </select>
           </label>
-          <label><span className={labelCls}>Número de Teléfono</span><input className={field} placeholder="+1 ***" value={f.phone} onChange={set("phone")} /></label>
-          <label><span className={labelCls}>E-mail de Recuperación</span><input className={field} type="email" placeholder="Escribe tu email" value={f.recoveryEmail} onChange={set("recoveryEmail")} /></label>
-          <label className="sm:col-span-2"><span className={labelCls}>Fecha de Nacimiento</span><input className={field} type="date" value={f.birthdate} onChange={set("birthdate")} /></label>
-          <label className="sm:col-span-2 flex items-start gap-2 text-xs text-navy/70">
-            <input type="checkbox" checked={f.tyc} onChange={set("tyc")} className="mt-0.5 accent-navy" />
+          <label className="mb-4 block"><span className={labelCls}>Número de teléfono</span><input className={inputCls} placeholder="+1 ***" value={f.phone} onChange={set("phone")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>E-mail de recuperación</span><input className={inputCls} type="email" placeholder="Escribe tu email" value={f.recoveryEmail} onChange={set("recoveryEmail")} /></label>
+          <label className="mb-4 block"><span className={labelCls}>Fecha de nacimiento</span><input className={inputCls} type="date" value={f.birthdate} onChange={set("birthdate")} /></label>
+          <label className="mb-4 flex items-start gap-2 text-xs text-white/60">
+            <input type="checkbox" checked={f.tyc} onChange={set("tyc")} className="mt-0.5 accent-purple" />
             <span>Al aceptar, aceptas las Políticas de datos, cookies y los Términos de confidencialidad. Podemos enviarte notificaciones por SMS que puedes desactivar cuando quieras.</span>
           </label>
-        </div>
+        </>
       )}
 
-      {error && <p className="mt-3 text-center text-sm text-red-600">{error}</p>}
+      {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
 
-      <div className="mt-5 flex justify-center gap-3">
-        {step === 2 && <button onClick={() => setStep(1)} className="rounded-full px-6 py-2.5 text-sm font-bold text-navy/60 hover:text-navy">Atrás</button>}
+      <div className="flex gap-3">
+        {step === 2 && (
+          <button onClick={() => setStep(1)} className="rounded-lg border border-white/10 px-5 py-2.5 text-sm font-medium text-white/70 transition hover:text-white">Atrás</button>
+        )}
         {step === 1 ? (
-          <button onClick={next} className="rounded-full bg-navy px-8 py-2.5 text-sm font-bold text-white">Siguiente</button>
+          <button onClick={next} className="flex-1 rounded-lg bg-purple py-2.5 font-medium text-navy transition hover:opacity-90">Siguiente</button>
         ) : (
-          <button onClick={submit} disabled={busy} className="rounded-full bg-navy px-8 py-2.5 text-sm font-bold text-white disabled:opacity-50">{busy ? "Creando…" : "Registrarte"}</button>
+          <button onClick={submit} disabled={busy} className="flex-1 rounded-lg bg-purple py-2.5 font-medium text-navy transition hover:opacity-90 disabled:opacity-60">{busy ? "Creando…" : "Registrarte"}</button>
         )}
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import MercuryMark from "@/components/MercuryMark";
+import AuthShell from "@/components/AuthShell";
 
 export default function ResetTokenPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params);
@@ -28,30 +28,25 @@ export default function ResetTokenPage({ params }: { params: Promise<{ token: st
     else { const d = await res.json().catch(() => ({})); setError(d.error ?? "Error"); }
   }
 
-  const input = "w-full rounded-full border border-navy/20 bg-white/70 px-4 py-2.5 text-sm text-navy outline-none placeholder:text-navy/40 focus:border-navy";
+  const input = "w-full rounded-lg border border-white/10 bg-navy px-3.5 py-2.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple";
+  const label = "mb-1.5 block text-sm text-purple-soft";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-soft via-purple to-purple p-6">
-      <div className="w-full max-w-md text-center">
-        <div className="mb-8 flex justify-center text-navy"><MercuryMark className="h-20 w-12" /></div>
-        {done ? (
-          <p className="text-lg font-bold text-navy">Contraseña actualizada. Redirigiendo…</p>
-        ) : (
-          <>
-            <p className="mb-8 text-lg font-bold text-navy">Establece tu nueva contraseña</p>
-            <div className="space-y-3 text-left">
-              <label className="block"><span className="mb-1 block text-sm font-medium text-navy/80">Nueva contraseña</span>
-                <input className={input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••" /></label>
-              <label className="block"><span className="mb-1 block text-sm font-medium text-navy/80">Confirmar contraseña</span>
-                <input className={input} type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="••••••" /></label>
-            </div>
-            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-            <button onClick={submit} disabled={busy} className="mt-6 rounded-full bg-navy px-10 py-2.5 text-sm font-bold text-white disabled:opacity-50">
-              {busy ? "Guardando…" : "Establecer contraseña"}
-            </button>
-          </>
-        )}
-      </div>
-    </main>
+    <AuthShell titulo="Nueva contraseña" alt={{ texto: "¿Cambiaste de opinión?", href: "/login", label: "Iniciar sesión" }}>
+      {done ? (
+        <p className="text-center text-sm text-white/70">Contraseña actualizada. Redirigiendo…</p>
+      ) : (
+        <>
+          <label className="mb-4 block"><span className={label}>Nueva contraseña</span>
+            <input className={input} type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 8 caracteres" /></label>
+          <label className="mb-4 block"><span className={label}>Confirmar contraseña</span>
+            <input className={input} type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repite la contraseña" /></label>
+          {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+          <button onClick={submit} disabled={busy} className="w-full rounded-lg bg-purple py-2.5 font-medium text-navy transition hover:opacity-90 disabled:opacity-60">
+            {busy ? "Guardando…" : "Establecer contraseña"}
+          </button>
+        </>
+      )}
+    </AuthShell>
   );
 }

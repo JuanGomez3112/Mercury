@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import MercuryMark from "@/components/MercuryMark";
+import AuthShell from "@/components/AuthShell";
 
 export default function RecuperarPage() {
   const [identifier, setIdentifier] = useState("");
@@ -18,41 +17,31 @@ export default function RecuperarPage() {
       body: JSON.stringify({ identifier: identifier.trim() }),
     });
     setBusy(false);
-    setSent(true); // respuesta uniforme: siempre confirmamos
+    setSent(true);
   }
 
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-soft via-purple to-purple p-6">
-      <div className="w-full max-w-md text-center">
-        <div className="mb-8 flex justify-center text-navy"><MercuryMark className="h-20 w-12" /></div>
+  const input = "w-full rounded-lg border border-white/10 bg-navy px-3.5 py-2.5 text-white outline-none transition placeholder:text-white/30 focus:border-purple";
 
-        {sent ? (
-          <>
-            <p className="text-lg font-bold text-navy">Si la cuenta existe, te enviamos un correo con las instrucciones para restablecer tu contraseña.</p>
-            <p className="mt-2 text-sm text-navy/70">Revisa tu bandeja (y spam).</p>
-            <Link href="/login" className="mt-6 inline-block text-sm font-semibold text-navy underline">Volver a iniciar sesión</Link>
-          </>
-        ) : (
-          <>
-            <p className="mb-8 text-lg font-bold text-navy">
-              Escribe tu nombre de usuario o correo electrónico, te enviaremos un correo con las instrucciones para establecer tu contraseña.
-            </p>
-            <label className="block text-left">
-              <span className="mb-1 block text-sm font-medium text-navy/80">Usuario ó Correo Electrónico</span>
-              <input
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-                className="w-full rounded-full border border-navy/20 bg-white/70 px-4 py-2.5 text-sm text-navy outline-none placeholder:text-navy/40 focus:border-navy"
-                placeholder="usuario o email"
-              />
-            </label>
-            <button onClick={submit} disabled={busy} className="mt-6 rounded-full bg-navy px-10 py-2.5 text-sm font-bold text-white disabled:opacity-50">
-              {busy ? "Enviando…" : "Enviar"}
-            </button>
-          </>
-        )}
-      </div>
-    </main>
+  return (
+    <AuthShell titulo="Recuperar contraseña" alt={{ texto: "¿La recordaste?", href: "/login", label: "Iniciar sesión" }}>
+      {sent ? (
+        <p className="text-center text-sm text-white/70">
+          Si la cuenta existe, te enviamos un correo con las instrucciones. Revisa tu bandeja (y spam).
+        </p>
+      ) : (
+        <>
+          <p className="mb-5 text-sm text-white/60">
+            Escribe tu usuario o correo y te enviaremos un enlace para establecer una nueva contraseña.
+          </p>
+          <label className="mb-4 block">
+            <span className="mb-1.5 block text-sm text-purple-soft">Usuario o correo</span>
+            <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} className={input} placeholder="usuario o email" />
+          </label>
+          <button onClick={submit} disabled={busy} className="w-full rounded-lg bg-purple py-2.5 font-medium text-navy transition hover:opacity-90 disabled:opacity-60">
+            {busy ? "Enviando…" : "Enviar"}
+          </button>
+        </>
+      )}
+    </AuthShell>
   );
 }
