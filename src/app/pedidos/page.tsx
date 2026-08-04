@@ -32,7 +32,7 @@ export default async function PedidosPage() {
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
       <div className="space-y-5">
-        <h1 className="text-xl font-semibold text-white">Pedidos</h1>
+        <h1 className="text-xl font-semibold text-white max-sm:px-4">Pedidos</h1>
         {orders.length === 0 ? (
           <p className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center text-sm text-white/40">
             Aún no tienes pedidos.

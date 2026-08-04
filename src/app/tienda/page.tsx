@@ -25,7 +25,7 @@ export default async function TiendaPage() {
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl} wide>
       <div className="space-y-5">
-        <h1 className="text-xl font-semibold text-white">Tienda</h1>
+        <h1 className="text-xl font-semibold text-white max-sm:px-4">Tienda</h1>
         {products.length === 0 ? (
           <p className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 text-center text-sm text-white/40 max-sm:rounded-none max-sm:border-x-0">
             Aún no hay productos en la tienda.

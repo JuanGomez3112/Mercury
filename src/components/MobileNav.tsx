@@ -24,14 +24,16 @@ export default function MobileNav({ username }: { username: string }) {
       {item("/feed", "Inicio", IconGrid, path === "/feed")}
       {item("/mensajes", "Mensajes", IconInbox, path.startsWith("/mensajes"))}
 
-      {/* Publicar (centro, FAB elevado) */}
-      <Link
-        href="/publicar"
-        aria-label="Publicar"
-        className="relative -top-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-2xl font-light leading-none text-white shadow-md shadow-purple/40"
-      >
-        +
-      </Link>
+      {/* Publicar (centro, FAB elevado) — en su propio slot flex-1 para espaciado uniforme */}
+      <div className="flex flex-1 items-center justify-center">
+        <Link
+          href="/publicar"
+          aria-label="Publicar"
+          className="relative -top-1.5 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-2xl font-light leading-none text-white shadow-md shadow-purple/40"
+        >
+          +
+        </Link>
+      </div>
 
       {item("/notificaciones", "Notificaciones", IconBell, path.startsWith("/notificaciones"))}
       {item(`/u/${username}`, "Perfil", IconUser, path === `/u/${username}`)}

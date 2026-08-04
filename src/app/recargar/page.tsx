@@ -19,7 +19,7 @@ export default async function RecargarPage() {
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
       <div className="mx-auto max-w-md space-y-4">
-        <h1 className="text-xl font-semibold text-white">Recargar créditos</h1>
+        <h1 className="text-xl font-semibold text-white max-sm:px-4">Recargar créditos</h1>
         <p className="text-sm text-white/50">Saldo actual: <b className="text-white">{me.balance} ☾</b></p>
         {cryptoEnabled && <BuyCreditsForm rateCents={cfg.rateCents} />}
         <RechargeForm />

@@ -41,7 +41,7 @@ export default async function NotificationsPage() {
   return (
     <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
       <div>
-        <h1 className="mb-4 text-xl font-semibold text-white">Notificaciones</h1>
+        <h1 className="mb-4 text-xl font-semibold text-white max-sm:px-4">Notificaciones</h1>
         <div className="rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0">
           {notifs.length === 0 ? (
             <p className="p-10 text-center text-sm text-white/40">Sin notificaciones.</p>
