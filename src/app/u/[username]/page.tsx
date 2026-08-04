@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { getUserPosts } from "@/lib/queries";
 import AppShell from "@/components/AppShell";
-import PostCard from "@/components/PostCard";
+import ProfilePosts from "@/components/ProfilePosts";
 import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
 import { VerifiedGrad } from "@/components/GradientIcons";
@@ -72,8 +72,8 @@ export default async function ProfilePage({
       <div className="space-y-6">
         {/* Cabecera del perfil */}
         <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-5">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-5">
+          <div className="flex items-start justify-between max-sm:flex-col max-sm:gap-4">
+            <div className="flex items-center gap-5 max-sm:gap-4">
               <div className="relative">
                 <Deco mode={profile.mode} />
                 <Avatar src={profile.avatarUrl} className="h-24 w-24 ring-2 ring-purple/40" />
@@ -88,7 +88,7 @@ export default async function ProfilePage({
               </div>
             </div>
             {!isMe && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 max-sm:w-full max-sm:flex-wrap">
                 <a
                   href={`/mensajes/${profile.username}`}
                   className="rounded-[1.25rem] border-2 border-white/20 px-4 py-2 text-sm font-bold text-white transition hover:border-purple hover:text-purple"
@@ -112,16 +112,8 @@ export default async function ProfilePage({
           </div>
         </section>
 
-        {/* Publicaciones */}
-        <div className="space-y-6">
-          {posts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-white/50">
-              Sin publicaciones todavía.
-            </div>
-          ) : (
-            posts.map((p) => <PostCard key={p.id} post={p} viewerAvatarUrl={viewer.avatarUrl} />)
-          )}
-        </div>
+        {/* Publicaciones: normales vs Tabú */}
+        <ProfilePosts posts={posts} viewerAvatarUrl={viewer.avatarUrl} />
       </div>
     </AppShell>
   );
