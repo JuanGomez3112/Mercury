@@ -34,6 +34,11 @@ model User {
   tycAcceptedAt   DateTime?
   creatorMode     Boolean  @default(false)
   subPriceCredits Int?
+  shareLocation   Boolean   @default(false)          // ¿comparte ubicación?
+  locationScope   String    @default("friends")       // "friends" | "public"
+  lat             Float?
+  lng             Float?
+  locationAt      DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

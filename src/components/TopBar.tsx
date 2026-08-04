@@ -31,9 +31,9 @@ export default function TopBar({
             <Link href="/tabu" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Tabú">
               <IconMasks className="!h-6 !w-6" />
             </Link>
-            <button className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Mapa">
+            <Link href="/mapa" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Mapa">
               <IconMapPeople className="!h-6 !w-6" />
-            </button>
+            </Link>
           </div>
           <div className="max-sm:hidden">
             <ProfileMenu username={username} avatarUrl={avatarUrl} />
