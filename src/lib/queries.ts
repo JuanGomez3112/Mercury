@@ -2,6 +2,7 @@ import { prisma } from "./db";
 import type { FeedPost, Author } from "./types";
 import type { Prisma } from "@prisma/client";
 import { loadViewerEntitlements } from "./entitlement";
+import { loadViewerSignals, loadAuthorAttrs, scorePost, arrangeByScore } from "./ranking";
 
 type Row = {
   id: string;
@@ -84,14 +85,23 @@ export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<Feed
         ? { authorId: { in: circle }, isAdult: false }
         : { authorId: { notIn: circle }, isAdult: false };
   }
-  const posts = await prisma.post.findMany({
+  // Candidatos recientes del filtro de la pestaña; se re-ordenan por relevancia (comportamiento).
+  const candidates = await prisma.post.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    take: 50,
+    take: 200,
     include: include(viewerId),
   });
-  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
-  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
+  const [signals, authorAttrs] = await Promise.all([
+    loadViewerSignals(viewerId),
+    loadAuthorAttrs(candidates.map((c) => c.authorId)),
+  ]);
+  const now = Date.now();
+  const scored = candidates.map((c) => Object.assign(c, { _score: scorePost(c, signals, authorAttrs, now) }));
+  const ordered = arrangeByScore(scored).slice(0, 60);
+
+  const ent = await loadViewerEntitlements(viewerId, ordered.map((p) => p.id), ordered.map((p) => p.authorId));
+  return ordered.map((p) => toFeedPost(p as Row, viewerId, ent));
 }
 
 export type ChatPreview = {
