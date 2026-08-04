@@ -45,6 +45,7 @@ export default async function OpcionesPage() {
           <Link href="/buscar" className={row}><IconSearch className="h-5 w-5 text-purple" /> Buscar</Link>
           <Link href="/chispa" className={row}><IconMasks className="h-5 w-5 text-purple" /> Chispa</Link>
           <Link href="/radar" className={row}><IconMapPeople className="h-5 w-5 text-purple" /> Radar</Link>
+          <Link href="/activar-ubicacion" className={row}><span className="w-5 text-center text-purple">🔒</span> Activar ubicación</Link>
           <Link href="/ajustes" className={row}><span className="w-5 text-center text-purple">⚙</span> Ajustes</Link>
           <AdminLink className={row} />
         </div>

@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Map as LMap, Marker as LMarker } from "leaflet";
 import type { NearbyUser } from "@/lib/geo";
-import InstallCertButton from "./InstallCertButton";
 
 type Share = { shareLocation: boolean; locationScope: "friends" | "public" };
 
@@ -109,6 +108,12 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
 
   return (
     <div className="space-y-4">
+      {/* Banner: activar ubicación (siempre visible) */}
+      <Link href="/activar-ubicacion" className="flex items-center justify-between gap-3 rounded-2xl border border-purple/30 bg-purple/10 px-4 py-3 transition hover:bg-purple/15 max-sm:rounded-none max-sm:border-x-0">
+        <span className="text-sm text-white/85">🔒 ¿La ubicación no pide permiso? <b className="text-white">Actívala aquí</b></span>
+        <span className="text-purple">›</span>
+      </Link>
+
       {/* Mapa */}
       <div className="relative overflow-hidden rounded-2xl border border-white/10 max-sm:rounded-none max-sm:border-x-0">
         <div ref={mapEl} className="h-[320px] w-full bg-navy-2" />
@@ -116,7 +121,7 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/85 p-6 text-center">
             <p className="text-sm text-white/70">Para ver el mapa necesitas permiso de ubicación.</p>
             <p className="max-w-xs text-xs text-white/40">Si no aparece el permiso, instala el certificado de Mercury (una vez por dispositivo) y recarga.</p>
-            <InstallCertButton />
+            <Link href="/activar-ubicacion" className="rounded-full bg-gradient-to-tl from-purple to-purple-soft px-4 py-2 text-sm font-semibold text-white">Activar ubicación</Link>
             <button onClick={locate} className="text-sm text-white/60 underline hover:text-white">Reintentar</button>
           </div>
         )}
@@ -136,9 +141,9 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
       <div className="space-y-3 rounded-2xl border border-white/10 bg-navy-2/50 p-5 max-sm:rounded-none max-sm:border-x-0">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-sm font-semibold text-white/70">Tu ubicación</h2>
-          <a href={`http://${typeof window !== "undefined" ? window.location.hostname : "192.168.1.106"}/mercury-rootCA.crt`} className="text-xs text-purple underline">
-            ¿No funciona? Instalar certificado
-          </a>
+          <Link href="/activar-ubicacion" className="text-xs text-purple underline">
+            ¿No funciona? Activar
+          </Link>
         </div>
         <label className="flex items-center justify-between gap-3 text-sm text-white/85">
           <span>Compartir mi ubicación</span>

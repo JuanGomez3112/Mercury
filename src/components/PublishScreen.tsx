@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
-import InstallCertButton from "./InstallCertButton";
 import { IconFire, IconImage, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink } from "./icons";
 
 const MAX_FILES = 10;
@@ -206,8 +205,7 @@ export default function PublishScreen({
           {locErr && (
             <div className="space-y-2">
               <p className="text-xs text-red-400">{locErr}</p>
-              <p className="text-xs text-white/40">¿No sale el permiso? Instala el certificado de Mercury (una vez) y vuelve.</p>
-              <InstallCertButton />
+              <a href="/activar-ubicacion" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-tl from-purple to-purple-soft px-4 py-2 text-sm font-semibold text-white">🔒 Activar ubicación</a>
             </div>
           )}
 
