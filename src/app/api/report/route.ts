@@ -23,6 +23,8 @@ async function targetExists(targetType: string, targetId: string): Promise<boole
       return !!(await prisma.message.findUnique({ where: { id: targetId }, select: { id: true } }));
     case "user":
       return !!(await prisma.user.findUnique({ where: { id: targetId }, select: { id: true } }));
+    case "listing":
+      return !!(await prisma.listing.findUnique({ where: { id: targetId }, select: { id: true } }));
     default:
       return false;
   }

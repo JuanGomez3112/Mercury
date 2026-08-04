@@ -24,6 +24,10 @@ async function resolveAuthor(tx: Prisma.TransactionClient, targetType: string, t
       const m = await tx.message.findUnique({ where: { id: targetId }, select: { senderId: true } });
       return m?.senderId ?? null;
     }
+    case "listing": {
+      const l = await tx.listing.findUnique({ where: { id: targetId }, select: { sellerId: true } });
+      return l?.sellerId ?? null;
+    }
     case "user":
       return targetId;
     default:
@@ -56,6 +60,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (targetType === "post") await tx.post.deleteMany({ where: { id: targetId } });
         else if (targetType === "comment") await tx.comment.deleteMany({ where: { id: targetId } });
         else if (targetType === "message") await tx.message.deleteMany({ where: { id: targetId } });
+        else if (targetType === "listing") await tx.listing.updateMany({ where: { id: targetId }, data: { status: "removed" } });
       } else if (action === "ban") {
         const authorId = await resolveAuthor(tx, targetType, targetId);
         if (!authorId) throw new Error("NOAUTHOR");

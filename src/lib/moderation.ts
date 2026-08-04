@@ -1,6 +1,6 @@
 // Moderación: motivos de reporte + helpers compartidos (client + server).
 
-export const REPORT_TARGETS = ["post", "user", "comment", "message"] as const;
+export const REPORT_TARGETS = ["post", "user", "comment", "message", "listing"] as const;
 export type ReportTarget = (typeof REPORT_TARGETS)[number];
 
 export const REPORT_REASONS = [
@@ -35,4 +35,5 @@ export const TARGET_LABELS: Record<ReportTarget, string> = {
   user: "Usuario",
   comment: "Comentario",
   message: "Mensaje",
+  listing: "Anuncio",
 };

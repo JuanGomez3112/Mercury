@@ -50,6 +50,9 @@ export default function ProfileMenu({
           <Link href="/tienda" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">🛍</span> Tienda
           </Link>
+          <Link href="/market" onClick={() => setOpen(false)} className={item}>
+            <span className="w-4 text-center">🏷</span> Marketplace
+          </Link>
           <Link href="/cartera" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">☾</span> Cartera
           </Link>

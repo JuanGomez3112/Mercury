@@ -59,6 +59,9 @@ model User {
   reportsResolved Report[]  @relation("resolver")
   payments        Payment[]
   passwordResets  PasswordReset[]
+  listings        Listing[]     @relation("listingSeller")
+  marketBuys      MarketOrder[] @relation("marketBuyer")
+  marketSales     MarketOrder[] @relation("marketSeller")
 }
 
 model PasswordReset {
@@ -377,4 +380,45 @@ model OrderItem {
   priceCreditsSnapshot Int
   qty Int
   @@index([orderId])
+}
+
+model Listing {
+  id             String   @id @default(cuid())
+  sellerId       String
+  seller         User     @relation("listingSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  title          String
+  description    String   @default("")
+  images         String[] @default([])
+  priceCredits   Int
+  acceptsCredits Boolean  @default(true)
+  acceptsCash    Boolean  @default(false)
+  condition      String   @default("used") // new | used
+  category       String   @default("otros")
+  location       String   @default("")
+  status         String   @default("active") // active | sold | removed
+  createdAt      DateTime @default(now())
+
+  orders         MarketOrder[]
+  @@index([status, createdAt])
+  @@index([sellerId])
+}
+
+model MarketOrder {
+  id           String    @id @default(cuid())
+  listingId    String
+  listing      Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId      String
+  buyer        User      @relation("marketBuyer", fields: [buyerId], references: [id], onDelete: Cascade)
+  sellerId     String
+  seller       User      @relation("marketSeller", fields: [sellerId], references: [id], onDelete: Cascade)
+  credits      Int
+  status       String    @default("held") // held | released | refunded | disputed
+  releaseAt    DateTime
+  confirmedAt  DateTime?
+  resolvedById String?
+  createdAt    DateTime  @default(now())
+
+  @@index([buyerId, status])
+  @@index([sellerId, status])
+  @@index([status, releaseAt])
 }

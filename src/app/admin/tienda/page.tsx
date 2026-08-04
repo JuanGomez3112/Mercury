@@ -12,6 +12,7 @@ import TokenConfigForm from "@/components/TokenConfigForm";
 import WithdrawalRow from "@/components/WithdrawalRow";
 import OrderStatusButton from "@/components/OrderStatusButton";
 import PaymentRow from "@/components/PaymentRow";
+import MarketDisputeRow from "@/components/MarketDisputeRow";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,7 @@ export default async function AdminTiendaPage() {
     );
   }
 
-  const [products, zones, cfg, withdrawals, orders, sums, payments] = await Promise.all([
+  const [products, zones, cfg, withdrawals, orders, sums, payments, disputes] = await Promise.all([
     prisma.product.findMany({ include: { variants: true }, orderBy: { createdAt: "desc" } }),
     prisma.shippingZone.findMany({ orderBy: { createdAt: "desc" } }),
     getConfig(),
@@ -48,6 +49,7 @@ export default async function AdminTiendaPage() {
     prisma.order.findMany({ include: { items: true, user: { select: { username: true } } }, orderBy: { createdAt: "desc" } }),
     prisma.user.aggregate({ _sum: { balance: true, earnings: true } }),
     prisma.payment.findMany({ take: 50, orderBy: { createdAt: "desc" }, include: { user: { select: { username: true } } } }),
+    prisma.marketOrder.findMany({ where: { status: "disputed" }, orderBy: { createdAt: "asc" }, include: { buyer: { select: { username: true } }, seller: { select: { username: true } }, listing: { select: { title: true } } } }),
   ]);
 
   const maxSupply = Number(cfg.maxSupply);
@@ -157,6 +159,21 @@ export default async function AdminTiendaPage() {
                           createdAt: pay.createdAt.toISOString(),
                         }}
                       />
+                    ))
+                  )}
+                </div>
+              ),
+            },
+            {
+              id: "disputas",
+              label: "Disputas",
+              content: (
+                <div className="divide-y divide-white/5 rounded-2xl border border-white/10 bg-navy-2/50">
+                  {disputes.length === 0 ? (
+                    <p className="p-8 text-center text-sm text-white/40">Sin disputas del marketplace.</p>
+                  ) : (
+                    disputes.map((o) => (
+                      <MarketDisputeRow key={o.id} order={{ id: o.id, credits: o.credits, listingTitle: o.listing.title, buyer: o.buyer.username, seller: o.seller.username }} />
                     ))
                   )}
                 </div>
