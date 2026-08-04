@@ -17,10 +17,10 @@ export default function TopBar({
     <header className="sticky top-0 z-40 h-24 border-b border-white/10 bg-navy/90 backdrop-blur">
       <div className="mx-auto flex h-full max-w-[1920px] items-center justify-between px-4 lg:px-32">
         <Link href="/feed" className="flex items-center gap-2.5">
-          <MercuryMark className="h-[72px] w-9" />
+          <MercuryMark className="h-[72px] w-9 max-sm:h-14 max-sm:w-7" />
         </Link>
 
-        <div className="flex items-center gap-9">
+        <div className="flex items-center gap-3 sm:gap-9">
           <SearchBar />
           <div className="hidden items-center gap-4 sm:flex">
             <NotifBell />
