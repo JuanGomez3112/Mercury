@@ -19,6 +19,8 @@ const verb: Record<string, string> = {
   transfer: "te envió MeryCoin",
   order: "— actualización de tu pedido",
   withdrawal: "actualizó tu retiro",
+  mention: "te etiquetó en una publicación",
+  match: "¡hiciste match! 💜",
 };
 
 export default async function NotificationsPage() {

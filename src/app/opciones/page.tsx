@@ -43,7 +43,7 @@ export default async function OpcionesPage() {
           <Link href="/guardados" className={row}><IconBookmark className="h-5 w-5 text-purple" /> Guardados</Link>
           <Link href="/notificaciones" className={row}><IconBell className="h-5 w-5 text-purple" /> Notificaciones</Link>
           <Link href="/buscar" className={row}><IconSearch className="h-5 w-5 text-purple" /> Buscar</Link>
-          <div className={soon}><span className="flex items-center gap-3"><IconMasks className="h-5 w-5" /> Tabú</span><span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px]">pronto</span></div>
+          <Link href="/tabu" className={row}><IconMasks className="h-5 w-5 text-purple" /> Tabú <span className="ml-auto rounded-full bg-purple/20 px-2 py-0.5 text-[10px] text-purple">match</span></Link>
           <div className={soon}><span className="flex items-center gap-3"><IconMapPeople className="h-5 w-5" /> Mapa</span><span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px]">pronto</span></div>
           <Link href="/ajustes" className={row}><span className="w-5 text-center text-purple">⚙</span> Ajustes</Link>
           <AdminLink className={row} />

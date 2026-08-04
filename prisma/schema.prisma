@@ -149,6 +149,27 @@ model Post {
   @@index([createdAt])
 }
 
+model Swipe {
+  id        String   @id @default(cuid())
+  swiperId  String
+  targetId  String
+  liked     Boolean
+  createdAt DateTime @default(now())
+
+  @@unique([swiperId, targetId])
+  @@index([targetId])
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  userAId   String   // siempre el id menor (orden lexicográfico) para deduplicar
+  userBId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userAId, userBId])
+  @@index([userBId])
+}
+
 model Poll {
   id        String       @id @default(cuid())
   postId    String       @unique
