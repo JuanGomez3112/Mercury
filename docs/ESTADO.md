@@ -33,6 +33,9 @@
 ### Moderación y seguridad
 - Reportes (post/user/comment/message), cola admin con prioridad roja (menores/no-consentido), baneo/suspensión, **logout forzado global**. Idempotencia de checkout.
 
+### Marketplace C2C
+- Cualquiera vende (`Listing`); comprar con **escrow ☾** (`MarketOrder`: retiene→confirma/libera, disputa→admin resuelve, auto-liberación 7d) o **efectivo** vía DM (fuera de plataforma, T&C no-responsable). Moderación de anuncios (report `listing`, retiro admin). Páginas `/market`, `/market/[id]`, `/market/nuevo`, `/market/mis`; tab Disputas en admin.
+
 ### Móvil (rehecho)
 - Contenedor full-width sin radius; lightbox fullscreen (foto + barra like/comentar/compartir); **pantalla dedicada `/publicar`**; bottom nav con FAB central; historias compactas; topbar ajustado. Screenshots headless (Playwright) como método de auditoría.
 
@@ -42,7 +45,6 @@
 
 | Ítem | Notas |
 |---|---|
-| **Marketplace C2C** | Spec listo (`specs/2026-08-01-mercury-marketplace-c2c-design.md`): cualquiera vende, pago ☾ con escrow o efectivo P2P. Usa ☾ existente. |
 | **Palabras → iconos en móvil** | Pulido pendiente (botones de perfil, etc.). |
 | **Afinar pesos del algoritmo** | Observar el feed con uso real y ajustar `W` en `lib/ranking.ts`. |
 | **BTCPay mainnet self-test** | Esperando fin del IBD del nodo + conectar xpub watch-only; luego pagar unos $ de BTC real (self-test, no abierto a usuarios). |
