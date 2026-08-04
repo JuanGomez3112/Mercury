@@ -7,7 +7,7 @@ import { getCandidates, getMatches } from "@/lib/match";
 
 export const dynamic = "force-dynamic";
 
-export default async function TabuPage() {
+export default async function ChispaPage() {
   const session = await getSession();
   if (!session) redirect("/login");
   const me = await prisma.user.findUnique({
@@ -25,8 +25,8 @@ export default async function TabuPage() {
     <AppShell username={me.username} avatarUrl={me.avatarUrl} wide>
       <div className="space-y-4">
         <div className="px-4 sm:px-0">
-          <h1 className="text-xl font-semibold text-white">Tabú</h1>
-          <p className="text-sm text-white/40">Desliza para descubrir gente. Si ambos se gustan, ¡es un match!</p>
+          <h1 className="text-xl font-semibold text-white">Chispa</h1>
+          <p className="text-sm text-white/40">Desliza para descubrir gente. Si ambos se gustan, ¡salta la chispa!</p>
         </div>
         <MatchDeck initial={candidates} matches={matches} />
       </div>

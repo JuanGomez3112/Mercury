@@ -7,7 +7,7 @@ import { getVisibleLocations } from "@/lib/geo";
 
 export const dynamic = "force-dynamic";
 
-export default async function MapaPage() {
+export default async function RadarPage() {
   const session = await getSession();
   if (!session) redirect("/login");
   const me = await prisma.user.findUnique({
@@ -23,7 +23,7 @@ export default async function MapaPage() {
     <AppShell username={me.username} avatarUrl={me.avatarUrl} wide flush>
       <div className="space-y-4">
         <div className="px-4 pt-4 sm:px-0">
-          <h1 className="text-xl font-semibold text-white">Mapa</h1>
+          <h1 className="text-xl font-semibold text-white">Radar</h1>
           <p className="text-sm text-white/40">Mira quién está cerca. Tú decides cuándo y para quién compartir tu ubicación.</p>
         </div>
         <MapView initialShare={{ shareLocation: me.shareLocation, locationScope: scope }} initialNearby={nearby} />

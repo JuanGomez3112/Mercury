@@ -43,8 +43,8 @@ export default async function OpcionesPage() {
           <Link href="/guardados" className={row}><IconBookmark className="h-5 w-5 text-purple" /> Guardados</Link>
           <Link href="/notificaciones" className={row}><IconBell className="h-5 w-5 text-purple" /> Notificaciones</Link>
           <Link href="/buscar" className={row}><IconSearch className="h-5 w-5 text-purple" /> Buscar</Link>
-          <Link href="/tabu" className={row}><IconMasks className="h-5 w-5 text-purple" /> Tabú <span className="ml-auto rounded-full bg-purple/20 px-2 py-0.5 text-[10px] text-purple">match</span></Link>
-          <Link href="/mapa" className={row}><IconMapPeople className="h-5 w-5 text-purple" /> Mapa</Link>
+          <Link href="/chispa" className={row}><IconMasks className="h-5 w-5 text-purple" /> Chispa</Link>
+          <Link href="/radar" className={row}><IconMapPeople className="h-5 w-5 text-purple" /> Radar</Link>
           <Link href="/ajustes" className={row}><span className="w-5 text-center text-purple">⚙</span> Ajustes</Link>
           <AdminLink className={row} />
         </div>

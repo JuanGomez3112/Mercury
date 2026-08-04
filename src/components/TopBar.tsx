@@ -28,10 +28,10 @@ export default function TopBar({
           <div className="hidden items-center gap-4 sm:flex">
             <NotifBell />
             <InboxLink />
-            <Link href="/tabu" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Tabú">
+            <Link href="/chispa" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Chispa">
               <IconMasks className="!h-6 !w-6" />
             </Link>
-            <Link href="/mapa" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Mapa">
+            <Link href="/radar" className="flex h-10 w-10 items-center justify-center rounded-full text-purple transition-all duration-200 hover:bg-purple/15" aria-label="Radar">
               <IconMapPeople className="!h-6 !w-6" />
             </Link>
           </div>
