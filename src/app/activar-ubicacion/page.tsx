@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import AppShell from "@/components/AppShell";
 import InstallCertButton from "@/components/InstallCertButton";
+import LocationDiag from "@/components/LocationDiag";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,11 @@ export default async function ActivarUbicacionPage() {
             Para que Publicar y el Radar detecten dónde estás, tu navegador necesita confiar en Mercury. Se instala un certificado <b>una sola vez por dispositivo</b>.
           </p>
         </div>
+
+        <section className={step}>
+          <p className="mb-3 text-sm font-semibold text-white/80">Diagnóstico</p>
+          <LocationDiag />
+        </section>
 
         <section className={step}>
           <p className="mb-3 text-sm font-semibold text-white/80">Paso 1 · Descarga el certificado</p>
