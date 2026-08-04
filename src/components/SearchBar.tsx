@@ -42,24 +42,24 @@ export default function SearchBar() {
       <button
         onClick={reveal}
         aria-label="Buscar"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-navy transition hover:brightness-95"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-navy transition hover:brightness-95"
       >
-        <IconSearch className="h-4 w-4" />
+        <IconSearch className="h-5 w-5" />
       </button>
     );
   }
 
   return (
     <div ref={ref} className="relative">
-      <form onSubmit={go} className="flex h-9 items-center gap-2 rounded-full bg-white px-3 text-navy">
+      <form onSubmit={go} className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-navy">
         <IconSearch className="h-4 w-4 opacity-60" />
         <input
           ref={inputRef}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Escape" && !q) setOpenInput(false); }}
-          placeholder="Buscar en Mercury"
-          className="w-56 bg-transparent text-sm outline-none placeholder:text-navy/40"
+          placeholder="Buscar"
+          className="w-32 bg-transparent text-sm outline-none placeholder:text-navy/40 sm:w-56"
         />
       </form>
 
