@@ -13,10 +13,12 @@ export default function PostComposer({
   displayName,
   avatarUrl,
   creatorMode = false,
+  redirectTo,
 }: {
   displayName: string;
   avatarUrl?: string | null;
   creatorMode?: boolean;
+  redirectTo?: string; // si se pasa, navega ahí tras publicar (pantalla dedicada); si no, refresh
 }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -111,7 +113,8 @@ export default function PostComposer({
       setAdult(false);
       setPaid(false);
       setPrice("");
-      router.refresh();
+      if (redirectTo) router.push(redirectTo);
+      else router.refresh();
     } else {
       const d = await res.json().catch(() => ({}));
       setError(d.error ?? "Error al publicar");
