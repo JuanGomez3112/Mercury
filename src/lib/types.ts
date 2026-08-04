@@ -18,7 +18,16 @@ export type FeedPost = {
   savedByMe: boolean;
   priceCredits: number | null;
   locked: boolean;
+  location: string | null;
+  linkUrl: string | null;
+  poll: PollView | null;
   commentPreview: { id: string; username: string; displayName: string | null; avatarUrl: string | null; body: string }[];
+};
+
+export type PollView = {
+  totalVotes: number;
+  myOptionId: string | null;
+  options: { id: string; text: string; votes: number }[];
 };
 
 export type CommentDTO = {

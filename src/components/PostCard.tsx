@@ -7,7 +7,9 @@ import CommentsSection from "./CommentsSection";
 import { timeAgo } from "@/lib/time";
 import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
-import { IconComment, IconShare, IconFire } from "./icons";
+import PostBody from "./PostBody";
+import PollCard from "./PollCard";
+import { IconComment, IconShare, IconFire, IconPin, IconLink } from "./icons";
 import { VerifiedGrad } from "./GradientIcons";
 import BookmarkButton from "./BookmarkButton";
 import TipButton from "./TipButton";
@@ -55,11 +57,35 @@ export default function PostCard({
         </div>
       </div>
 
-      {/* Cuerpo */}
-      {post.body && <p className="mt-4 whitespace-pre-wrap break-words text-white/90">{post.body}</p>}
+      {/* Cuerpo (con @menciones y #hashtags enlazados) */}
+      {post.body && <PostBody text={post.body} />}
+
+      {/* Ubicación */}
+      {post.location && (
+        <div className="mt-3 flex items-center gap-1.5 text-sm text-white/50">
+          <IconPin className="h-3.5 w-3.5 text-purple" />
+          {post.location}
+        </div>
+      )}
 
       {/* Media (abre lightbox con panel de comentarios) */}
       <PostMedia post={post} viewerAvatarUrl={viewerAvatarUrl} />
+
+      {/* Encuesta */}
+      {post.poll && <PollCard poll={post.poll} />}
+
+      {/* Enlace */}
+      {post.linkUrl && (
+        <a
+          href={post.linkUrl}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-navy px-4 py-3 text-sm text-purple transition hover:border-purple/40"
+        >
+          <IconLink className="h-4 w-4 shrink-0" />
+          <span className="truncate">{post.linkUrl.replace(/^https?:\/\//, "")}</span>
+        </a>
+      )}
 
       {/* Likers */}
       {post.likeCount > 0 && (

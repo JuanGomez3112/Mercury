@@ -10,6 +10,8 @@ type Row = {
   images: string[];
   isAdult: boolean;
   priceCredits: number | null;
+  location: string | null;
+  linkUrl: string | null;
   createdAt: Date;
   authorId: string;
   author: { username: string; displayName: string | null; avatarUrl: string | null };
@@ -17,6 +19,12 @@ type Row = {
   likes: { userId: string }[];
   bookmarks: { userId: string }[];
   comments: { id: string; body: string; author: { username: string; displayName: string | null; avatarUrl: string | null } }[];
+  poll:
+    | {
+        options: { id: string; text: string; _count: { votes: number } }[];
+        votes: { optionId: string }[];
+      }
+    | null;
 };
 
 function toFeedPost(
@@ -30,6 +38,13 @@ function toFeedPost(
     priceCredits == null ||
     (ent ? ent.purchasedPosts.has(p.id) || ent.activeSubs.has(p.authorId) : false);
   const locked = priceCredits != null && !access;
+  const poll = p.poll
+    ? {
+        options: p.poll.options.map((o) => ({ id: o.id, text: o.text, votes: o._count.votes })),
+        totalVotes: p.poll.options.reduce((s, o) => s + o._count.votes, 0),
+        myOptionId: p.poll.votes[0]?.optionId ?? null,
+      }
+    : null;
   return {
     id: p.id,
     body: p.body,
@@ -44,6 +59,9 @@ function toFeedPost(
     savedByMe: p.bookmarks.length > 0,
     priceCredits,
     locked,
+    location: p.location,
+    linkUrl: p.linkUrl,
+    poll,
     commentPreview: [...p.comments]
       .reverse()
       .map((c) => ({ id: c.id, username: c.author.username, displayName: c.author.displayName, avatarUrl: c.author.avatarUrl, body: c.body })),
@@ -59,6 +77,15 @@ const include = (viewerId: string) => ({
     orderBy: { createdAt: "desc" as const },
     take: 2,
     select: { id: true, body: true, author: { select: { username: true, displayName: true, avatarUrl: true } } },
+  },
+  poll: {
+    select: {
+      options: {
+        orderBy: { order: "asc" as const },
+        select: { id: true, text: true, _count: { select: { votes: true } } },
+      },
+      votes: { where: { userId: viewerId }, select: { optionId: true } },
+    },
   },
 });
 

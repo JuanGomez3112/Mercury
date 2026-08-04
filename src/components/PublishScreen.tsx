@@ -20,6 +20,7 @@ export default function PublishScreen({
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const camRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [adult, setAdult] = useState(false);
@@ -27,9 +28,22 @@ export default function PublishScreen({
   const [price, setPrice] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  // Ubicación, enlace, encuesta
+  const [showLoc, setShowLoc] = useState(false);
+  const [location, setLocation] = useState("");
+  const [showLink, setShowLink] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollOpts, setPollOpts] = useState<string[]>(["", ""]);
+
+  function insertMention() {
+    setBody((b) => (b.endsWith(" ") || b === "" ? b : b + " ") + "@");
+    setTimeout(() => bodyRef.current?.focus(), 0);
+  }
 
   const previews = files.map((f) => ({ f, url: URL.createObjectURL(f) }));
-  const canPublish = (body.trim() || files.length > 0) && !loading;
+  const pollValid = showPoll && pollOpts.filter((o) => o.trim()).length >= 2;
+  const canPublish = (body.trim() || files.length > 0 || pollValid) && !loading;
 
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const picked = Array.from(e.target.files ?? []);
@@ -40,6 +54,11 @@ export default function PublishScreen({
   async function submit() {
     if (!canPublish) return;
     if (paid && (price === "" || Number(price) < 1)) return setError("Pon un precio válido");
+    let link: string | null = null;
+    if (showLink && linkUrl.trim()) {
+      link = /^https?:\/\//i.test(linkUrl.trim()) ? linkUrl.trim() : `https://${linkUrl.trim()}`;
+    }
+    const pollPayload = pollValid ? { options: pollOpts.map((o) => o.trim()).filter(Boolean) } : null;
     setLoading(true);
     setError("");
     let images: string[] = [];
@@ -54,7 +73,12 @@ export default function PublishScreen({
     const priceCredits = paid && price !== "" ? Number(price) : null;
     const res = await fetch("/api/posts", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body, images, adult, priceCredits }),
+      body: JSON.stringify({
+        body, images, adult, priceCredits,
+        location: showLoc && location.trim() ? location.trim() : null,
+        linkUrl: link,
+        poll: pollPayload,
+      }),
     });
     setLoading(false);
     if (res.ok) { router.push("/feed"); router.refresh(); }
@@ -80,6 +104,7 @@ export default function PublishScreen({
         <div className="flex gap-3">
           <Avatar src={avatarUrl} className="h-11 w-11" />
           <textarea
+            ref={bodyRef}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder={`${displayName}, ¿qué te gustaría compartir?`}
@@ -139,13 +164,56 @@ export default function PublishScreen({
             </div>
           )}
 
-          {/* Próximamente */}
-          {[["Música", <IconMusic key="m" className="h-5 w-5" />], ["Etiqueta", <IconTag key="t" className="h-5 w-5" />], ["Ubicación", <IconPin key="p" className="h-5 w-5" />], ["Encuesta", <IconPoll key="e" className="h-5 w-5" />], ["Enlace", <IconLink key="l" className="h-5 w-5" />]].map(([label, icon]) => (
-            <div key={label as string} className={soon}>
-              <span className="flex items-center gap-3">{icon}{label}</span>
-              <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px]">pronto</span>
+          {/* Etiqueta: inserta @ para mencionar */}
+          <button type="button" onClick={insertMention} className={optRow}>
+            <IconTag className="h-5 w-5 text-purple" /> Etiquetar persona (@)
+          </button>
+
+          {/* Ubicación */}
+          <button type="button" onClick={() => setShowLoc((v) => !v)} className={`${optRow} ${showLoc ? "border-purple/50 bg-purple/10" : ""}`}>
+            <IconPin className="h-5 w-5 text-purple" /> Ubicación
+          </button>
+          {showLoc && (
+            <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={120} placeholder="¿Dónde estás?"
+              className="w-full rounded-xl border border-white/10 bg-navy px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple" />
+          )}
+
+          {/* Enlace */}
+          <button type="button" onClick={() => setShowLink((v) => !v)} className={`${optRow} ${showLink ? "border-purple/50 bg-purple/10" : ""}`}>
+            <IconLink className="h-5 w-5 text-purple" /> Enlace
+          </button>
+          {showLink && (
+            <input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} inputMode="url" maxLength={500} placeholder="https://…"
+              className="w-full rounded-xl border border-white/10 bg-navy px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple" />
+          )}
+
+          {/* Encuesta */}
+          <button type="button" onClick={() => setShowPoll((v) => !v)} className={`${optRow} ${showPoll ? "border-purple/50 bg-purple/10" : ""}`}>
+            <IconPoll className="h-5 w-5 text-purple" /> Encuesta
+          </button>
+          {showPoll && (
+            <div className="space-y-2 rounded-xl border border-white/10 bg-navy/60 p-3">
+              {pollOpts.map((opt, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input value={opt} onChange={(e) => setPollOpts((prev) => prev.map((o, idx) => idx === i ? e.target.value : o))}
+                    maxLength={80} placeholder={`Opción ${i + 1}`}
+                    className="w-full rounded-lg border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple" />
+                  {pollOpts.length > 2 && (
+                    <button type="button" onClick={() => setPollOpts((prev) => prev.filter((_, idx) => idx !== i))} className="text-white/40 hover:text-white" aria-label="Quitar opción">×</button>
+                  )}
+                </div>
+              ))}
+              {pollOpts.length < 6 && (
+                <button type="button" onClick={() => setPollOpts((prev) => [...prev, ""])} className="text-sm text-purple hover:underline">+ Añadir opción</button>
+              )}
             </div>
-          ))}
+          )}
+
+          {/* Próximamente */}
+          <div className={soon}>
+            <span className="flex items-center gap-3"><IconMusic className="h-5 w-5" /> Música</span>
+            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px]">pronto</span>
+          </div>
         </div>
 
         {error && <p className="text-center text-sm text-red-400">{error}</p>}
