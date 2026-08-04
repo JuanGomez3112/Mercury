@@ -31,7 +31,7 @@ export default function ProfileMenu({
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((o) => !o)} aria-label="Mi cuenta">
-        <Avatar src={avatarUrl} className="h-12 w-12 ring-2 ring-inset ring-purple/40" />
+        <Avatar src={avatarUrl} className="h-10 w-10 ring-2 ring-inset ring-purple/40" />
       </button>
 
       {open && (

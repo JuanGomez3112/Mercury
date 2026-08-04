@@ -42,16 +42,16 @@ export default function SearchBar() {
       <button
         onClick={reveal}
         aria-label="Buscar"
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-navy transition hover:brightness-95"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-navy transition hover:brightness-95"
       >
-        <IconSearch className="h-5 w-5" />
+        <IconSearch className="h-4 w-4" />
       </button>
     );
   }
 
   return (
     <div ref={ref} className="relative">
-      <form onSubmit={go} className="flex h-12 items-center gap-2 rounded-full bg-white px-4 text-navy">
+      <form onSubmit={go} className="flex h-10 items-center gap-2 rounded-full bg-white px-4 text-navy">
         <IconSearch className="h-4 w-4 opacity-60" />
         <input
           ref={inputRef}
