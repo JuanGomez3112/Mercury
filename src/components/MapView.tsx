@@ -134,7 +134,12 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
 
       {/* Privacidad */}
       <div className="space-y-3 rounded-2xl border border-white/10 bg-navy-2/50 p-5 max-sm:rounded-none max-sm:border-x-0">
-        <h2 className="text-sm font-semibold text-white/70">Tu ubicación</h2>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-white/70">Tu ubicación</h2>
+          <a href={`http://${typeof window !== "undefined" ? window.location.hostname : "192.168.1.106"}/mercury-rootCA.crt`} className="text-xs text-purple underline">
+            ¿No funciona? Instalar certificado
+          </a>
+        </div>
         <label className="flex items-center justify-between gap-3 text-sm text-white/85">
           <span>Compartir mi ubicación</span>
           <button
