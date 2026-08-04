@@ -26,6 +26,11 @@ model User {
   adminPinHash String?
   banned          Boolean   @default(false)
   suspendedUntil  DateTime?
+  sexuality       String?
+  nationality     String?
+  phone           String?
+  recoveryEmail   String?
+  tycAcceptedAt   DateTime?
   creatorMode     Boolean  @default(false)
   subPriceCredits Int?
   createdAt    DateTime  @default(now())
@@ -53,6 +58,19 @@ model User {
   reportsMade     Report[]  @relation("reporter")
   reportsResolved Report[]  @relation("resolver")
   payments        Payment[]
+  passwordResets  PasswordReset[]
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Report {

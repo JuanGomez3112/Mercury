@@ -66,7 +66,7 @@ export default function LoginPage() {
             <input type="checkbox" name="remember" className="accent-purple" />
             Recuérdame
           </label>
-          <a href="#" className="font-medium text-purple hover:underline">
+          <a href="/recuperar" className="font-medium text-purple hover:underline">
             ¿Olvidó su contraseña?
           </a>
         </div>

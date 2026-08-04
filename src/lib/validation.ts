@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SEXUALITIES, NATIONALITIES } from "./profile-options";
 
 export function isAdult(birthdate: Date): boolean {
   const now = new Date();
@@ -18,9 +19,15 @@ export const registerSchema = z
       .min(3, "Mínimo 3 caracteres")
       .max(30)
       .regex(/^[a-zA-Z0-9_.]+$/, "Solo letras, números, _ y ."),
+    email: z.string().trim().email("Email inválido").max(200),
     password: z.string().min(8, "Mínimo 8 caracteres").max(200),
     password2: z.string(),
     birthdate: z.string().refine((v) => !Number.isNaN(Date.parse(v)), "Fecha inválida"),
+    sexuality: z.enum(SEXUALITIES),
+    nationality: z.enum(NATIONALITIES),
+    phone: z.string().trim().max(30).optional().default(""),
+    recoveryEmail: z.union([z.string().trim().email("Email de recuperación inválido"), z.literal("")]).optional().default(""),
+    tycAccepted: z.literal(true, { message: "Debes aceptar los términos" }),
   })
   .refine((d) => d.password === d.password2, {
     message: "Las contraseñas no coinciden",
