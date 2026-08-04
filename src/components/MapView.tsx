@@ -47,10 +47,8 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
     );
   }
 
-  useEffect(() => {
-    locate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Nota: NO pedimos ubicación automáticamente. En móvil, el mapa pintándose al
+  // mismo tiempo puede descartar el cartel de permiso. Se pide con gesto (botón).
 
   // Inicializar / actualizar el mapa Leaflet
   useEffect(() => {
@@ -117,12 +115,22 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
       {/* Mapa */}
       <div className="relative overflow-hidden rounded-2xl border border-white/10 max-sm:rounded-none max-sm:border-x-0">
         <div ref={mapEl} className="h-[320px] w-full bg-navy-2" />
-        {status === "denied" && (
+        {!myPos && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/85 p-6 text-center">
-            <p className="text-sm text-white/70">Para ver el mapa necesitas permiso de ubicación.</p>
-            <p className="max-w-xs text-xs text-white/40">Si no aparece el permiso, instala el certificado de Mercury (una vez por dispositivo) y recarga.</p>
-            <Link href="/activar-ubicacion" className="rounded-full bg-gradient-to-tl from-purple to-purple-soft px-4 py-2 text-sm font-semibold text-white">Activar ubicación</Link>
-            <button onClick={locate} className="text-sm text-white/60 underline hover:text-white">Reintentar</button>
+            {status === "locating" ? (
+              <p className="text-sm text-white/70">Buscando tu ubicación… toca <b>Permitir</b>.</p>
+            ) : (
+              <>
+                <p className="text-sm text-white/80">Muéstrate en el mapa</p>
+                <button onClick={locate} className="rounded-full bg-gradient-to-tl from-purple to-purple-soft px-5 py-2.5 text-sm font-semibold text-white">📍 Activar mi ubicación</button>
+                {status === "denied" && (
+                  <>
+                    <p className="max-w-xs text-xs text-amber-400">No se pudo obtener tu ubicación. Revisa el permiso o instala el certificado.</p>
+                    <Link href="/activar-ubicacion" className="text-sm text-purple underline">Ayuda para activar</Link>
+                  </>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
