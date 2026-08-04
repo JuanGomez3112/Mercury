@@ -80,7 +80,7 @@ export default async function FeedPage({
 
         <RightPanel suggestions={suggestions} chats={chats} />
       </div>
-      <MobileNav username={me.username} />
+      <MobileNav />
     </>
   );
 }

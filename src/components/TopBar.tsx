@@ -32,7 +32,9 @@ export default function TopBar({
               <IconMapPeople className="!h-6 !w-6" />
             </button>
           </div>
-          <ProfileMenu username={username} avatarUrl={avatarUrl} />
+          <div className="max-sm:hidden">
+            <ProfileMenu username={username} avatarUrl={avatarUrl} />
+          </div>
         </div>
       </div>
     </header>

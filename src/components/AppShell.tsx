@@ -22,7 +22,7 @@ export default function AppShell({
         <LeftRail username={username} />
         <main className={`mx-auto w-full flex-1 ${wide ? "max-w-[896px]" : "max-w-2xl"}`}>{children}</main>
       </div>
-      <MobileNav username={username} />
+      <MobileNav />
     </>
   );
 }

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { IconGrid, IconInbox, IconBell, IconUser } from "./icons";
 
 /** Navegación inferior fija para móvil. Publicar al centro (FAB). Oculta en desktop (rail lateral). */
-export default function MobileNav({ username }: { username: string }) {
+export default function MobileNav() {
   const path = usePathname();
 
   const item = (href: string, label: string, Icon: ComponentType<{ className?: string }>, active: boolean) => (
@@ -36,7 +36,7 @@ export default function MobileNav({ username }: { username: string }) {
       </div>
 
       {item("/notificaciones", "Notificaciones", IconBell, path.startsWith("/notificaciones"))}
-      {item(`/u/${username}`, "Perfil", IconUser, path === `/u/${username}`)}
+      {item("/opciones", "Menú", IconUser, path === "/opciones")}
     </nav>
   );
 }

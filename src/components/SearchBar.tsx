@@ -59,7 +59,7 @@ export default function SearchBar() {
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Escape" && !q) setOpenInput(false); }}
           placeholder="Buscar"
-          className="w-32 bg-transparent text-sm outline-none placeholder:text-navy/40 sm:w-56"
+          className="w-48 bg-transparent text-sm outline-none placeholder:text-navy/40 sm:w-56"
         />
       </form>
 
