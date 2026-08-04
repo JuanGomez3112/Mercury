@@ -28,9 +28,10 @@ export default function PublishScreen({
   const [price, setPrice] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  // Ubicación, enlace, encuesta
-  const [showLoc, setShowLoc] = useState(false);
+  // Ubicación (geolocalización real), enlace, encuesta
   const [location, setLocation] = useState("");
+  const [locBusy, setLocBusy] = useState(false);
+  const [locErr, setLocErr] = useState("");
   const [showLink, setShowLink] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [showPoll, setShowPoll] = useState(false);
@@ -39,6 +40,26 @@ export default function PublishScreen({
   function insertMention() {
     setBody((b) => (b.endsWith(" ") || b === "" ? b : b + " ") + "@");
     setTimeout(() => bodyRef.current?.focus(), 0);
+  }
+
+  function detectLocation() {
+    if (!("geolocation" in navigator)) { setLocErr("Geolocalización no disponible"); return; }
+    setLocBusy(true); setLocErr("");
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const r = await fetch(`/api/geocode/reverse?lat=${latitude}&lng=${longitude}`);
+          const d = await r.json();
+          setLocation(d.label || `${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+        } catch {
+          setLocation(`${latitude.toFixed(3)}, ${longitude.toFixed(3)}`);
+        }
+        setLocBusy(false);
+      },
+      () => { setLocErr("Activa el permiso de ubicación"); setLocBusy(false); },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
   }
 
   const previews = files.map((f) => ({ f, url: URL.createObjectURL(f) }));
@@ -75,7 +96,7 @@ export default function PublishScreen({
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         body, images, adult, priceCredits,
-        location: showLoc && location.trim() ? location.trim() : null,
+        location: location.trim() || null,
         linkUrl: link,
         poll: pollPayload,
       }),
@@ -169,14 +190,19 @@ export default function PublishScreen({
             <IconTag className="h-5 w-5 text-purple" /> Etiquetar persona (@)
           </button>
 
-          {/* Ubicación */}
-          <button type="button" onClick={() => setShowLoc((v) => !v)} className={`${optRow} ${showLoc ? "border-purple/50 bg-purple/10" : ""}`}>
-            <IconPin className="h-5 w-5 text-purple" /> Ubicación
-          </button>
-          {showLoc && (
-            <input value={location} onChange={(e) => setLocation(e.target.value)} maxLength={120} placeholder="¿Dónde estás?"
-              className="w-full rounded-xl border border-white/10 bg-navy px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple" />
+          {/* Ubicación real (geolocalización del dispositivo) */}
+          {location ? (
+            <div className={`${optRow} border-purple/50 bg-purple/10`}>
+              <IconPin className="h-5 w-5 text-purple" />
+              <span className="flex-1">{location}</span>
+              <button type="button" onClick={() => setLocation("")} aria-label="Quitar ubicación" className="text-white/40 hover:text-white">×</button>
+            </div>
+          ) : (
+            <button type="button" onClick={detectLocation} disabled={locBusy} className={optRow}>
+              <IconPin className="h-5 w-5 text-purple" /> {locBusy ? "Detectando ubicación…" : "Añadir mi ubicación"}
+            </button>
           )}
+          {locErr && <p className="text-xs text-red-400">{locErr}</p>}
 
           {/* Enlace */}
           <button type="button" onClick={() => setShowLink((v) => !v)} className={`${optRow} ${showLink ? "border-purple/50 bg-purple/10" : ""}`}>
