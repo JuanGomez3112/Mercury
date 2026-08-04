@@ -3,7 +3,7 @@
 import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconGrid, IconInbox, IconBell, IconUser } from "./icons";
+import { IconGrid, IconInbox, IconReels, IconUser } from "./icons";
 
 /** Navegación inferior fija para móvil. Publicar al centro (FAB). Oculta en desktop (rail lateral). */
 export default function MobileNav() {
@@ -35,7 +35,7 @@ export default function MobileNav() {
         </Link>
       </div>
 
-      {item("/notificaciones", "Notificaciones", IconBell, path.startsWith("/notificaciones"))}
+      {item("/reels", "Reels", IconReels, path.startsWith("/reels"))}
       {item("/opciones", "Menú", IconUser, path === "/opciones")}
     </nav>
   );

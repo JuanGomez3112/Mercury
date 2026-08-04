@@ -6,6 +6,8 @@ import AppShell from "@/components/AppShell";
 import ProfilePosts from "@/components/ProfilePosts";
 import FollowButton from "@/components/FollowButton";
 import Avatar from "@/components/Avatar";
+import AvatarUploader from "@/components/AvatarUploader";
+import CoverUploader from "@/components/CoverUploader";
 import { VerifiedGrad } from "@/components/GradientIcons";
 import SubscribeButton from "@/components/SubscribeButton";
 import ReportUserButton from "@/components/ReportUserButton";
@@ -16,9 +18,9 @@ export const dynamic = "force-dynamic";
 /* eslint-disable @next/next/no-img-element */
 function Deco({ mode }: { mode?: string | null }) {
   if (mode === "devil")
-    return <img src="/Cuernos.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%-10px)] left-1/2 h-11 w-[66px] -translate-x-1/2" />;
+    return <img src="/Cuernos.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%-14px)] left-1/2 z-0 h-12 w-[72px] -translate-x-1/2" />;
   if (mode === "angel")
-    return <img src="/Aurola.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%+6px)] left-1/2 h-5 w-16 -translate-x-1/2" />;
+    return <img src="/Aurola.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%+4px)] left-1/2 z-20 h-5 w-16 -translate-x-1/2" />;
   return null;
 }
 
@@ -41,6 +43,7 @@ export default async function ProfilePage({
         displayName: true,
         bio: true,
         avatarUrl: true,
+        coverUrl: true,
         mode: true,
         creatorMode: true,
         subPriceCredits: true,
@@ -68,17 +71,24 @@ export default async function ProfilePage({
   const name = profile.displayName ?? profile.username;
 
   return (
-    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl} wide>
+    <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl} wide flush>
       <div className="space-y-6">
+        {/* Portada */}
+        <CoverUploader src={profile.coverUrl} editable={isMe} />
+
         {/* Cabecera del perfil */}
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-5">
+        <section className="-mt-6 rounded-2xl border border-white/10 bg-navy-2/50 p-8 max-sm:rounded-none max-sm:border-x-0 max-sm:p-5">
           <div className="flex items-start justify-between max-sm:flex-col max-sm:gap-4">
-            <div className="flex items-center gap-5 max-sm:gap-4">
-              <div className="relative">
+            <div className="flex items-end gap-5 max-sm:gap-4">
+              <div className="relative -mt-20 max-sm:-mt-16">
                 <Deco mode={profile.mode} />
-                <Avatar src={profile.avatarUrl} className="h-24 w-24 ring-2 ring-purple/40" />
+                {isMe ? (
+                  <AvatarUploader src={profile.avatarUrl} className="relative z-10 h-28 w-28 ring-4 ring-navy-2 max-sm:h-24 max-sm:w-24" />
+                ) : (
+                  <Avatar src={profile.avatarUrl} className="relative z-10 h-28 w-28 rounded-full ring-4 ring-navy-2 max-sm:h-24 max-sm:w-24" />
+                )}
               </div>
-              <div>
+              <div className="pb-1">
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-semibold text-white">{name}</h1>
                   <VerifiedGrad className="h-5 w-5" />

@@ -8,8 +8,11 @@ import PasswordForm from "@/components/PasswordForm";
 import TabuPinForm from "@/components/TabuPinForm";
 import CreatorModeForm from "@/components/CreatorModeForm";
 import AdminPinForm from "@/components/AdminPinForm";
+import ProfileEditForm from "@/components/ProfileEditForm";
 
 export const dynamic = "force-dynamic";
+
+const card = "rounded-2xl border border-white/10 bg-navy-2/50 p-6 max-sm:rounded-none max-sm:border-x-0";
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -17,7 +20,7 @@ export default async function SettingsPage() {
 
   const me = await prisma.user.findUnique({
     where: { id: session.sub },
-    select: { username: true, displayName: true, avatarUrl: true, email: true, mode: true, passwordHash: true, tabuPinHash: true, creatorMode: true, subPriceCredits: true, isAdmin: true, adminPinHash: true },
+    select: { username: true, displayName: true, bio: true, avatarUrl: true, email: true, mode: true, passwordHash: true, tabuPinHash: true, creatorMode: true, subPriceCredits: true, isAdmin: true, adminPinHash: true },
   });
   if (!me) redirect("/login");
 
@@ -26,42 +29,46 @@ export default async function SettingsPage() {
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold text-white">Ajustes</h1>
+        <h1 className="px-4 text-xl font-semibold text-white sm:px-0">Ajustes</h1>
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
-          <h2 className="mb-3 text-sm font-semibold text-white/70">Cuenta</h2>
-          <div className="space-y-1 text-sm text-white/70">
-            <div><span className="text-white/40">Nombre:</span> {me.displayName ?? "—"}</div>
-            <div><span className="text-white/40">Usuario:</span> @{me.username}</div>
-            <div><span className="text-white/40">Email:</span> {me.email ?? "—"}</div>
+        {/* Perfil: nombre, foto, bio */}
+        <section className={card}>
+          <ProfileEditForm displayName={me.displayName ?? ""} bio={me.bio ?? ""} avatarUrl={me.avatarUrl} />
+          <div className="mt-4 border-t border-white/10 pt-3 text-sm text-white/50">
+            <span className="text-white/30">Usuario:</span> @{me.username}
+            <span className="mx-2 text-white/20">·</span>
+            <span className="text-white/30">Email:</span> {me.email ?? "—"}
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+        {/* Modo ángel / diablito */}
+        <section className={card}>
           <ModeToggle initial={mode} />
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
-          <h2 className="mb-3 text-sm font-semibold text-white/70">Sesión</h2>
-          <LogoutButton />
+        {/* Modo creador */}
+        <section className={card}>
+          <CreatorModeForm initialMode={me.creatorMode} initialPrice={me.subPriceCredits} />
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+        {/* Seguridad */}
+        <section className={card}>
           <PasswordForm hasPassword={me.passwordHash !== null} />
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+        <section className={card}>
           <TabuPinForm hasPin={me.tabuPinHash !== null} />
         </section>
 
         {me.isAdmin && (
-          <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
+          <section className={card}>
             <AdminPinForm hasPin={me.adminPinHash !== null} />
           </section>
         )}
 
-        <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6">
-          <CreatorModeForm initialMode={me.creatorMode} initialPrice={me.subPriceCredits} />
+        <section className={card}>
+          <h2 className="mb-3 text-sm font-semibold text-white/70">Sesión</h2>
+          <LogoutButton />
         </section>
 
         <p className="text-center text-xs text-white/30">

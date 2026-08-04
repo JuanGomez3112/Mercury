@@ -22,6 +22,9 @@ export default function TopBar({
 
         <div className="flex items-center gap-3 sm:gap-9">
           <SearchBar />
+          <div className="text-purple sm:hidden">
+            <NotifBell />
+          </div>
           <div className="hidden items-center gap-4 sm:flex">
             <NotifBell />
             <InboxLink />

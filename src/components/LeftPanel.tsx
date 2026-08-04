@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Avatar from "./Avatar";
-import MoodSlider from "./MoodSlider";
 import CartBadge from "./CartBadge";
 import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable } from "./icons";
 
@@ -19,19 +18,15 @@ export default function LeftPanel({
 }: {
   me: { username: string; displayName: string | null; avatarUrl: string | null; mode: string | null };
 }) {
-  const mood = me.mode === "angel" || me.mode === "devil" ? me.mode : null;
   return (
     <aside className="sticky top-28 hidden h-max w-96 shrink-0 flex-col gap-4 min-[1700px]:flex">
-      <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-navy-2/50 p-4">
-        <Link href={`/u/${me.username}`} className="flex min-w-0 flex-1 items-center gap-3">
-          <Avatar src={me.avatarUrl} className="h-12 w-12" />
-          <div className="min-w-0">
-            <span className="block truncate font-semibold text-white">{me.displayName ?? me.username}</span>
-            <span className="block truncate text-xs text-white/40">@{me.username}</span>
-          </div>
-        </Link>
-        <MoodSlider initial={mood} />
-      </div>
+      <Link href={`/u/${me.username}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-navy-2/50 p-4 transition hover:bg-navy-2">
+        <Avatar src={me.avatarUrl} className="h-12 w-12" />
+        <div className="min-w-0">
+          <span className="block truncate font-semibold text-white">{me.displayName ?? me.username}</span>
+          <span className="block truncate text-xs text-white/40">@{me.username}</span>
+        </div>
+      </Link>
 
       <nav className="rounded-2xl border border-white/10 bg-navy-2/50 p-3">
         {nav.map(({ icon: Icon, label, href, active }) => (

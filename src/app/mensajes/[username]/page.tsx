@@ -33,7 +33,7 @@ export default async function ChatPage({
 
   return (
     <AppShell username={viewer.username} avatarUrl={viewer.avatarUrl}>
-      <div className="flex min-h-[70vh] flex-col rounded-2xl border border-white/10 bg-navy-2/50">
+      <div className="flex min-h-[70vh] flex-col rounded-2xl border border-white/10 bg-navy-2/50 max-sm:rounded-none max-sm:border-x-0">
           {/* Cabecera */}
           <Link href={`/u/${partner.username}`} className="flex items-center gap-3 border-b border-white/10 p-4">
             <Avatar src={partner.avatarUrl} className="h-10 w-10" />
