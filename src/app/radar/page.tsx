@@ -26,7 +26,7 @@ export default async function RadarPage() {
           <h1 className="text-xl font-semibold text-white">Radar</h1>
           <p className="text-sm text-white/40">Mira quién está cerca. Tú decides cuándo y para quién compartir tu ubicación.</p>
         </div>
-        <MapView initialShare={{ shareLocation: me.shareLocation, locationScope: scope }} initialNearby={nearby} />
+        <MapView initialShare={{ shareLocation: me.shareLocation, locationScope: scope }} initialNearby={nearby} myAvatarUrl={me.avatarUrl} />
       </div>
     </AppShell>
   );

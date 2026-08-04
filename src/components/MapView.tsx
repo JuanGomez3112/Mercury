@@ -15,7 +15,7 @@ function fmtDist(km: number | null): string {
 }
 
 /* eslint-disable @next/next/no-img-element */
-export default function MapView({ initialShare, initialNearby }: { initialShare: Share; initialNearby: NearbyUser[] }) {
+export default function MapView({ initialShare, initialNearby, myAvatarUrl = null }: { initialShare: Share; initialNearby: NearbyUser[]; myAvatarUrl?: string | null }) {
   const [share, setShare] = useState(initialShare.shareLocation);
   const [scope, setScope] = useState<Share["locationScope"]>(initialShare.locationScope);
   const [nearby, setNearby] = useState<NearbyUser[]>(initialNearby);
@@ -72,13 +72,13 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
       const avatarIcon = (src: string | null, ring: string) =>
         L.divIcon({
           className: "",
-          html: `<div style="width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover"/>` : ""}</div>`,
+          html: `<div style="width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830;display:flex;align-items:center;justify-content:center;color:#ffffff66;font-size:20px">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='👤'"/>` : "👤"}</div>`,
           iconSize: [44, 44],
           iconAnchor: [22, 22],
         });
 
       if (myPos) {
-        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(null, "#7c5cff"), zIndexOffset: 1000 }).addTo(mapRef.current!).bindPopup("Tú"));
+        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(myAvatarUrl, "#7c5cff"), zIndexOffset: 1000 }).addTo(mapRef.current!).bindPopup("Tú"));
       }
       for (const u of nearby) {
         const mk = L.marker([u.lat, u.lng], { icon: avatarIcon(u.avatarUrl, u.isFriend ? "#7c5cff" : "#ffffff55") })
@@ -88,7 +88,7 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
       }
     })();
     return () => { cancelled = true; };
-  }, [myPos, nearby]);
+  }, [myPos, nearby, myAvatarUrl]);
 
   useEffect(() => () => { mapRef.current?.remove(); mapRef.current = null; }, []);
 
