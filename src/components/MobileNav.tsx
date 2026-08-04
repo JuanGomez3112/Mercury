@@ -28,7 +28,7 @@ export default function MobileNav({ username }: { username: string }) {
       <Link
         href="/publicar"
         aria-label="Publicar"
-        className="relative -top-3 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-3xl font-light leading-none text-white shadow-lg shadow-purple/40"
+        className="relative -top-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tl from-purple to-purple-soft text-2xl font-light leading-none text-white shadow-md shadow-purple/40"
       >
         +
       </Link>
