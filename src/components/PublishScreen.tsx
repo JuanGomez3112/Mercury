@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
+import InstallCertButton from "./InstallCertButton";
 import { IconFire, IconImage, IconCamera, IconMusic, IconTag, IconPin, IconPoll, IconLink } from "./icons";
 
 const MAX_FILES = 10;
@@ -202,7 +203,13 @@ export default function PublishScreen({
               <IconPin className="h-5 w-5 text-purple" /> {locBusy ? "Detectando ubicación…" : "Añadir mi ubicación"}
             </button>
           )}
-          {locErr && <p className="text-xs text-red-400">{locErr}</p>}
+          {locErr && (
+            <div className="space-y-2">
+              <p className="text-xs text-red-400">{locErr}</p>
+              <p className="text-xs text-white/40">¿No sale el permiso? Instala el certificado de Mercury (una vez) y vuelve.</p>
+              <InstallCertButton />
+            </div>
+          )}
 
           {/* Enlace */}
           <button type="button" onClick={() => setShowLink((v) => !v)} className={`${optRow} ${showLink ? "border-purple/50 bg-purple/10" : ""}`}>

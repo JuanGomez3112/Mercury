@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Map as LMap, Marker as LMarker } from "leaflet";
 import type { NearbyUser } from "@/lib/geo";
+import InstallCertButton from "./InstallCertButton";
 
 type Share = { shareLocation: boolean; locationScope: "friends" | "public" };
 
@@ -112,9 +113,11 @@ export default function MapView({ initialShare, initialNearby }: { initialShare:
       <div className="relative overflow-hidden rounded-2xl border border-white/10 max-sm:rounded-none max-sm:border-x-0">
         <div ref={mapEl} className="h-[320px] w-full bg-navy-2" />
         {status === "denied" && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-navy/80 p-6 text-center">
-            <p className="text-sm text-white/70">Activa los permisos de ubicación para ver el mapa.</p>
-            <button onClick={locate} className="rounded-full bg-gradient-to-tl from-purple to-purple-soft px-4 py-2 text-sm font-semibold text-white">Reintentar</button>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/85 p-6 text-center">
+            <p className="text-sm text-white/70">Para ver el mapa necesitas permiso de ubicación.</p>
+            <p className="max-w-xs text-xs text-white/40">Si no aparece el permiso, instala el certificado de Mercury (una vez por dispositivo) y recarga.</p>
+            <InstallCertButton />
+            <button onClick={locate} className="text-sm text-white/60 underline hover:text-white">Reintentar</button>
           </div>
         )}
       </div>
