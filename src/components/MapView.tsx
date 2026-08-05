@@ -15,7 +15,7 @@ function fmtDist(km: number | null): string {
 }
 
 /* eslint-disable @next/next/no-img-element */
-export default function MapView({ initialShare, initialNearby, myAvatarUrl = null }: { initialShare: Share; initialNearby: NearbyUser[]; myAvatarUrl?: string | null }) {
+export default function MapView({ initialShare, initialNearby, myAvatarUrl = null, myMode = null }: { initialShare: Share; initialNearby: NearbyUser[]; myAvatarUrl?: string | null; myMode?: string | null }) {
   const [share, setShare] = useState(initialShare.shareLocation);
   const [scope, setScope] = useState<Share["locationScope"]>(initialShare.locationScope);
   const [nearby, setNearby] = useState<NearbyUser[]>(initialNearby);
@@ -69,26 +69,31 @@ export default function MapView({ initialShare, initialNearby, myAvatarUrl = nul
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
 
-      const avatarIcon = (src: string | null, ring: string) =>
+      const deco = (mode: string | null) => {
+        if (mode === "devil") return `<img src="/Cuernos.svg" style="position:absolute;bottom:calc(100% - 8px);left:50%;transform:translateX(-50%);width:40px;height:27px;z-index:0"/>`;
+        if (mode === "angel") return `<img src="/Aurola.svg" style="position:absolute;bottom:calc(100% - 1px);left:50%;transform:translateX(-50%);width:34px;height:11px;z-index:2"/>`;
+        return "";
+      };
+      const avatarIcon = (src: string | null, ring: string, mode: string | null) =>
         L.divIcon({
           className: "",
-          html: `<div style="width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830;display:flex;align-items:center;justify-content:center;color:#ffffff66;font-size:20px">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='👤'"/>` : "👤"}</div>`,
+          html: `<div style="position:relative;width:44px;height:44px">${deco(mode)}<div style="position:relative;z-index:1;width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830;display:flex;align-items:center;justify-content:center;color:#ffffff66;font-size:20px">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='👤'"/>` : "👤"}</div></div>`,
           iconSize: [44, 44],
           iconAnchor: [22, 22],
         });
 
       if (myPos) {
-        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(myAvatarUrl, "#7c5cff"), zIndexOffset: 1000 }).addTo(mapRef.current!).bindPopup("Tú"));
+        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(myAvatarUrl, "#7c5cff", myMode), zIndexOffset: 1000 }).addTo(mapRef.current!).bindPopup("Tú"));
       }
       for (const u of nearby) {
-        const mk = L.marker([u.lat, u.lng], { icon: avatarIcon(u.avatarUrl, u.isFriend ? "#7c5cff" : "#ffffff55") })
+        const mk = L.marker([u.lat, u.lng], { icon: avatarIcon(u.avatarUrl, u.isFriend ? "#7c5cff" : "#ffffff55", u.mode) })
           .addTo(mapRef.current!)
           .bindPopup(`${u.displayName ?? u.username}${u.distanceKm != null ? " · " + fmtDist(u.distanceKm) : ""}`);
         markersRef.current.push(mk);
       }
     })();
     return () => { cancelled = true; };
-  }, [myPos, nearby, myAvatarUrl]);
+  }, [myPos, nearby, myAvatarUrl, myMode]);
 
   useEffect(() => () => { mapRef.current?.remove(); mapRef.current = null; }, []);
 

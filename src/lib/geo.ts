@@ -8,6 +8,7 @@ export type NearbyUser = {
   lat: number;
   lng: number;
   scope: string;
+  mode: string | null;
   distanceKm: number | null;
   isFriend: boolean;
   locationAt: string | null;
@@ -54,7 +55,7 @@ export async function getVisibleLocations(userId: string): Promise<NearbyUser[]>
         lng: { not: null },
         banned: false,
       },
-      select: { id: true, username: true, displayName: true, avatarUrl: true, lat: true, lng: true, locationScope: true, locationAt: true },
+      select: { id: true, username: true, displayName: true, avatarUrl: true, lat: true, lng: true, locationScope: true, locationAt: true, mode: true },
     }),
   ]);
 
@@ -73,6 +74,7 @@ export async function getVisibleLocations(userId: string): Promise<NearbyUser[]>
       lat: u.lat!,
       lng: u.lng!,
       scope: u.locationScope,
+      mode: u.mode,
       distanceKm,
       isFriend,
       locationAt: u.locationAt ? u.locationAt.toISOString() : null,
