@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
-import { transfer, InsufficientFunds } from "@/lib/wallet";
+import { transfer, transferSplit, splitRecipients, InsufficientFunds } from "@/lib/wallet";
 import { notify } from "@/lib/notifications";
 
 export async function POST(_req: Request, { params }: { params: Promise<{ username: string }> }) {
@@ -15,9 +15,14 @@ export async function POST(_req: Request, { params }: { params: Promise<{ userna
   if (!creator.creatorMode || creator.subPriceCredits == null) return NextResponse.json({ error: "Este usuario no ofrece suscripción" }, { status: 400 });
 
   const price = creator.subPriceCredits;
+  const subCollabs = await prisma.subCollaborator.findMany({ where: { creatorId: creator.id }, select: { userId: true, percent: true } });
   try {
     await prisma.$transaction(async (tx) => {
-      await transfer(tx, { fromId: session.sub, toId: creator.id, amount: price, kind: "sub", refType: "subscription", refId: creator.id });
+      if (subCollabs.length > 0) {
+        await transferSplit(tx, { fromId: session.sub, amount: price, kind: "sub", recipients: splitRecipients(creator.id, price, subCollabs), refType: "subscription", refId: creator.id });
+      } else {
+        await transfer(tx, { fromId: session.sub, toId: creator.id, amount: price, kind: "sub", refType: "subscription", refId: creator.id });
+      }
       // Extensión atómica: el UPDATE toma lock de fila, así renovaciones concurrentes
       // componen +30d desde el expiresAt vigente (o desde ahora si ya venció) sin perder pagos.
       const affected = await tx.$executeRaw`
@@ -35,6 +40,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ userna
     if (e instanceof InsufficientFunds) return NextResponse.json({ error: "Saldo insuficiente" }, { status: 400 });
     throw e;
   }
-  await notify({ userId: creator.id, actorId: session.sub, type: "subscribe" });
+  const subNotify = [creator.id, ...subCollabs.map((c) => c.userId)].filter((uid) => uid !== session.sub);
+  await Promise.all([...new Set(subNotify)].map((uid) => notify({ userId: uid, actorId: session.sub, type: "subscribe" })));
   return NextResponse.json({ ok: true });
 }

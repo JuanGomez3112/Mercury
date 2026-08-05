@@ -167,6 +167,16 @@ model PostCollaborator {
   @@index([userId])
 }
 
+model SubCollaborator {
+  id        String @id @default(cuid())
+  creatorId String // creador dueño de la suscripción
+  userId    String // colaborador que recibe %
+  percent   Int    // % de la suscripción (creador = 100 - suma)
+
+  @@unique([creatorId, userId])
+  @@index([creatorId])
+}
+
 model Story {
   id        String      @id @default(cuid())
   authorId  String

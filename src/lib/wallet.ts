@@ -54,11 +54,12 @@ export async function transferSplit(
     fromId: string;
     amount: number;
     recipients: { toId: string; amount: number }[];
+    kind?: "purchase" | "sub" | "tip";
     refType?: string;
     refId?: string;
   },
 ) {
-  const { fromId, amount, recipients, refType, refId } = args;
+  const { fromId, amount, recipients, kind = "purchase", refType, refId } = args;
   if (amount <= 0) throw new Error("Monto inválido");
   const total = recipients.reduce((s, r) => s + r.amount, 0);
   if (total !== amount) throw new Error("El reparto no cuadra con el monto");
@@ -69,16 +70,25 @@ export async function transferSplit(
   });
   if (debit.count === 0) throw new InsufficientFunds();
 
+  const outType = kind === "sub" ? "sub_out" : kind === "tip" ? "tip_out" : "purchase";
+  const inType = kind === "sub" ? "sub_in" : kind === "tip" ? "tip_in" : "sale";
   await tx.walletTransaction.create({
-    data: { userId: fromId, delta: -amount, type: "purchase", refType: refType ?? null, refId: refId ?? null, counterpartyId: recipients[0]?.toId ?? null },
+    data: { userId: fromId, delta: -amount, type: outType, refType: refType ?? null, refId: refId ?? null, counterpartyId: recipients[0]?.toId ?? null },
   });
   for (const r of recipients) {
     if (r.amount <= 0) continue;
     await tx.user.update({ where: { id: r.toId }, data: { earnings: { increment: r.amount } } });
     await tx.walletTransaction.create({
-      data: { userId: r.toId, delta: r.amount, type: "sale", refType: refType ?? null, refId: refId ?? null, counterpartyId: fromId },
+      data: { userId: r.toId, delta: r.amount, type: inType, refType: refType ?? null, refId: refId ?? null, counterpartyId: fromId },
     });
   }
+}
+
+/** Reparte un monto entre un dueño (resto) y colaboradores (por %). El dueño absorbe el redondeo. */
+export function splitRecipients(ownerId: string, amount: number, collaborators: { userId: string; percent: number }[]) {
+  const collabAmts = collaborators.map((c) => ({ toId: c.userId, amount: Math.floor((amount * c.percent) / 100) }));
+  const ownerAmt = amount - collabAmts.reduce((s, c) => s + c.amount, 0);
+  return [{ toId: ownerId, amount: ownerAmt }, ...collabAmts].filter((r) => r.amount > 0);
 }
 
 /** Gasto (sumidero de tienda): debita balance atómico + devuelve al treasury + ledger. */

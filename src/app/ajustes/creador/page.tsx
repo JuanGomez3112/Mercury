@@ -16,13 +16,21 @@ export default async function AjustesCreadorPage() {
   });
   if (!me) redirect("/login");
 
+  // Colaboradores de suscripción actuales (resuelvo usernames)
+  const rows = await prisma.subCollaborator.findMany({ where: { creatorId: session.sub }, select: { userId: true, percent: true } });
+  const users = rows.length ? await prisma.user.findMany({ where: { id: { in: rows.map((r) => r.userId) } }, select: { id: true, username: true } }) : [];
+  const nameById = new Map(users.map((u) => [u.id, u.username]));
+  const initialCollaborators = rows
+    .map((r) => ({ username: nameById.get(r.userId) ?? "", percent: r.percent }))
+    .filter((c) => c.username);
+
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
       <div className="mx-auto max-w-lg space-y-4">
         <Link href="/ajustes" className="inline-flex items-center gap-1 px-4 text-sm text-white/50 hover:text-white sm:px-0">‹ Ajustes</Link>
         <h1 className="px-4 text-xl font-semibold text-white sm:px-0">Modo creador</h1>
         <section className="rounded-2xl border border-white/10 bg-navy-2/50 p-6 max-sm:rounded-none max-sm:border-x-0">
-          <CreatorModeForm initialMode={me.creatorMode} initialPrice={me.subPriceCredits} />
+          <CreatorModeForm initialMode={me.creatorMode} initialPrice={me.subPriceCredits} initialCollaborators={initialCollaborators} />
         </section>
       </div>
     </AppShell>
