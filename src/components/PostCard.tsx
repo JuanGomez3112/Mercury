@@ -9,7 +9,7 @@ import type { FeedPost } from "@/lib/types";
 import PostMedia from "./PostMedia";
 import PostBody from "./PostBody";
 import PollCard from "./PollCard";
-import { IconComment, IconShare, IconFire, IconPin, IconLink } from "./icons";
+import { IconComment, IconShare, IconFire, IconPin, IconLink, IconMusic } from "./icons";
 import { VerifiedGrad } from "./GradientIcons";
 import BookmarkButton from "./BookmarkButton";
 import TipButton from "./TipButton";
@@ -78,6 +78,14 @@ export default function PostCard({
         <div className="mt-3 flex items-center gap-1.5 text-sm text-white/50">
           <IconPin className="h-3.5 w-3.5 text-purple" />
           {post.location}
+        </div>
+      )}
+
+      {/* Música */}
+      {post.music && (
+        <div className="mt-2 flex items-center gap-1.5 text-sm text-white/50">
+          <IconMusic className="h-3.5 w-3.5 text-purple" />
+          <span className="truncate">{post.music}</span>
         </div>
       )}
 

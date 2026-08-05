@@ -34,6 +34,8 @@ export default function PublishScreen({
   const [locErr, setLocErr] = useState("");
   const [showLink, setShowLink] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+  const [showMusic, setShowMusic] = useState(false);
+  const [music, setMusic] = useState("");
   const [showPoll, setShowPoll] = useState(false);
   const [pollOpts, setPollOpts] = useState<string[]>(["", ""]);
   // Colaboradores (reparto de ganancias, solo pago)
@@ -99,6 +101,7 @@ export default function PublishScreen({
       body: JSON.stringify({
         body, images, adult, priceCredits,
         location: location.trim() || null,
+        music: showMusic && music.trim() ? music.trim() : null,
         linkUrl: link,
         poll: pollPayload,
         collaborators: paid ? collabs.filter((c) => c.username.trim() && c.percent !== "").map((c) => ({ username: c.username.trim(), percent: Number(c.percent) })) : [],
@@ -110,7 +113,6 @@ export default function PublishScreen({
   }
 
   const optRow = "flex w-full items-center gap-3 rounded-xl border border-white/10 bg-navy-2/40 px-4 py-3.5 text-left text-sm text-white/85 transition hover:bg-navy-2";
-  const soon = "flex w-full items-center justify-between gap-3 rounded-xl border border-white/5 bg-navy-2/20 px-4 py-3.5 text-left text-sm text-white/35";
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-navy">
@@ -268,11 +270,14 @@ export default function PublishScreen({
             </div>
           )}
 
-          {/* Próximamente */}
-          <div className={soon}>
-            <span className="flex items-center gap-3"><IconMusic className="h-5 w-5" /> Música</span>
-            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px]">pronto</span>
-          </div>
+          {/* Música */}
+          <button type="button" onClick={() => setShowMusic((v) => !v)} className={`${optRow} ${showMusic ? "border-purple/50 bg-purple/10" : ""}`}>
+            <IconMusic className="h-5 w-5 text-purple" /> Música
+          </button>
+          {showMusic && (
+            <input value={music} onChange={(e) => setMusic(e.target.value)} maxLength={120} placeholder="Artista — Canción"
+              className="w-full rounded-xl border border-white/10 bg-navy px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-purple" />
+          )}
         </div>
 
         {error && <p className="text-center text-sm text-red-400">{error}</p>}

@@ -10,6 +10,7 @@ const schema = z.object({
   adult: z.boolean().default(false),
   priceCredits: z.number().int().min(1).max(100000).nullable().default(null),
   location: z.string().trim().max(120).nullable().default(null),
+  music: z.string().trim().max(120).nullable().default(null),
   linkUrl: z.string().trim().url("Enlace inválido").max(500).nullable().default(null),
   poll: z
     .object({ options: z.array(z.string().trim().min(1).max(80)).min(2).max(6) })
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
-  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators, groupId, pageId } = parsed.data;
+  const { body, images, adult, priceCredits, location, music, linkUrl, poll, collaborators, groupId, pageId } = parsed.data;
   if (!body && images.length === 0 && !poll) {
     return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
   }
@@ -95,6 +96,7 @@ export async function POST(req: Request) {
       isAdult: adult,
       priceCredits,
       location: location || null,
+      music: music || null,
       linkUrl: link,
       groupId: groupId || null,
       pageId: pageId || null,

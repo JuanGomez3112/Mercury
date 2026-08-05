@@ -149,6 +149,7 @@ model Post {
   priceCredits Int?
   location  String?
   linkUrl   String?
+  music     String?
   groupId   String?
   group     Group?   @relation("groupPosts", fields: [groupId], references: [id], onDelete: Cascade)
   pageId    String?

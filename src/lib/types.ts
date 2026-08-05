@@ -19,6 +19,7 @@ export type FeedPost = {
   priceCredits: number | null;
   locked: boolean;
   location: string | null;
+  music: string | null;
   linkUrl: string | null;
   poll: PollView | null;
   collaborators: { username: string; displayName: string | null }[];

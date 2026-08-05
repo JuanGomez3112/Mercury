@@ -11,6 +11,7 @@ type Row = {
   isAdult: boolean;
   priceCredits: number | null;
   location: string | null;
+  music: string | null;
   linkUrl: string | null;
   createdAt: Date;
   authorId: string;
@@ -61,6 +62,7 @@ function toFeedPost(
     priceCredits,
     locked,
     location: p.location,
+    music: p.music,
     linkUrl: p.linkUrl,
     poll,
     collaborators: p.collaborators.map((c) => ({ username: c.user.username, displayName: c.user.displayName })),
