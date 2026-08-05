@@ -2,13 +2,14 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import MoodSlider from "./MoodSlider";
 import CartBadge from "./CartBadge";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable, IconUsers, IconReels, IconFlag } from "./icons";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable, IconUsers, IconReels, IconFlag, IconLive } from "./icons";
 
 const nav = [
   { icon: IconGrid, label: "Inicio", href: "/feed?tab=feed", active: true },
   { icon: IconSearch, label: "Explorar", href: "/feed?tab=explora" },
   { icon: IconFire, label: "Tabú", href: "/feed?tab=tabu" },
   { icon: IconReels, label: "Reels", href: "/reels" },
+  { icon: IconLive, label: "En vivo", href: "/en-vivo" },
   { icon: IconInbox, label: "Mensajes", href: "/mensajes" },
   { icon: IconUsers, label: "Grupos", href: "/grupos" },
   { icon: IconFlag, label: "Páginas", href: "/paginas" },

@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^3.5.0",
     "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.3",
+    "hls.js": "^1.6.16",
     "jose": "^6.2.5",
     "leaflet": "^1.9.4",
     "next": "16.2.12",

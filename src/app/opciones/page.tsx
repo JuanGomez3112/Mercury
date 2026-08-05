@@ -42,6 +42,7 @@ export default async function OpcionesPage() {
           <Link href="/market" className={row}><span className="w-5 text-center text-purple">🏷</span> Marketplace</Link>
           <Link href="/grupos" className={row}><span className="w-5 text-center text-purple">👥</span> Grupos</Link>
           <Link href="/paginas" className={row}><span className="w-5 text-center text-purple">🚩</span> Páginas</Link>
+          <Link href="/en-vivo" className={row}><span className="w-5 text-center text-purple">🔴</span> En vivo</Link>
           <Link href="/guardados" className={row}><IconBookmark className="h-5 w-5 text-purple" /> Guardados</Link>
           <Link href="/notificaciones" className={row}><IconBell className="h-5 w-5 text-purple" /> Notificaciones</Link>
           <Link href="/buscar" className={row}><IconSearch className="h-5 w-5 text-purple" /> Buscar</Link>

@@ -73,6 +73,7 @@ model User {
   reels           Reel[]        @relation("reels")
   groupsOwned     Group[]       @relation("groupOwner")
   pagesOwned      Page[]        @relation("pageOwner")
+  liveStream      LiveStream?   @relation("liveStreams")
 }
 
 model PasswordReset {
@@ -241,6 +242,20 @@ model SubCollaborator {
 
   @@unique([creatorId, userId])
   @@index([creatorId])
+}
+
+model LiveStream {
+  id            String    @id @default(cuid())
+  broadcasterId String    @unique
+  broadcaster   User      @relation("liveStreams", fields: [broadcasterId], references: [id], onDelete: Cascade)
+  streamKey     String    @unique
+  title         String?
+  isLive        Boolean   @default(false)
+  startedAt     DateTime?
+  endedAt       DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@index([isLive])
 }
 
 model Reel {

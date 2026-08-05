@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CartBadge from "./CartBadge";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser, IconTable, IconUsers, IconReels, IconFlag } from "./icons";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser, IconTable, IconUsers, IconReels, IconFlag, IconLive } from "./icons";
 
 export default function LeftRail({ username }: { username: string }) {
   const path = usePathname();
@@ -13,6 +13,7 @@ export default function LeftRail({ username }: { username: string }) {
     { icon: IconSearch, href: "/feed?tab=explora", label: "Explorar", match: () => false },
     { icon: IconFire, href: "/feed?tab=tabu", label: "Tabú", match: () => false },
     { icon: IconReels, href: "/reels", label: "Reels", match: (p: string) => p.startsWith("/reels") },
+    { icon: IconLive, href: "/en-vivo", label: "En vivo", match: (p: string) => p.startsWith("/en-vivo") },
     { icon: IconInbox, href: "/mensajes", label: "Mensajes", match: (p: string) => p.startsWith("/mensajes") },
     { icon: IconUsers, href: "/grupos", label: "Grupos", match: (p: string) => p.startsWith("/grupos") },
     { icon: IconFlag, href: "/paginas", label: "Páginas", match: (p: string) => p.startsWith("/paginas") },

@@ -56,6 +56,9 @@ export default function ProfileMenu({
           <Link href="/reels" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">🎬</span> Reels
           </Link>
+          <Link href="/en-vivo" onClick={() => setOpen(false)} className={item}>
+            <span className="w-4 text-center">🔴</span> En vivo
+          </Link>
           <Link href="/tienda" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">🛍</span> Tienda
           </Link>
