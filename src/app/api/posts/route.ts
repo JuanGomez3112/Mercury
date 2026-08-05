@@ -19,6 +19,7 @@ const schema = z.object({
     .array(z.object({ username: z.string().trim().min(1), percent: z.number().int().min(1).max(99) }))
     .max(5)
     .default([]),
+  groupId: z.string().optional(),
 });
 
 /** Extrae @usuarios únicos del cuerpo (a-z, 0-9, _). */
@@ -38,9 +39,18 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
-  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators } = parsed.data;
+  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators, groupId } = parsed.data;
   if (!body && images.length === 0 && !poll) {
     return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
+  }
+
+  // Publicar en grupo requiere ser miembro
+  if (groupId) {
+    const member = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId: session.sub } },
+      select: { id: true },
+    });
+    if (!member) return NextResponse.json({ error: "No eres miembro del grupo" }, { status: 403 });
   }
 
   // Colaboradores (reparto de ganancias) — solo en contenido de pago
@@ -79,6 +89,7 @@ export async function POST(req: Request) {
       priceCredits,
       location: location || null,
       linkUrl: link,
+      groupId: groupId || null,
       ...(poll
         ? {
             poll: {

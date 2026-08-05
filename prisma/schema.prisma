@@ -71,6 +71,7 @@ model User {
   stories         Story[]       @relation("stories")
   postCollabs     PostCollaborator[] @relation("postCollabUser")
   reels           Reel[]        @relation("reels")
+  groupsOwned     Group[]       @relation("groupOwner")
 }
 
 model PasswordReset {
@@ -146,6 +147,8 @@ model Post {
   priceCredits Int?
   location  String?
   linkUrl   String?
+  groupId   String?
+  group     Group?   @relation("groupPosts", fields: [groupId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   likes    Like[]
@@ -156,6 +159,35 @@ model Post {
 
   @@index([authorId])
   @@index([createdAt])
+  @@index([groupId])
+}
+
+model Group {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  description String?
+  coverUrl    String?
+  isPrivate   Boolean       @default(false)
+  ownerId     String
+  owner       User          @relation("groupOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  posts       Post[]        @relation("groupPosts")
+  createdAt   DateTime      @default(now())
+
+  @@index([ownerId])
+}
+
+model GroupMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  role      String   @default("member") // owner | member
+  createdAt DateTime @default(now())
+
+  @@unique([groupId, userId])
+  @@index([userId])
 }
 
 model PostCollaborator {
