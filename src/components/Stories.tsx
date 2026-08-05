@@ -10,10 +10,12 @@ import type { StoryGroup } from "@/lib/stories";
 export type Me = { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
 
 /* eslint-disable @next/next/no-img-element */
-function StoryAvatar({ src, mode, ring }: { src?: string | null; mode?: string | null; ring?: "unseen" | "seen" | "none" }) {
+function StoryAvatar({ src, mode, ring }: { src?: string | null; mode?: string | null; ring?: "unseen" | "seen" | "mine" | "none" }) {
   const ringCls =
     ring === "unseen"
       ? "bg-gradient-to-tr from-purple to-purple-soft shadow-[0_0_12px_2px_rgba(147,121,242,0.55)]"
+      : ring === "mine"
+      ? "bg-gradient-to-tr from-purple to-purple-soft"
       : ring === "seen"
       ? "bg-white/15"
       : "bg-transparent";
@@ -68,14 +70,14 @@ export default function Stories({ me, groups }: { me: Me; groups: StoryGroup[] }
 
   return (
     <>
-      <div className="group relative h-[164px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[132px] max-sm:rounded-none max-sm:border-x-0">
-        <div className="no-scrollbar relative h-full overflow-x-auto p-8 max-sm:p-4">
+      <div className="group relative h-[168px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[140px] max-sm:rounded-none max-sm:border-x-0">
+        <div className="no-scrollbar relative h-full overflow-x-auto px-8 pb-5 pt-9 max-sm:px-4 max-sm:pb-3 max-sm:pt-8">
           <div className="flex w-max items-start gap-8 max-sm:gap-5">
             {/* Mi historia */}
             <div className="flex shrink-0 flex-col items-center">
               <div className="relative">
                 <button onClick={() => (myGroup ? openGroup(myGroup) : fileRef.current?.click())} disabled={busy} aria-label="Tu historia">
-                  <StoryAvatar src={me.avatarUrl} mode={me.mode} ring={myGroup ? "seen" : "none"} />
+                  <StoryAvatar src={me.avatarUrl} mode={me.mode} ring={myGroup ? "mine" : "none"} />
                 </button>
                 <button
                   onClick={() => fileRef.current?.click()}
