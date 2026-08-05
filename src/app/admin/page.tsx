@@ -13,10 +13,10 @@ type Section = { key: string; label: string; desc: string; icon: string; href?: 
 const SECTIONS: Section[] = [
   { key: "tienda", label: "Tienda", desc: "Productos, variantes, zonas de envío, órdenes", icon: "🛍", href: "/admin/tienda" },
   { key: "economia", label: "Economía / MeryCoin", desc: "Tasa, supply, retiros (dentro de Tienda por ahora)", icon: "☾", href: "/admin/tienda" },
-  { key: "usuarios", label: "Usuarios", desc: "Gestión de cuentas y roles", icon: "👥" },
+  { key: "usuarios", label: "Usuarios", desc: "Gestión de cuentas, baneos y suspensiones", icon: "👥", href: "/admin/usuarios" },
   { key: "moderacion", label: "Moderación", desc: "Reportes, retiro de contenido, baneos", icon: "🛡", href: "/admin/moderacion" },
   { key: "cumplimiento", label: "Cumplimiento", desc: "Verificación de edad, T&C, pagos", icon: "📋" },
-  { key: "stats", label: "Estadísticas", desc: "Métricas de la plataforma", icon: "📊" },
+  { key: "stats", label: "Estadísticas", desc: "Métricas de la plataforma", icon: "📊", href: "/admin/stats" },
 ];
 
 export default async function AdminHubPage() {
