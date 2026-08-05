@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     if (collaborators.length > 0) {
       const sum = collaborators.reduce((s, c) => s + c.percent, 0);
       if (sum > 99) return NextResponse.json({ error: "La suma de porcentajes debe dejar al menos 1% para ti" }, { status: 400 });
-      const names = collaborators.map((c) => c.username.replace(/^@/, "").toLowerCase());
+      const names = collaborators.map((c) => c.username.replace(/^@/, ""));
       const users = await prisma.user.findMany({ where: { username: { in: names } }, select: { id: true, username: true } });
       const byName = new Map(users.map((u) => [u.username.toLowerCase(), u.id]));
       for (const c of collaborators) {
