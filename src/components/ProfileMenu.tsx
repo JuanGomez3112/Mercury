@@ -47,6 +47,12 @@ export default function ProfileMenu({
           <Link href={`/u/${username}`} onClick={() => setOpen(false)} className={item}>
             <IconUser className="h-4 w-4" /> Perfil
           </Link>
+          <Link href="/grupos" onClick={() => setOpen(false)} className={item}>
+            <span className="w-4 text-center">👥</span> Grupos
+          </Link>
+          <Link href="/reels" onClick={() => setOpen(false)} className={item}>
+            <span className="w-4 text-center">🎬</span> Reels
+          </Link>
           <Link href="/tienda" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">🛍</span> Tienda
           </Link>
