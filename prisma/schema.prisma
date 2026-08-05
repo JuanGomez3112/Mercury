@@ -70,6 +70,7 @@ model User {
   marketSales     MarketOrder[] @relation("marketSeller")
   stories         Story[]       @relation("stories")
   postCollabs     PostCollaborator[] @relation("postCollabUser")
+  reels           Reel[]        @relation("reels")
 }
 
 model PasswordReset {
@@ -177,6 +178,30 @@ model SubCollaborator {
 
   @@unique([creatorId, userId])
   @@index([creatorId])
+}
+
+model Reel {
+  id        String     @id @default(cuid())
+  authorId  String
+  author    User       @relation("reels", fields: [authorId], references: [id], onDelete: Cascade)
+  videoUrl  String
+  caption   String?
+  createdAt DateTime   @default(now())
+  likes     ReelLike[]
+
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model ReelLike {
+  id        String   @id @default(cuid())
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([reelId, userId])
+  @@index([userId])
 }
 
 model Story {
