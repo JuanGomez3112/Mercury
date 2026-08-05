@@ -68,6 +68,7 @@ model User {
   listings        Listing[]     @relation("listingSeller")
   marketBuys      MarketOrder[] @relation("marketBuyer")
   marketSales     MarketOrder[] @relation("marketSeller")
+  stories         Story[]       @relation("stories")
 }
 
 model PasswordReset {
@@ -152,6 +153,31 @@ model Post {
 
   @@index([authorId])
   @@index([createdAt])
+}
+
+model Story {
+  id        String      @id @default(cuid())
+  authorId  String
+  author    User        @relation("stories", fields: [authorId], references: [id], onDelete: Cascade)
+  mediaUrl  String
+  isVideo   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  expiresAt DateTime
+  views     StoryView[]
+
+  @@index([authorId])
+  @@index([expiresAt])
+}
+
+model StoryView {
+  id        String   @id @default(cuid())
+  storyId   String
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  viewerId  String
+  createdAt DateTime @default(now())
+
+  @@unique([storyId, viewerId])
+  @@index([viewerId])
 }
 
 model Swipe {

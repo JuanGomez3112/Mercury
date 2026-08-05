@@ -2,14 +2,15 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import FollowButton from "./FollowButton";
 import MeryCoinCard from "./MeryCoinCard";
-import type { Story } from "./Stories";
 import type { ChatPreview } from "@/lib/queries";
+
+type SuggestUser = { username: string; displayName: string | null; avatarUrl: string | null };
 
 export default function RightPanel({
   suggestions,
   chats = [],
 }: {
-  suggestions: Story[];
+  suggestions: SuggestUser[];
   chats?: ChatPreview[];
 }) {
   return (

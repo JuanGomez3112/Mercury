@@ -8,6 +8,7 @@ import MobileNav from "@/components/MobileNav";
 import LeftPanel from "@/components/LeftPanel";
 import RightPanel from "@/components/RightPanel";
 import Stories from "@/components/Stories";
+import { getStoryFeed } from "@/lib/stories";
 import PostComposer from "@/components/PostComposer";
 import FeedTabs from "@/components/FeedTabs";
 
@@ -42,14 +43,9 @@ export default async function FeedPage({
   });
   const followingIds = following.map((f) => f.id);
 
-  const [posts, stories, suggestions, chats] = await Promise.all([
+  const [posts, storyGroups, suggestions, chats] = await Promise.all([
     getFeedByTab(me.id, tab),
-    prisma.user.findMany({
-      where: { id: { not: me.id } },
-      orderBy: { createdAt: "desc" },
-      take: 12,
-      select: { username: true, displayName: true, avatarUrl: true, mode: true },
-    }),
+    getStoryFeed(me.id),
     prisma.user.findMany({
       where: { id: { notIn: [me.id, ...followingIds] } },
       orderBy: { createdAt: "desc" },
@@ -69,7 +65,7 @@ export default async function FeedPage({
         <LeftPanel me={me} />
 
         <main className="w-full min-w-0 flex-1 space-y-6 xl:max-w-[896px]">
-          <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl, mode: me.mode }} stories={stories} />
+          <Stories me={{ username: me.username, displayName: me.displayName, avatarUrl: me.avatarUrl, mode: me.mode }} groups={storyGroups} />
           <div className="max-sm:hidden">
             <PostComposer displayName={displayName} avatarUrl={me.avatarUrl} creatorMode={me.creatorMode} />
           </div>

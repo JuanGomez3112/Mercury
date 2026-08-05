@@ -1,64 +1,106 @@
-import Link from "next/link";
+"use client";
+
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import { IconPlus } from "./icons";
+import StoryViewer from "./StoryViewer";
+import type { StoryGroup } from "@/lib/stories";
 
-export type Story = {
-  username: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-  mode?: string | null;
-};
+export type Me = { username: string; displayName: string | null; avatarUrl: string | null; mode?: string | null };
 
 /* eslint-disable @next/next/no-img-element */
-function StoryAvatar({ src, mode }: { src?: string | null; mode?: string | null }) {
+function StoryAvatar({ src, mode, ring }: { src?: string | null; mode?: string | null; ring?: "unseen" | "seen" | "none" }) {
+  const ringCls =
+    ring === "unseen" ? "bg-gradient-to-tr from-purple to-purple-soft" : ring === "seen" ? "bg-white/20" : "bg-transparent";
   return (
     <div className="relative h-16 w-16">
-      {/* Cuernos: 42×28, hundidos -6px en la parte superior de la imagen (detrás) */}
       {mode === "devil" && (
-        <img
-          src="/Cuernos.svg"
-          alt=""
-          className="pointer-events-none absolute bottom-[calc(100%-6px)] left-1/2 z-0 h-7 w-[42px] -translate-x-1/2"
-        />
+        <img src="/Cuernos.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%-6px)] left-1/2 z-0 h-7 w-[42px] -translate-x-1/2" />
       )}
-      {/* Aureola: 40×12, 4px por encima de la imagen */}
       {mode === "angel" && (
-        <img
-          src="/Aurola.svg"
-          alt=""
-          className="pointer-events-none absolute bottom-[calc(100%+4px)] left-1/2 z-20 h-3 w-10 -translate-x-1/2"
-        />
+        <img src="/Aurola.svg" alt="" className="pointer-events-none absolute bottom-[calc(100%+4px)] left-1/2 z-20 h-3 w-10 -translate-x-1/2" />
       )}
-      <Avatar src={src} className="relative z-10 h-16 w-16" />
+      <span className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-full p-[3px] ${ringCls}`}>
+        <Avatar src={src} className="h-full w-full ring-2 ring-navy-2" />
+      </span>
     </div>
   );
 }
 
-export default function Stories({ me, stories }: { me: Story; stories: Story[] }) {
+export default function Stories({ me, groups }: { me: Me; groups: StoryGroup[] }) {
+  const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [viewer, setViewer] = useState<number | null>(null);
+
+  const myGroup = groups.find((g) => g.isMe) ?? null;
+  const others = groups.filter((g) => !g.isMe);
+
+  async function upload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("files", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd });
+      const ud = await up.json().catch(() => ({}));
+      if (!up.ok || !ud.urls?.[0]) throw new Error();
+      const res = await fetch("/api/stories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaUrl: ud.urls[0], isVideo: file.type.startsWith("video/") }),
+      });
+      if (!res.ok) throw new Error();
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const openGroup = (g: StoryGroup) => setViewer(groups.indexOf(g));
+
   return (
-    <div className="group relative h-[150px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[112px] max-sm:rounded-none max-sm:border-x-0">
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tl from-[#2e2568] to-[#1a1540] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      <div className="no-scrollbar relative h-full overflow-x-auto p-8 max-sm:p-4">
-      <div className="flex h-full w-max items-end gap-8 max-sm:gap-5">
-        {/* Mi historia */}
-        <div className="relative shrink-0">
-          <StoryAvatar src={me.avatarUrl} mode={me.mode} />
-          <span className="absolute -bottom-0.5 -right-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-purple text-navy ring-2 ring-navy-2">
-            <IconPlus className="h-3 w-3" />
-          </span>
+    <>
+      <div className="group relative h-[150px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[112px] max-sm:rounded-none max-sm:border-x-0">
+        <div className="no-scrollbar relative h-full overflow-x-auto p-8 max-sm:p-4">
+          <div className="flex h-full w-max items-end gap-8 max-sm:gap-5">
+            {/* Mi historia */}
+            <div className="relative shrink-0">
+              <button onClick={() => (myGroup ? openGroup(myGroup) : fileRef.current?.click())} disabled={busy} aria-label="Tu historia">
+                <StoryAvatar src={me.avatarUrl} mode={me.mode} ring={myGroup ? "seen" : "none"} />
+              </button>
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={busy}
+                aria-label="Añadir historia"
+                className="absolute -bottom-0.5 -right-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-purple text-navy ring-2 ring-navy-2"
+              >
+                <IconPlus className="h-3 w-3" />
+              </button>
+            </div>
+
+            <span className="h-16 w-px shrink-0 self-end bg-purple/50" />
+
+            {/* Historias de los demás */}
+            {others.length === 0 && (
+              <span className="self-center text-sm text-white/30">Sé el primero en publicar una historia</span>
+            )}
+            {others.map((g) => (
+              <button key={g.username} onClick={() => openGroup(g)} className="shrink-0">
+                <StoryAvatar src={g.avatarUrl} mode={g.mode} ring={g.hasUnseen ? "unseen" : "seen"} />
+                <span className="mt-1 block w-16 truncate text-center text-xs text-white/60">{g.displayName ?? g.username}</span>
+              </button>
+            ))}
+          </div>
         </div>
-
-        {/* Separador morado */}
-        <span className="h-16 w-px shrink-0 self-end bg-purple/50" />
-
-        {/* Historias de los demás */}
-        {stories.map((st) => (
-          <Link key={st.username} href={`/u/${st.username}`} className="shrink-0">
-            <StoryAvatar src={st.avatarUrl} mode={st.mode} />
-          </Link>
-        ))}
       </div>
-      </div>
-    </div>
+
+      <input ref={fileRef} type="file" accept="image/*,video/mp4,video/webm" hidden onChange={upload} />
+
+      {viewer !== null && <StoryViewer groups={groups} start={viewer} onClose={() => { setViewer(null); router.refresh(); }} />}
+    </>
   );
 }
