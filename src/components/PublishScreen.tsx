@@ -36,6 +36,8 @@ export default function PublishScreen({
   const [linkUrl, setLinkUrl] = useState("");
   const [showPoll, setShowPoll] = useState(false);
   const [pollOpts, setPollOpts] = useState<string[]>(["", ""]);
+  // Colaboradores (reparto de ganancias, solo pago)
+  const [collabs, setCollabs] = useState<{ username: string; percent: number | "" }[]>([]);
 
   function insertMention() {
     setBody((b) => (b.endsWith(" ") || b === "" ? b : b + " ") + "@");
@@ -99,6 +101,7 @@ export default function PublishScreen({
         location: location.trim() || null,
         linkUrl: link,
         poll: pollPayload,
+        collaborators: paid ? collabs.filter((c) => c.username.trim() && c.percent !== "").map((c) => ({ username: c.username.trim(), percent: Number(c.percent) })) : [],
       }),
     });
     setLoading(false);
@@ -182,6 +185,31 @@ export default function PublishScreen({
             <div className={`overflow-hidden transition-all duration-300 ${paid ? "max-h-16 opacity-100" : "max-h-0 opacity-0"}`}>
               <input type="number" min={1} max={100000} value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
                 placeholder="Precio ☾" className="w-full rounded-xl border border-purple/50 bg-purple/10 px-4 py-3 text-sm text-white outline-none placeholder:text-purple/50 focus:border-purple" />
+            </div>
+          )}
+
+          {/* Colaboradores: reparto de ganancias */}
+          {creatorMode && adult && paid && (
+            <div className="space-y-2 rounded-xl border border-white/10 bg-navy/60 p-3">
+              <p className="text-sm font-semibold text-white/80">Colaboradores (reparto de ganancias)</p>
+              {collabs.map((c, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <span className="text-white/40">@</span>
+                  <input value={c.username} onChange={(e) => setCollabs((p) => p.map((x, idx) => idx === i ? { ...x, username: e.target.value.replace(/^@/, "") } : x))}
+                    placeholder="usuario" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-navy px-3 py-2 text-sm text-white outline-none focus:border-purple" />
+                  <input type="number" min={1} max={99} value={c.percent} onChange={(e) => setCollabs((p) => p.map((x, idx) => idx === i ? { ...x, percent: e.target.value === "" ? "" : Number(e.target.value) } : x))}
+                    placeholder="%" className="w-16 rounded-lg border border-white/10 bg-navy px-2 py-2 text-center text-sm text-white outline-none focus:border-purple" />
+                  <span className="text-white/40">%</span>
+                  <button type="button" onClick={() => setCollabs((p) => p.filter((_, idx) => idx !== i))} className="text-white/40 hover:text-white" aria-label="Quitar">×</button>
+                </div>
+              ))}
+              {collabs.length < 5 && (
+                <button type="button" onClick={() => setCollabs((p) => [...p, { username: "", percent: "" }])} className="text-sm text-purple hover:underline">+ Añadir colaborador</button>
+              )}
+              {(() => {
+                const sum = collabs.reduce((s, c) => s + (c.percent === "" ? 0 : Number(c.percent)), 0);
+                return <p className={`text-xs ${sum > 99 ? "text-red-400" : "text-white/40"}`}>Tú te quedas con {Math.max(0, 100 - sum)}% · colaboradores {sum}%</p>;
+              })()}
             </div>
           )}
 

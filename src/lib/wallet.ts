@@ -43,6 +43,44 @@ export async function transfer(
   });
 }
 
+/**
+ * Venta con reparto: debita `amount` del comprador una sola vez y acredita
+ * earnings a varios destinatarios según `recipients` (la suma debe ser `amount`).
+ * Un solo cargo, sin saldo negativo. Usado para PPV con colaboradores.
+ */
+export async function transferSplit(
+  tx: Tx,
+  args: {
+    fromId: string;
+    amount: number;
+    recipients: { toId: string; amount: number }[];
+    refType?: string;
+    refId?: string;
+  },
+) {
+  const { fromId, amount, recipients, refType, refId } = args;
+  if (amount <= 0) throw new Error("Monto inválido");
+  const total = recipients.reduce((s, r) => s + r.amount, 0);
+  if (total !== amount) throw new Error("El reparto no cuadra con el monto");
+
+  const debit = await tx.user.updateMany({
+    where: { id: fromId, balance: { gte: amount } },
+    data: { balance: { decrement: amount } },
+  });
+  if (debit.count === 0) throw new InsufficientFunds();
+
+  await tx.walletTransaction.create({
+    data: { userId: fromId, delta: -amount, type: "purchase", refType: refType ?? null, refId: refId ?? null, counterpartyId: recipients[0]?.toId ?? null },
+  });
+  for (const r of recipients) {
+    if (r.amount <= 0) continue;
+    await tx.user.update({ where: { id: r.toId }, data: { earnings: { increment: r.amount } } });
+    await tx.walletTransaction.create({
+      data: { userId: r.toId, delta: r.amount, type: "sale", refType: refType ?? null, refId: refId ?? null, counterpartyId: fromId },
+    });
+  }
+}
+
 /** Gasto (sumidero de tienda): debita balance atómico + devuelve al treasury + ledger. */
 export async function spend(
   tx: Tx,

@@ -150,9 +150,21 @@ model Post {
   comments Comment[]
   bookmarks Bookmark[]
   poll     Poll?
+  collaborators PostCollaborator[]
 
   @@index([authorId])
   @@index([createdAt])
+}
+
+model PostCollaborator {
+  id      String @id @default(cuid())
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  String
+  percent Int    // % de las ganancias para este colaborador (autor = 100 - suma)
+
+  @@unique([postId, userId])
+  @@index([userId])
 }
 
 model Story {

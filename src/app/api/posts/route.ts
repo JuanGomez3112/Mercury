@@ -15,6 +15,10 @@ const schema = z.object({
     .object({ options: z.array(z.string().trim().min(1).max(80)).min(2).max(6) })
     .nullable()
     .default(null),
+  collaborators: z
+    .array(z.object({ username: z.string().trim().min(1), percent: z.number().int().min(1).max(99) }))
+    .max(5)
+    .default([]),
 });
 
 /** Extrae @usuarios únicos del cuerpo (a-z, 0-9, _). */
@@ -34,16 +38,34 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
-  const { body, images, adult, priceCredits, location, linkUrl, poll } = parsed.data;
+  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators } = parsed.data;
   if (!body && images.length === 0 && !poll) {
     return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
   }
 
+  // Colaboradores (reparto de ganancias) — solo en contenido de pago
+  let collabCreate: { userId: string; percent: number }[] = [];
   if (priceCredits != null) {
     const author = await prisma.user.findUnique({ where: { id: session.sub }, select: { creatorMode: true } });
     if (!author?.creatorMode) {
       return NextResponse.json({ error: "Activa modo creador" }, { status: 403 });
     }
+    if (collaborators.length > 0) {
+      const sum = collaborators.reduce((s, c) => s + c.percent, 0);
+      if (sum > 99) return NextResponse.json({ error: "La suma de porcentajes debe dejar al menos 1% para ti" }, { status: 400 });
+      const names = collaborators.map((c) => c.username.replace(/^@/, "").toLowerCase());
+      const users = await prisma.user.findMany({ where: { username: { in: names } }, select: { id: true, username: true } });
+      const byName = new Map(users.map((u) => [u.username.toLowerCase(), u.id]));
+      for (const c of collaborators) {
+        const uid = byName.get(c.username.replace(/^@/, "").toLowerCase());
+        if (!uid) return NextResponse.json({ error: `@${c.username} no existe` }, { status: 400 });
+        if (uid === session.sub) return NextResponse.json({ error: "No puedes añadirte como colaborador" }, { status: 400 });
+        if (collabCreate.some((x) => x.userId === uid)) return NextResponse.json({ error: "Colaborador repetido" }, { status: 400 });
+        collabCreate.push({ userId: uid, percent: c.percent });
+      }
+    }
+  } else {
+    collabCreate = [];
   }
 
   const link = linkUrl && /^https?:\/\//i.test(linkUrl) ? linkUrl : null;
@@ -66,6 +88,7 @@ export async function POST(req: Request) {
             },
           }
         : {}),
+      ...(collabCreate.length > 0 ? { collaborators: { create: collabCreate } } : {}),
     },
   });
 
