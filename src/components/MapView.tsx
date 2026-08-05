@@ -74,19 +74,22 @@ export default function MapView({ initialShare, initialNearby, myAvatarUrl = nul
         if (mode === "angel") return `<img src="/Aurola.svg" style="position:absolute;bottom:calc(100% - 1px);left:50%;transform:translateX(-50%);width:34px;height:11px;z-index:2"/>`;
         return "";
       };
-      const avatarIcon = (src: string | null, ring: string, mode: string | null) =>
+      const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c]!));
+      const label = (name: string) =>
+        `<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)">${esc(name)}</div>`;
+      const avatarIcon = (src: string | null, ring: string, mode: string | null, name: string) =>
         L.divIcon({
           className: "",
-          html: `<div style="position:relative;width:44px;height:44px">${deco(mode)}<div style="position:relative;z-index:1;width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830;display:flex;align-items:center;justify-content:center;color:#ffffff66;font-size:20px">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='👤'"/>` : "👤"}</div></div>`,
+          html: `<div style="position:relative;width:44px;height:44px">${deco(mode)}<div style="position:relative;z-index:1;width:44px;height:44px;border-radius:9999px;border:3px solid ${ring};overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);background:#1a1830;display:flex;align-items:center;justify-content:center;color:#ffffff66;font-size:20px">${src ? `<img src="${src}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none';this.parentNode.innerHTML='👤'"/>` : "👤"}</div>${label(name)}</div>`,
           iconSize: [44, 44],
           iconAnchor: [22, 22],
         });
 
       if (myPos) {
-        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(myAvatarUrl, "#7c5cff", myMode), zIndexOffset: 1000 }).addTo(mapRef.current!).bindPopup("Tú"));
+        markersRef.current.push(L.marker([myPos.lat, myPos.lng], { icon: avatarIcon(myAvatarUrl, "#7c5cff", myMode, "Tú"), zIndexOffset: 1000 }).addTo(mapRef.current!));
       }
       for (const u of nearby) {
-        const mk = L.marker([u.lat, u.lng], { icon: avatarIcon(u.avatarUrl, u.isFriend ? "#7c5cff" : "#ffffff55", u.mode) })
+        const mk = L.marker([u.lat, u.lng], { icon: avatarIcon(u.avatarUrl, u.isFriend ? "#7c5cff" : "#ffffff55", u.mode, u.displayName ?? u.username) })
           .addTo(mapRef.current!)
           .bindPopup(`${u.displayName ?? u.username}${u.distanceKm != null ? " · " + fmtDist(u.distanceKm) : ""}`);
         markersRef.current.push(mk);
