@@ -6,7 +6,7 @@ import Avatar from "./Avatar";
 import { IconImage } from "./icons";
 
 /* eslint-disable @next/next/no-img-element */
-export default function GroupComposer({ groupId, avatarUrl }: { groupId: string; avatarUrl?: string | null }) {
+export default function GroupComposer({ groupId, pageId, avatarUrl, placeholder = "Escribe algo en el grupo…" }: { groupId?: string; pageId?: string; avatarUrl?: string | null; placeholder?: string }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [body, setBody] = useState("");
@@ -32,7 +32,7 @@ export default function GroupComposer({ groupId, avatarUrl }: { groupId: string;
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body, images, groupId }),
+        body: JSON.stringify({ body, images, groupId, pageId }),
       });
       if (!res.ok) throw new Error();
       setBody(""); setFiles([]);
@@ -46,7 +46,7 @@ export default function GroupComposer({ groupId, avatarUrl }: { groupId: string;
     <div className="rounded-2xl border border-white/10 bg-navy-2/50 p-4 max-sm:rounded-none max-sm:border-x-0">
       <div className="flex gap-3">
         <Avatar src={avatarUrl} className="h-10 w-10" />
-        <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Escribe algo en el grupo…" maxLength={2000} rows={2} className="flex-1 resize-none bg-transparent text-sm text-white outline-none placeholder:text-white/40" />
+        <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder={placeholder} maxLength={2000} rows={2} className="flex-1 resize-none bg-transparent text-sm text-white outline-none placeholder:text-white/40" />
       </div>
       {previews.length > 0 && (
         <div className="mt-2 grid grid-cols-3 gap-2">

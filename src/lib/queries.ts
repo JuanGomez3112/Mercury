@@ -103,7 +103,7 @@ export type FeedTab = "feed" | "explora" | "tabu";
 export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<FeedPost[]> {
   let where;
   if (tab === "tabu") {
-    where = { isAdult: true, groupId: null };
+    where = { isAdult: true, groupId: null, pageId: null };
   } else {
     const following = await prisma.follow.findMany({
       where: { followerId: viewerId },
@@ -112,8 +112,8 @@ export async function getFeedByTab(viewerId: string, tab: FeedTab): Promise<Feed
     const circle = [viewerId, ...following.map((f) => f.followingId)];
     where =
       tab === "feed"
-        ? { authorId: { in: circle }, isAdult: false, groupId: null }
-        : { authorId: { notIn: circle }, isAdult: false, groupId: null };
+        ? { authorId: { in: circle }, isAdult: false, groupId: null, pageId: null }
+        : { authorId: { notIn: circle }, isAdult: false, groupId: null, pageId: null };
   }
   // Candidatos recientes del filtro de la pestaña; se re-ordenan por relevancia (comportamiento).
   const candidates = await prisma.post.findMany({
@@ -300,7 +300,7 @@ export async function getFeedPostsByWhere(
 /** Publicaciones de un autor concreto. */
 export async function getUserPosts(authorId: string, viewerId: string): Promise<FeedPost[]> {
   const posts = await prisma.post.findMany({
-    where: { authorId, groupId: null },
+    where: { authorId, groupId: null, pageId: null },
     orderBy: { createdAt: "desc" },
     take: 50,
     include: include(viewerId),
@@ -313,6 +313,18 @@ export async function getUserPosts(authorId: string, viewerId: string): Promise<
 export async function getGroupPosts(groupId: string, viewerId: string): Promise<FeedPost[]> {
   const posts = await prisma.post.findMany({
     where: { groupId },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+    include: include(viewerId),
+  });
+  const ent = await loadViewerEntitlements(viewerId, posts.map((p) => p.id), posts.map((p) => p.authorId));
+  return posts.map((p) => toFeedPost(p as Row, viewerId, ent));
+}
+
+/** Publicaciones de una página. */
+export async function getPagePosts(pageId: string, viewerId: string): Promise<FeedPost[]> {
+  const posts = await prisma.post.findMany({
+    where: { pageId },
     orderBy: { createdAt: "desc" },
     take: 50,
     include: include(viewerId),

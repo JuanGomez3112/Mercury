@@ -50,6 +50,9 @@ export default function ProfileMenu({
           <Link href="/grupos" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">👥</span> Grupos
           </Link>
+          <Link href="/paginas" onClick={() => setOpen(false)} className={item}>
+            <span className="w-4 text-center">🚩</span> Páginas
+          </Link>
           <Link href="/reels" onClick={() => setOpen(false)} className={item}>
             <span className="w-4 text-center">🎬</span> Reels
           </Link>

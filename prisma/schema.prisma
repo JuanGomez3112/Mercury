@@ -72,6 +72,7 @@ model User {
   postCollabs     PostCollaborator[] @relation("postCollabUser")
   reels           Reel[]        @relation("reels")
   groupsOwned     Group[]       @relation("groupOwner")
+  pagesOwned      Page[]        @relation("pageOwner")
 }
 
 model PasswordReset {
@@ -149,6 +150,8 @@ model Post {
   linkUrl   String?
   groupId   String?
   group     Group?   @relation("groupPosts", fields: [groupId], references: [id], onDelete: Cascade)
+  pageId    String?
+  page      Page?    @relation("pagePosts", fields: [pageId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   likes    Like[]
@@ -160,6 +163,34 @@ model Post {
   @@index([authorId])
   @@index([createdAt])
   @@index([groupId])
+  @@index([pageId])
+}
+
+model Page {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String?
+  coverUrl    String?
+  avatarUrl   String?
+  ownerId     String
+  owner       User         @relation("pageOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  followers   PageFollow[]
+  posts       Post[]       @relation("pagePosts")
+  createdAt   DateTime     @default(now())
+
+  @@index([ownerId])
+}
+
+model PageFollow {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@unique([pageId, userId])
+  @@index([userId])
 }
 
 model Group {

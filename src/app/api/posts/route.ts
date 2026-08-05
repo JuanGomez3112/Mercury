@@ -20,6 +20,7 @@ const schema = z.object({
     .max(5)
     .default([]),
   groupId: z.string().optional(),
+  pageId: z.string().optional(),
 });
 
 /** Extrae @usuarios únicos del cuerpo (a-z, 0-9, _). */
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Inválido" }, { status: 400 });
   }
-  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators, groupId } = parsed.data;
+  const { body, images, adult, priceCredits, location, linkUrl, poll, collaborators, groupId, pageId } = parsed.data;
   if (!body && images.length === 0 && !poll) {
     return NextResponse.json({ error: "Publicación vacía" }, { status: 400 });
   }
@@ -51,6 +52,12 @@ export async function POST(req: Request) {
       select: { id: true },
     });
     if (!member) return NextResponse.json({ error: "No eres miembro del grupo" }, { status: 403 });
+  }
+
+  // Publicar en página requiere ser el dueño
+  if (pageId) {
+    const page = await prisma.page.findUnique({ where: { id: pageId }, select: { ownerId: true } });
+    if (!page || page.ownerId !== session.sub) return NextResponse.json({ error: "Solo el dueño publica en la página" }, { status: 403 });
   }
 
   // Colaboradores (reparto de ganancias) — solo en contenido de pago
@@ -90,6 +97,7 @@ export async function POST(req: Request) {
       location: location || null,
       linkUrl: link,
       groupId: groupId || null,
+      pageId: pageId || null,
       ...(poll
         ? {
             poll: {

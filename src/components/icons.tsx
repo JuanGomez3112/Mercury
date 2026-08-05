@@ -24,6 +24,7 @@ import {
   faVideo,
   faFilm,
   faUsers,
+  faFlag,
   faTowerBroadcast,
   faCamera,
   faFire,
@@ -67,6 +68,7 @@ export const IconVerified = make(faCircleCheck);
 export const IconVideo = make(faVideo);
 export const IconReels = make(faFilm);
 export const IconUsers = make(faUsers);
+export const IconFlag = make(faFlag);
 export const IconLive = make(faTowerBroadcast);
 export const IconCamera = make(faCamera);
 export const IconFire = make(faFire);

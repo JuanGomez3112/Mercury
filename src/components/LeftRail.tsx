@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CartBadge from "./CartBadge";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser, IconTable, IconUsers, IconReels } from "./icons";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBell, IconUser, IconTable, IconUsers, IconReels, IconFlag } from "./icons";
 
 export default function LeftRail({ username }: { username: string }) {
   const path = usePathname();
@@ -15,6 +15,7 @@ export default function LeftRail({ username }: { username: string }) {
     { icon: IconReels, href: "/reels", label: "Reels", match: (p: string) => p.startsWith("/reels") },
     { icon: IconInbox, href: "/mensajes", label: "Mensajes", match: (p: string) => p.startsWith("/mensajes") },
     { icon: IconUsers, href: "/grupos", label: "Grupos", match: (p: string) => p.startsWith("/grupos") },
+    { icon: IconFlag, href: "/paginas", label: "Páginas", match: (p: string) => p.startsWith("/paginas") },
     { icon: IconTable, href: "/tienda", label: "Tienda", match: (p: string) => p.startsWith("/tienda") },
     { icon: IconBell, href: "/notificaciones", label: "Notificaciones", match: (p: string) => p.startsWith("/notificaciones") },
     { icon: IconUser, href: `/u/${username}`, label: "Perfil", match: (p: string) => p === `/u/${username}` },

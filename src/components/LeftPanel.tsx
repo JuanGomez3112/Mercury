@@ -2,7 +2,7 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import MoodSlider from "./MoodSlider";
 import CartBadge from "./CartBadge";
-import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable, IconUsers, IconReels } from "./icons";
+import { IconGrid, IconSearch, IconFire, IconInbox, IconBookmark, IconUser, IconTable, IconUsers, IconReels, IconFlag } from "./icons";
 
 const nav = [
   { icon: IconGrid, label: "Inicio", href: "/feed?tab=feed", active: true },
@@ -11,6 +11,7 @@ const nav = [
   { icon: IconReels, label: "Reels", href: "/reels" },
   { icon: IconInbox, label: "Mensajes", href: "/mensajes" },
   { icon: IconUsers, label: "Grupos", href: "/grupos" },
+  { icon: IconFlag, label: "Páginas", href: "/paginas" },
   { icon: IconTable, label: "Tienda", href: "/tienda" },
   { icon: IconBookmark, label: "Guardados", href: "/guardados" },
   { icon: IconUser, label: "Perfil", href: "#perfil" },
