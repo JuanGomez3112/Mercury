@@ -70,9 +70,9 @@ export default function Stories({ me, groups }: { me: Me; groups: StoryGroup[] }
 
   return (
     <>
-      <div className="group relative h-[168px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[140px] max-sm:rounded-none max-sm:border-x-0">
-        <div className="no-scrollbar relative h-full overflow-x-auto px-8 pb-5 pt-9 max-sm:px-4 max-sm:pb-3 max-sm:pt-8">
-          <div className="flex w-max items-start gap-8 max-sm:gap-5">
+      <div className="group relative h-[156px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[140px] max-sm:rounded-none max-sm:border-x-0">
+        <div className="no-scrollbar flex h-full items-center overflow-x-auto px-8 max-sm:px-4">
+          <div className="flex w-max items-center gap-8 max-sm:gap-5">
             {/* Mi historia */}
             <div className="flex shrink-0 flex-col items-center">
               <div className="relative">
@@ -91,11 +91,11 @@ export default function Stories({ me, groups }: { me: Me; groups: StoryGroup[] }
               <span className="mt-1.5 block w-16 truncate text-center text-xs text-white/60">Tu historia</span>
             </div>
 
-            <span className="mt-5 h-16 w-px shrink-0 bg-purple/50" />
+            <span className="mb-6 h-16 w-px shrink-0 self-center bg-purple/50" />
 
             {/* Historias de los demás */}
             {others.length === 0 && (
-              <span className="mt-6 text-sm text-white/30">Sé el primero en publicar una historia</span>
+              <span className="mb-6 self-center text-sm text-white/30">Sé el primero en publicar una historia</span>
             )}
             {others.map((g) => (
               <button key={g.username} onClick={() => openGroup(g)} className="flex shrink-0 flex-col items-center">
