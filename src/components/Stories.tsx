@@ -12,7 +12,11 @@ export type Me = { username: string; displayName: string | null; avatarUrl: stri
 /* eslint-disable @next/next/no-img-element */
 function StoryAvatar({ src, mode, ring }: { src?: string | null; mode?: string | null; ring?: "unseen" | "seen" | "none" }) {
   const ringCls =
-    ring === "unseen" ? "bg-gradient-to-tr from-purple to-purple-soft" : ring === "seen" ? "bg-white/20" : "bg-transparent";
+    ring === "unseen"
+      ? "bg-gradient-to-tr from-purple to-purple-soft shadow-[0_0_12px_2px_rgba(147,121,242,0.55)]"
+      : ring === "seen"
+      ? "bg-white/15"
+      : "bg-transparent";
   return (
     <div className="relative h-16 w-16">
       {mode === "devil" && (
@@ -64,34 +68,37 @@ export default function Stories({ me, groups }: { me: Me; groups: StoryGroup[] }
 
   return (
     <>
-      <div className="group relative h-[150px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[112px] max-sm:rounded-none max-sm:border-x-0">
+      <div className="group relative h-[164px] rounded-2xl border border-white/10 bg-navy-2/50 transition-colors duration-300 hover:border-purple/20 max-sm:h-[132px] max-sm:rounded-none max-sm:border-x-0">
         <div className="no-scrollbar relative h-full overflow-x-auto p-8 max-sm:p-4">
-          <div className="flex h-full w-max items-end gap-8 max-sm:gap-5">
+          <div className="flex w-max items-start gap-8 max-sm:gap-5">
             {/* Mi historia */}
-            <div className="relative shrink-0">
-              <button onClick={() => (myGroup ? openGroup(myGroup) : fileRef.current?.click())} disabled={busy} aria-label="Tu historia">
-                <StoryAvatar src={me.avatarUrl} mode={me.mode} ring={myGroup ? "seen" : "none"} />
-              </button>
-              <button
-                onClick={() => fileRef.current?.click()}
-                disabled={busy}
-                aria-label="Añadir historia"
-                className="absolute -bottom-0.5 -right-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-purple text-navy ring-2 ring-navy-2"
-              >
-                <IconPlus className="h-3 w-3" />
-              </button>
+            <div className="flex shrink-0 flex-col items-center">
+              <div className="relative">
+                <button onClick={() => (myGroup ? openGroup(myGroup) : fileRef.current?.click())} disabled={busy} aria-label="Tu historia">
+                  <StoryAvatar src={me.avatarUrl} mode={me.mode} ring={myGroup ? "seen" : "none"} />
+                </button>
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  disabled={busy}
+                  aria-label="Añadir historia"
+                  className="absolute -bottom-0.5 -right-0.5 z-20 flex h-5 w-5 items-center justify-center rounded-full bg-purple text-navy ring-2 ring-navy-2"
+                >
+                  <IconPlus className="h-3 w-3" />
+                </button>
+              </div>
+              <span className="mt-1.5 block w-16 truncate text-center text-xs text-white/60">Tu historia</span>
             </div>
 
-            <span className="h-16 w-px shrink-0 self-end bg-purple/50" />
+            <span className="mt-5 h-16 w-px shrink-0 bg-purple/50" />
 
             {/* Historias de los demás */}
             {others.length === 0 && (
-              <span className="self-center text-sm text-white/30">Sé el primero en publicar una historia</span>
+              <span className="mt-6 text-sm text-white/30">Sé el primero en publicar una historia</span>
             )}
             {others.map((g) => (
-              <button key={g.username} onClick={() => openGroup(g)} className="shrink-0">
+              <button key={g.username} onClick={() => openGroup(g)} className="flex shrink-0 flex-col items-center">
                 <StoryAvatar src={g.avatarUrl} mode={g.mode} ring={g.hasUnseen ? "unseen" : "seen"} />
-                <span className="mt-1 block w-16 truncate text-center text-xs text-white/60">{g.displayName ?? g.username}</span>
+                <span className="mt-1.5 block w-16 truncate text-center text-xs text-white/60">{g.displayName ?? g.username}</span>
               </button>
             ))}
           </div>
