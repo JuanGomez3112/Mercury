@@ -21,6 +21,7 @@ export type FeedPost = {
   location: string | null;
   linkUrl: string | null;
   poll: PollView | null;
+  collaborators: { username: string; displayName: string | null }[];
   commentPreview: { id: string; username: string; displayName: string | null; avatarUrl: string | null; body: string }[];
 };
 

@@ -25,6 +25,7 @@ type Row = {
         votes: { optionId: string }[];
       }
     | null;
+  collaborators: { user: { username: string; displayName: string | null } }[];
 };
 
 function toFeedPost(
@@ -62,6 +63,7 @@ function toFeedPost(
     location: p.location,
     linkUrl: p.linkUrl,
     poll,
+    collaborators: p.collaborators.map((c) => ({ username: c.user.username, displayName: c.user.displayName })),
     commentPreview: [...p.comments]
       .reverse()
       .map((c) => ({ id: c.id, username: c.author.username, displayName: c.author.displayName, avatarUrl: c.author.avatarUrl, body: c.body })),
@@ -87,6 +89,7 @@ const include = (viewerId: string) => ({
       votes: { where: { userId: viewerId }, select: { optionId: true } },
     },
   },
+  collaborators: { select: { user: { select: { username: true, displayName: true } } } },
 });
 
 export type FeedTab = "feed" | "explora" | "tabu";

@@ -57,6 +57,19 @@ export default function PostCard({
         </div>
       </div>
 
+      {/* Colaboradores (crédito del reparto) */}
+      {post.collaborators.length > 0 && (
+        <p className="mt-3 flex flex-wrap items-center gap-x-1.5 text-sm text-white/60">
+          <span className="text-white/40">🤝 con</span>
+          {post.collaborators.map((c, i) => (
+            <span key={c.username}>
+              <Link href={`/u/${c.username}`} className="text-purple hover:underline">@{c.username}</Link>
+              {i < post.collaborators.length - 1 && <span className="text-white/40">,</span>}
+            </span>
+          ))}
+        </p>
+      )}
+
       {/* Cuerpo (con @menciones y #hashtags enlazados) */}
       {post.body && <PostBody text={post.body} />}
 

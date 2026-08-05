@@ -69,6 +69,7 @@ model User {
   marketBuys      MarketOrder[] @relation("marketBuyer")
   marketSales     MarketOrder[] @relation("marketSeller")
   stories         Story[]       @relation("stories")
+  postCollabs     PostCollaborator[] @relation("postCollabUser")
 }
 
 model PasswordReset {
@@ -161,6 +162,7 @@ model PostCollaborator {
   postId  String
   post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId  String
+  user    User   @relation("postCollabUser", fields: [userId], references: [id], onDelete: Cascade)
   percent Int    // % de las ganancias para este colaborador (autor = 100 - suma)
 
   @@unique([postId, userId])
