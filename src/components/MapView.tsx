@@ -76,7 +76,7 @@ export default function MapView({ initialShare, initialNearby, myAvatarUrl = nul
       };
       const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c]!));
       const label = (name: string) =>
-        `<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:3px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)">${esc(name)}</div>`;
+        `<div style="position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:8px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,.9)">${esc(name)}</div>`;
       const avatarIcon = (src: string | null, ring: string, mode: string | null, name: string) =>
         L.divIcon({
           className: "",
