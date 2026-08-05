@@ -12,12 +12,15 @@ export default function HlsPlayer({ src }: { src: string }) {
     if (!v) return;
     let hls: Hls | null = null;
 
+    const tryPlay = () => v.play().catch(() => {});
     if (v.canPlayType("application/vnd.apple.mpegurl")) {
       v.src = src;
+      v.addEventListener("loadedmetadata", tryPlay);
     } else if (Hls.isSupported()) {
       hls = new Hls({ lowLatencyMode: true, liveSyncDurationCount: 3 });
       hls.loadSource(src);
       hls.attachMedia(v);
+      hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
       hls.on(Hls.Events.ERROR, (_e, data) => {
         // Reintentar si aún no hay señal (el broadcaster puede tardar)
         if (data.fatal) setTimeout(() => { hls?.loadSource(src); }, 2500);
