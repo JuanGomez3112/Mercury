@@ -9,8 +9,8 @@ const CHIPS: { key: string; label: string; enabled: boolean }[] = [
   { key: "tags", label: "Hashtag", enabled: true },
   { key: "tabu", label: "Tabú", enabled: true },
   { key: "reels", label: "Reels", enabled: true },
-  { key: "paginas", label: "Páginas", enabled: false },
-  { key: "grupos", label: "Grupos", enabled: false },
+  { key: "paginas", label: "Páginas", enabled: true },
+  { key: "grupos", label: "Grupos", enabled: true },
 ];
 
 export default function SearchFilters({ q, active }: { q: string; active: string }) {

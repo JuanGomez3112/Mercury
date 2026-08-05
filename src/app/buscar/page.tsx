@@ -11,7 +11,7 @@ import TabuGate from "@/components/TabuGate";
 
 export const dynamic = "force-dynamic";
 
-const TYPES = ["all", "users", "posts", "tags", "tabu", "reels"];
+const TYPES = ["all", "users", "posts", "tags", "tabu", "reels", "grupos", "paginas"];
 
 export default async function BuscarPage({
   searchParams,
@@ -34,7 +34,7 @@ export default async function BuscarPage({
   const unlocked = await isTabuUnlocked(session.sub);
   const hasPin = (await prisma.user.findUnique({ where: { id: session.sub }, select: { tabuPinHash: true } }))!.tabuPinHash !== null;
 
-  const { users, posts, tags } = await searchAll(session.sub, q, type);
+  const { users, posts, tags, groups, pages } = await searchAll(session.sub, q, type);
 
   return (
     <AppShell username={me.username} avatarUrl={me.avatarUrl}>
@@ -85,7 +85,32 @@ export default async function BuscarPage({
           </section>
         )}
 
-        {q && users.length === 0 && posts.length === 0 && tags.length === 0 && (
+        {q && (type === "all" || type === "grupos") && groups.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold text-white/50">Grupos</h2>
+            {groups.map((g) => (
+              <Link key={g.slug} href={`/grupos/${g.slug}`} className="flex items-center justify-between rounded-xl border border-white/10 bg-navy-2/50 p-3 hover:border-purple/30">
+                <span className="text-sm font-semibold text-white">👥 {g.name}</span>
+                <span className="text-xs text-white/40">{g.memberCount} miembros</span>
+              </Link>
+            ))}
+          </section>
+        )}
+
+        {q && (type === "all" || type === "paginas") && pages.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-sm font-semibold text-white/50">Páginas</h2>
+            {pages.map((p) => (
+              <Link key={p.slug} href={`/paginas/${p.slug}`} className="flex items-center gap-3 rounded-xl border border-white/10 bg-navy-2/50 p-3 hover:border-purple/30">
+                <Avatar src={p.avatarUrl} className="h-10 w-10" />
+                <span className="flex-1 text-sm font-semibold text-white">{p.name}</span>
+                <span className="text-xs text-white/40">{p.followerCount} seguidores</span>
+              </Link>
+            ))}
+          </section>
+        )}
+
+        {q && users.length === 0 && posts.length === 0 && tags.length === 0 && groups.length === 0 && pages.length === 0 && (
           <p className="text-sm text-white/40">Sin resultados.</p>
         )}
         {type === "tabu" && !unlocked && <TabuGate hasPin={hasPin} />}

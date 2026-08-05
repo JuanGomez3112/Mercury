@@ -2,21 +2,25 @@ import { prisma } from "./db";
 import type { FeedPost } from "./types";
 import { getFeedPostsByWhere } from "./queries";
 
-export type SearchType = "all" | "users" | "posts" | "tags" | "tabu" | "reels";
+export type SearchType = "all" | "users" | "posts" | "tags" | "tabu" | "reels" | "grupos" | "paginas";
 export type UserHit = { username: string; displayName: string | null; avatarUrl: string | null; mode: string | null };
 export type TagHit = { tag: string; count: number };
-export type SearchResult = { users: UserHit[]; posts: FeedPost[]; tags: TagHit[] };
+export type GroupHit = { slug: string; name: string; memberCount: number };
+export type PageHit = { slug: string; name: string; avatarUrl: string | null; followerCount: number };
+export type SearchResult = { users: UserHit[]; posts: FeedPost[]; tags: TagHit[]; groups: GroupHit[]; pages: PageHit[] };
 
 const VIDEO_RE = /\.(mp4|webm)(\?|$)/i;
 
 export async function searchAll(viewerId: string, qRaw: string, type: SearchType): Promise<SearchResult> {
   const q = qRaw.trim();
-  const empty: SearchResult = { users: [], posts: [], tags: [] };
+  const empty: SearchResult = { users: [], posts: [], tags: [], groups: [], pages: [] };
   if (!q) return empty;
 
   const wantUsers = type === "all" || type === "users";
   const wantPosts = type === "all" || type === "posts" || type === "tabu" || type === "reels";
   const wantTags = type === "all" || type === "tags";
+  const wantGroups = type === "all" || type === "grupos";
+  const wantPages = type === "all" || type === "paginas";
 
   const users: UserHit[] = wantUsers
     ? await prisma.user.findMany({
@@ -65,5 +69,21 @@ export async function searchAll(viewerId: string, qRaw: string, type: SearchType
       .map(([tag, count]) => ({ tag, count }));
   }
 
-  return { users, posts, tags };
+  const groups: GroupHit[] = wantGroups
+    ? (await prisma.group.findMany({
+        where: { name: { contains: q, mode: "insensitive" } },
+        take: 10,
+        select: { slug: true, name: true, _count: { select: { members: true } } },
+      })).map((g) => ({ slug: g.slug, name: g.name, memberCount: g._count.members }))
+    : [];
+
+  const pages: PageHit[] = wantPages
+    ? (await prisma.page.findMany({
+        where: { name: { contains: q, mode: "insensitive" } },
+        take: 10,
+        select: { slug: true, name: true, avatarUrl: true, _count: { select: { followers: true } } },
+      })).map((p) => ({ slug: p.slug, name: p.name, avatarUrl: p.avatarUrl, followerCount: p._count.followers }))
+    : [];
+
+  return { users, posts, tags, groups, pages };
 }
